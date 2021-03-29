@@ -56,8 +56,48 @@ class DeviceStatus extends StatelessWidget {
                           ))
                   
                     ])), // Total Devices
-
-            Container(), // Active Devices Last 72 Hours
+            
+            SizedBox(height: 30),
+            Container(
+              width: 320,
+              height: 130,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3))
+                  ]),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          width: 60,
+                          height: 110,
+                          child: Image.asset('assets/image/active.png')),
+                      Container(
+                          width: 200,
+                          height: 110,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '198',
+                                style: TextStyle(
+                                    fontSize: 26, fontWeight: FontWeight.bold),
+                              ),
+                              Text.rich(TextSpan(
+                                  text: 'Total Active Devices',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)))
+                            ],
+                          ))
+                  
+                    ])
+            ), // Active Devices Last 72 Hours
 
             Container(), // Inactive Devices Last 72 Hours
           ]),
