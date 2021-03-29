@@ -85,7 +85,7 @@ class DeviceStatus extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '150',
+                                '190',
                                 style: TextStyle(
                                     fontSize: 26, fontWeight: FontWeight.bold),
                               ),
