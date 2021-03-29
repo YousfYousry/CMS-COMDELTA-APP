@@ -36,7 +36,7 @@ class DeviceStatus extends StatelessWidget {
                       Container(
                           width: 60,
                           height: 110,
-                          child: Image.asset('assets/image/status.png')),
+                          child: Image.asset('assets/image/track.jpg')),
                       Container(
                           width: 200,
                           height: 110,
