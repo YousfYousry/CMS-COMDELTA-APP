@@ -17,7 +17,11 @@ class DeviceStatus extends StatelessWidget {
           child: Column(children: [
             DashBoardHeader(),
             SizedBox(height: 30),
-            Container(
+            
+            
+            InkWell(
+              onTap: () {},
+              child:Container(
               width: 320,
               height: 130,
               decoration: BoxDecoration(
@@ -55,10 +59,13 @@ class DeviceStatus extends StatelessWidget {
                             ],
                           ))
                   
-                    ])), // Total Devices
+                    ]))), // Total Devices
+            
             
             SizedBox(height: 30),
-            Container(
+            InkWell(
+              onTap: () {},
+              child:Container(
               width: 320,
               height: 130,
               decoration: BoxDecoration(
@@ -97,9 +104,53 @@ class DeviceStatus extends StatelessWidget {
                           ))
                   
                     ])
-            ), // Active Devices Last 72 Hours
+            )), // Active Devices Last 72 Hours
 
-            Container(), // Inactive Devices Last 72 Hours
+            SizedBox(height: 30),
+            InkWell(
+              onTap: () {},
+              child:Container(
+              width: 320,
+              height: 130,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3))
+                  ]),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          width: 60,
+                          height: 110,
+                          child: Image.asset('assets/image/inactive1.png')),
+                      Container(
+                          width: 200,
+                          height: 110,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '10',
+                                style: TextStyle(
+                                    fontSize: 26, fontWeight: FontWeight.bold),
+                              ),
+                              Text.rich(TextSpan(
+                                  text: 'Total Inactive Devices',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)))
+                            ],
+                          ))
+                  
+                    ])
+            )), // Inactive Devices Last 72 Hours
+
+
           ]),
         ));
   }

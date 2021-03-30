@@ -53,6 +53,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                 Navigator.push(context, 
                 MaterialPageRoute(builder: (context) => DeviceStatus()));
               },
+              
               child:Container(
                   width: 320,
                   height: 130,
