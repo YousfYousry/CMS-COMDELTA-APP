@@ -20,6 +20,41 @@ class TotalDeviceCard extends StatelessWidget {
         child: Column(
           children: [
             DeviceListHeader(),
+            SizedBox(height: 30),
+            Container(
+              color: Colors.white,
+              width: 340,
+              height: 800,
+              child: Column(
+                children: [
+                  Center(
+                    heightFactor: 2,
+                    child: Text(
+                      'Total Devices',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Divider(
+                    thickness: 1,
+                    color: Colors.grey,
+                  ),
+                  Container(
+                    width: 320,
+                    height: 700,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.grey),
+                    ),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+
+                        ]),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(height: 30),
           ],
         ),
       ),

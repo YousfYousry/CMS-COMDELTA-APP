@@ -101,7 +101,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
             InkWell(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => GoogleMap()));
+                    MaterialPageRoute(builder: (context) => GoogleMapApp()));
               },
               child: Container(
                 width: 320,

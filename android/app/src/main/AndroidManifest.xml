@@ -10,6 +10,8 @@
         android:label="login_cms_comdelta"
         android:usesCleartextTraffic="true">
 
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBsBDhToCxcW3B7CBdNX4M-hl1RtvMCLTE"/>
 
         <activity
             android:name=".MainActivity"
