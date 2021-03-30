@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   @override
   Widget build(BuildContext context) {
+    
     final emailField = Material(
       child: TextField(
           obscureText: false,
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
       elevation: 10.0,
       shadowColor: Colors.black45,
       borderRadius: BorderRadius.circular(32.0),
-    );
+    ); //Email Text Field 
 
     final passwordField = Material(
       child: TextField(
@@ -68,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       elevation: 10.0,
       shadowColor: Colors.black45,
       borderRadius: BorderRadius.circular(32.0),
-    );
+    ); // Password Text Field 
 
     final loginButton = Material(
         elevation: 10.0,
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
               textAlign: TextAlign.center,
               style: style.copyWith(
                   color: Colors.white, fontWeight: FontWeight.bold),
-            )));
+            ))); //Login Button
 
     return Scaffold(
         body: Center(
@@ -104,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Image.asset(
               "assets/image/logo.png",
               fit: BoxFit.contain,
-            ),
+            ), // Image setting
           ),
           SizedBox(height: 20.0),
           Text('Welcome to Comdelta Tracking System',
@@ -117,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
           loginButton,
           SizedBox(height: 100.0),
         ],
-      )),
-    ))));
+      )), // Setting for Text Field, Password Field and Login Button
+    )))); 
   }
 }
