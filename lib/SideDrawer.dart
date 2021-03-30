@@ -9,24 +9,25 @@ class SideDrawer extends StatelessWidget {
       child: Column(
         children: <Widget>[
           DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color(0xff0065a3),
-              ),
-              child: Center(
-                  child: Column(
+            decoration: BoxDecoration(
+              color: Color(0xff0065a3),
+            ),
+            child: Center(
+              child: Column(
                 children: [
                   Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 4),
-                          borderRadius: BorderRadius.circular(50.0)),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/image/Avatar.jpeg',
-                          height: 80.0,
-                          width: 80.0,
-                          fit: BoxFit.contain,
-                        ),
-                      )),
+                    decoration: BoxDecoration(
+                        border: Border.all(width: 4),
+                        borderRadius: BorderRadius.circular(50.0)),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/image/Avatar.jpeg',
+                        height: 80.0,
+                        width: 80.0,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 5,
                   ),
@@ -47,13 +48,19 @@ class SideDrawer extends StatelessWidget {
                     ],
                   )
                 ],
-              ))),
+              ),
+            ),
+          ),
           ListTile(
             leading: Icon(Icons.home),
             title: Text('Dashoard'),
             onTap: () => {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => DashBoard()))
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DashBoard(),
+                ),
+              ),
             },
           ),
           ListTile(
@@ -85,8 +92,12 @@ class SideDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () => {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MyHomePage()))
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MyHomePage(),
+                ),
+              ),
             },
           ),
         ],

@@ -14,9 +14,11 @@ class GoogleMap extends StatelessWidget {
         preferredSize: const Size.fromHeight(50),
       ),
       drawer: SideDrawer(),
-      body: Column(children:[
-        DashBoardHeader(),
-      ]),
+      body: Column(
+        children: [
+          DashBoardHeader(),
+        ],
+      ),
     );
   }
 }
