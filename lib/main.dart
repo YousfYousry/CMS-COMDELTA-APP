@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/DashBoard.dart';
 import 'DashBoard.dart';
-import 'ProgressBar.dart';
+import 'Widgets/ProgressBar.dart';
+import 'Widgets/TextFieldShadow.dart';
 
 void main() {
   runApp(MyApp());
@@ -45,17 +47,23 @@ class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   TextEditingController emailFieldController = new TextEditingController(),
       passFieldController = new TextEditingController();
-  bool validateEmail = false, validatePassword = false,loading=false;
+  bool validateEmail = false, validatePassword = false, loading = false;
 
   @override
   Widget build(BuildContext context) {
-    final emailField = Material(
-      child: TextField(
+    final emailField = Stack(children: [
+      TextFieldShadow(),
+      TextField(
         controller: emailFieldController,
         obscureText: false,
         style: style,
+        onChanged: (text) {
+          setState(() {
+            validateEmail=false;
+          });
+        },
         decoration: InputDecoration(
-          errorText: validateEmail ? 'Email Can\'t Be Empty' : null,
+          errorText: validateEmail ? 'Username is required' : null,
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Username",
           border: OutlineInputBorder(
@@ -63,30 +71,30 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      elevation: 10.0,
-      shadowColor: Colors.black45,
-      borderRadius: BorderRadius.circular(32.0),
-    ); //Email Text Field
+    ]); //Email Text Field
 
-    final passwordField = Material(
-      child: TextField(
+    final passwordField = Stack(children: [
+      TextFieldShadow(),
+      TextField(
         controller: passFieldController,
         obscureText: true,
         style: style,
+        onChanged: (text) {
+          setState(() {
+            validatePassword=false;
+          });
+        },
         decoration: InputDecoration(
-          errorText: validatePassword ? 'Password Can\'t Be Empty' : null,
+          errorText: validatePassword ? 'Password is required' : null,
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Password",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
         ),
       ),
-      elevation: 10.0,
-      shadowColor: Colors.black45,
-      borderRadius: BorderRadius.circular(32.0),
-    ); // Password Text Field
+    ]); // Password Text Field
 
     final loginButton = Material(
-      elevation: 10.0,
+      elevation: 5.0,
       shadowColor: Colors.black,
       borderRadius: BorderRadius.circular(30.0),
       color: Color(0xff0065a3),
@@ -148,7 +156,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> checkInfo() async {
-    setState(() => loading=true);
     if (emailFieldController.text.isEmpty) {
       setState(() {
         validateEmail = true;
@@ -162,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
       return;
     }
+    setState(() => loading = true);
 
     String msg = '';
     http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
@@ -187,20 +195,15 @@ class _MyHomePageState extends State<MyHomePage> {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1);
-      setState(() => loading=false);
+      setState(() => loading = false);
+    }).onError((error, stackTrace) {
+      Fluttertoast.showToast(
+          msg: 'Error: ' + error.message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1);
+      setState(() => loading = false);
     });
-
-    // Map data = {
-    //   'email': 'user@comdelta.com',
-    //   'password': '2181dab55acfd8d519301d48e66b1a8c'
-    // };
-    //
-    // String body = json.encode(data);
-    // http.Response response = await http.post(
-    //   Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
-    //   headers: {"Content-Type": "application/json"},
-    //   body: body,
-    // );
   }
 
   String getResponseError(http.Response response) {
