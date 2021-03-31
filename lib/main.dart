@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/DashBoard.dart';
 import 'DashBoard.dart';
+import 'ProgressBar.dart';
 
 void main() {
   runApp(MyApp());
@@ -42,7 +43,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-  TextEditingController  emailFieldController= new TextEditingController(), passFieldController= new TextEditingController();
+  TextEditingController emailFieldController = new TextEditingController(),
+      passFieldController = new TextEditingController();
+  bool validateEmail = false, validatePassword = false,loading=false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
         obscureText: false,
         style: style,
         decoration: InputDecoration(
+          errorText: validateEmail ? 'Email Can\'t Be Empty' : null,
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Username",
           border: OutlineInputBorder(
@@ -70,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         obscureText: true,
         style: style,
         decoration: InputDecoration(
+          errorText: validatePassword ? 'Password Can\'t Be Empty' : null,
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Password",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
@@ -99,42 +104,66 @@ class _MyHomePageState extends State<MyHomePage> {
     ); //Login Button
 
     return Scaffold(
-      body: Center(
-        child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 100.0,
-                    child: Image.asset(
-                      "assets/image/logo.png",
-                      fit: BoxFit.contain,
-                    ), // Image setting
-                  ),
-                  SizedBox(height: 20.0),
-                  Text('Welcome to Comdelta Tracking System',
-                      style: TextStyle(fontSize: 16, color: Colors.black)),
-                  SizedBox(height: 20.0),
-                  emailField,
-                  SizedBox(height: 20.0),
-                  passwordField,
-                  SizedBox(height: 25.0),
-                  loginButton,
-                  SizedBox(height: 100.0),
-                ],
-              ),
-            ), // Setting for Text Field, Password Field and Login Button
+      body: Stack(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 100.0,
+                      child: Image.asset(
+                        "assets/image/logo.png",
+                        fit: BoxFit.contain,
+                      ), // Image setting
+                    ),
+                    SizedBox(height: 20.0),
+                    Text('Welcome to Comdelta Tracking System',
+                        style: TextStyle(fontSize: 16, color: Colors.black)),
+                    SizedBox(height: 20.0),
+                    emailField,
+                    SizedBox(height: 20.0),
+                    passwordField,
+                    SizedBox(height: 25.0),
+                    loginButton,
+                    SizedBox(height: 100.0),
+                  ],
+                ),
+              ), // Setting for Text Field, Password Field and Login Button
+            ),
           ),
-        ),
+          Center(
+            child: Visibility(
+              child: CircularProgressIndicatorApp(),
+              visible: loading,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Future<void> checkInfo() async {
+    setState(() => loading=true);
+    if (emailFieldController.text.isEmpty) {
+      setState(() {
+        validateEmail = true;
+      });
+      return;
+    }
+
+    if (passFieldController.text.isEmpty) {
+      setState(() {
+        validatePassword = true;
+      });
+      return;
+    }
+
+    String msg = '';
     http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
         body: {
           'email': emailFieldController.text,
@@ -144,10 +173,21 @@ class _MyHomePageState extends State<MyHomePage> {
         // ignore: deprecated_member_use
         int value = json.decode(response.body);
         if (value == 1) {
+          msg = 'Logged in successfully';
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => DashBoard()));
+        } else if (value == 0) {
+          msg = 'Email or password is incorrect';
         }
+      } else {
+        msg = getResponseError(response);
       }
+      Fluttertoast.showToast(
+          msg: msg,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1);
+      setState(() => loading=false);
     });
 
     // Map data = {
@@ -161,5 +201,22 @@ class _MyHomePageState extends State<MyHomePage> {
     //   headers: {"Content-Type": "application/json"},
     //   body: body,
     // );
+  }
+
+  String getResponseError(http.Response response) {
+    switch (response.statusCode) {
+      case 200:
+        var responseJson = json.decode(response.body.toString());
+        return responseJson;
+      case 400:
+        return (response.body.toString());
+      case 401:
+        return (response.body.toString());
+      case 403:
+        return (response.body.toString());
+      case 500:
+      default:
+        return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
+    }
   }
 }
