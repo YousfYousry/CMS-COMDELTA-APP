@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/ActiveDeviceCard.dart';
+import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
-import './SideDrawer.dart';
-import './MyAppBar.dart';
-import './DashBoardHeader.dart';
+import 'Widgets/SideDrawer.dart';
+import 'Widgets/MyAppBar.dart';
+import 'Widgets/DashBoardHeader.dart';
 
 class DeviceStatus extends StatelessWidget {
   @override
@@ -69,7 +71,10 @@ class DeviceStatus extends StatelessWidget {
 
             SizedBox(height: 30),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ActiveDeviceCard()));
+              },
               child: Container(
                 width: 320,
                 height: 130,
@@ -114,7 +119,10 @@ class DeviceStatus extends StatelessWidget {
 
             SizedBox(height: 30),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => InactiveDeviceCard()));
+              },
               child: Container(
                 width: 320,
                 height: 130,

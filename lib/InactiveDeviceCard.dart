@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Widgets/DataTableInfo.dart';
-import 'package:login_cms_comdelta/Widgets/DropDwonListValue.dart';
-
+import 'Widgets/DeviceListHeader.dart';
 import 'Widgets/MyAppBar.dart';
 import 'Widgets/SideDrawer.dart';
-import 'Widgets/DeviceListHeader.dart';
 import 'Widgets/FloatingActionButton.dart';
 import 'Widgets/DropDwonListValue.dart';
+import 'Widgets/DataTableInfo.dart';
 import 'Widgets/CustomizeTextField.dart';
 
-class TotalDeviceCard extends StatelessWidget {
+class InactiveDeviceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +32,7 @@ class TotalDeviceCard extends StatelessWidget {
                   Center(
                     heightFactor: 2,
                     child: Text(
-                      'Total Devices',
+                      'Inactive Devices Last 72 Hours',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
