@@ -6,6 +6,7 @@ import 'package:login_cms_comdelta/DashBoard.dart';
 import 'DashBoard.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -71,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     ]); //Email Text Field
-
     final passwordField = Stack(children: [
       TextFieldShadow(),
       TextField(
@@ -91,7 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     ]); // Password Text Field
-
     final loginButton = Material(
       elevation: 5.0,
       shadowColor: Colors.black,
@@ -220,5 +219,15 @@ class _MyHomePageState extends State<MyHomePage> {
       default:
         return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
     }
+  }
+
+  Future<String> load(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? 0;
+  }
+
+  void save(String key, String data) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, data);
   }
 }
