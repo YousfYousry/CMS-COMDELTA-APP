@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/DataTableInfo.dart';
-import 'package:login_cms_comdelta/DropDwonListValue.dart';
+import 'package:login_cms_comdelta/Widgets/DataTableInfo.dart';
+import 'package:login_cms_comdelta/Widgets/DropDwonListValue.dart';
 
-import './MyAppBar.dart';
-import './SideDrawer.dart';
-import './DeviceListHeader.dart';
-import './FloatingActionButton.dart';
-import './DropDwonListValue.dart';
-import './CustomizeTextField.dart';
+import 'Widgets/MyAppBar.dart';
+import 'Widgets/SideDrawer.dart';
+import 'Widgets/DeviceListHeader.dart';
+import 'Widgets/FloatingActionButton.dart';
+import 'Widgets/DropDwonListValue.dart';
+import 'Widgets/CustomizeTextField.dart';
 
 class TotalDeviceCard extends StatelessWidget {
   @override

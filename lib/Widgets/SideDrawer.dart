@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
-import './DashBoard.dart';
+import '../main.dart';
+import '../DashBoard.dart';
 
 class SideDrawer extends StatelessWidget {
   @override

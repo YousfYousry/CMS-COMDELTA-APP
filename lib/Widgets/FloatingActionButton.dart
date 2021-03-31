@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import './DeviceStatus.dart';
+import '../DeviceStatus.dart';
 
 class FloatingButton extends StatelessWidget {
   @override

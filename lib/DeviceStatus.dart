@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/ActiveDeviceCard.dart';
 import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
-import './SideDrawer.dart';
-import './MyAppBar.dart';
-import './DashBoardHeader.dart';
+import 'Widgets/SideDrawer.dart';
+import 'Widgets/MyAppBar.dart';
+import 'Widgets/DashBoardHeader.dart';
 
 class DeviceStatus extends StatelessWidget {
   @override

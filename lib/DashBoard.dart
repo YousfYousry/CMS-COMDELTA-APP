@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:login_cms_comdelta/DeviceStatus.dart';
-import 'package:login_cms_comdelta/SideDrawer.dart';
 
-import 'SideDrawer.dart';
-import 'MyAppBar.dart';
+import 'Widgets/SideDrawer.dart';
+import 'Widgets/MyAppBar.dart';
 import './GoogleMap.dart';
-import './DashBoardHeader.dart';
+import 'Widgets/DashBoardHeader.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 

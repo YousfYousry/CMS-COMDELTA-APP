@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import './DeviceListHeader.dart';
-import './MyAppBar.dart';
-import './SideDrawer.dart';
-import './FloatingActionButton.dart';
-import './DropDwonListValue.dart';
-import './DataTableInfo.dart';
-import './CustomizeTextField.dart';
+import 'Widgets/DeviceListHeader.dart';
+import 'Widgets/MyAppBar.dart';
+import 'Widgets/SideDrawer.dart';
+import 'Widgets/FloatingActionButton.dart';
+import 'Widgets/DropDwonListValue.dart';
+import 'Widgets/DataTableInfo.dart';
+import 'Widgets/CustomizeTextField.dart';
 
 class InactiveDeviceCard extends StatelessWidget {
   @override
