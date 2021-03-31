@@ -181,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
         int value = json.decode(response.body);
         if (value == 1) {
           msg = 'Logged in successfully';
-          Navigator.push(
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => DashBoard()));
         } else if (value == 0) {
           msg = 'Email or password is incorrect';

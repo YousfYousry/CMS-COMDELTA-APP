@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/DashBoard.dart';
+import './SizeTransition.dart';
 
 class DashBoardHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashBoard(),
-          ),
-        );
-      },
       child: Container(
         width: double.infinity,
         height: 100,

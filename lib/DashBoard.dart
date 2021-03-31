@@ -6,6 +6,7 @@ import 'Widgets/SideDrawer.dart';
 import 'Widgets/MyAppBar.dart';
 import './GoogleMap.dart';
 import 'Widgets/DashBoardHeader.dart';
+import 'Widgets/SizeTransition.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -48,10 +49,10 @@ class _DashBoardPageState extends State<DashBoardPage> {
             DashBoardHeader(),
 
             SizedBox(height: 30),
-            GestureDetector(
+            InkWell(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => DeviceStatus()));
+                    SizeRoute(page: DeviceStatus()));
               },
               child: Container(
                 width: 320,
@@ -100,7 +101,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
             InkWell(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => GoogleMapApp()));
+                    SizeRoute(page: GoogleMapApp()));
               },
               child: Container(
                 width: 320,

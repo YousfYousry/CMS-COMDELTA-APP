@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../DashBoard.dart';
+import './SizeTransition.dart';
 
 class SideDrawer extends StatelessWidget {
   @override
@@ -54,13 +55,9 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('Dashoard'),
-            onTap: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DashBoard(),
-                ),
-              ),
+           onTap: () {
+                Navigator.push(context,
+                    SizeRoute(page: DashBoard()));
             },
           ),
           ListTile(
@@ -91,13 +88,9 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
-            onTap: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyHomePage(),
-                ),
-              ),
+            onTap: () {
+                Navigator.push(context,
+                    SizeRoute(page: MyHomePage()));
             },
           ),
         ],

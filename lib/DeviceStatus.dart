@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/ActiveDeviceCard.dart';
 import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
+import './Widgets/FloatingActionButton1.dart';
 import 'Widgets/SideDrawer.dart';
 import 'Widgets/MyAppBar.dart';
 import 'Widgets/DashBoardHeader.dart';
+import 'Widgets/SizeTransition.dart';
 
 class DeviceStatus extends StatelessWidget {
   @override
@@ -16,6 +18,7 @@ class DeviceStatus extends StatelessWidget {
         preferredSize: const Size.fromHeight(50),
       ),
       drawer: SideDrawer(),
+      floatingActionButton: FloatingButton1(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -23,9 +26,9 @@ class DeviceStatus extends StatelessWidget {
             SizedBox(height: 30),
 
             InkWell(
-              onTap: () {
+               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => TotalDeviceCard()));
+                    SizeRoute(page: TotalDeviceCard()));
               },
               child: Container(
                 width: 320,
@@ -73,7 +76,7 @@ class DeviceStatus extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ActiveDeviceCard()));
+                    SizeRoute(page: ActiveDeviceCard()));
               },
               child: Container(
                 width: 320,
@@ -121,7 +124,7 @@ class DeviceStatus extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => InactiveDeviceCard()));
+                    SizeRoute(page: InactiveDeviceCard()));
               },
               child: Container(
                 width: 320,
