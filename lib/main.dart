@@ -42,18 +42,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+  TextEditingController  emailFieldController= new TextEditingController(), passFieldController= new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final emailField = Material(
       child: TextField(
-          obscureText: false,
-          style: style,
-          decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-              hintText: "Username",
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32.0)))),
+        controller: emailFieldController,
+        obscureText: false,
+        style: style,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Username",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32.0),
+          ),
+        ),
+      ),
       elevation: 10.0,
       shadowColor: Colors.black45,
       borderRadius: BorderRadius.circular(32.0),
@@ -61,13 +66,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final passwordField = Material(
       child: TextField(
-          obscureText: true,
-          style: style,
-          decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-              hintText: "Password",
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(32.0)))),
+        controller: passFieldController,
+        obscureText: true,
+        style: style,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Password",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+        ),
+      ),
       elevation: 10.0,
       shadowColor: Colors.black45,
       borderRadius: BorderRadius.circular(32.0),
@@ -128,10 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> checkInfo() async {
-    http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'), body: {
-      'email': 'user@comdelta.com',
-      'password': '2181dab55acfd8d519301d48e66b1a8c'
-    }).then((response) {
+    http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
+        body: {
+          'email': emailFieldController.text,
+          'password': passFieldController.text
+        }).then((response) {
       if (response.statusCode == 200) {
         // ignore: deprecated_member_use
         int value = json.decode(response.body);
@@ -141,7 +149,6 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     });
-
 
     // Map data = {
     //   'email': 'user@comdelta.com',
@@ -154,6 +161,5 @@ class _MyHomePageState extends State<MyHomePage> {
     //   headers: {"Content-Type": "application/json"},
     //   body: body,
     // );
-
   }
 }
