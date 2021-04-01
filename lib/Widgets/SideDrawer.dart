@@ -72,7 +72,6 @@ class SideDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 SizeRoute(
-                  page: FeedBackPage(),
                 ),
               ),
             },
