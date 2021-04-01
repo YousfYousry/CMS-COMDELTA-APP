@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/ActiveDeviceCard.dart';
 import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
-import './Widgets/FloatingActionButton1.dart';
+import './Widgets/FloatingButton1=>DashBoard.dart';
 import 'Widgets/SideDrawer.dart';
 import 'Widgets/MyAppBar.dart';
 import 'Widgets/DashBoardHeader.dart';
