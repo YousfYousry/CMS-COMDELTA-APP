@@ -91,17 +91,16 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
-            onTap: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyHomePage(),
-                ),
-              ),
-            },
+            onTap: () => logOut(context),
           ),
         ],
       ),
     );
+  }
+
+  void logOut(BuildContext context) {
+    save('client_id', '-1');
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MyHomePage()));
   }
 }

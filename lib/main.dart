@@ -8,8 +8,10 @@ import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  load('client_id').then((value) => runApp(MaterialApp(home: value == '-1' ? MyApp() : DashBoard())));
 }
 
 class MyApp extends StatelessWidget {
@@ -51,6 +53,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // load('client_id').then((value) {
+    //   if (value != '-1') {
+    //     Navigator.pushReplacement(
+    //         context, MaterialPageRoute(builder: (context) => DashBoard()));
+    //   }
+    // });
+
     final emailField = Stack(children: [
       TextFieldShadow(),
       TextField(
@@ -59,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
         style: style,
         onChanged: (text) {
           setState(() {
-            validateEmail=false;
+            validateEmail = false;
           });
         },
         decoration: InputDecoration(
@@ -80,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         style: style,
         onChanged: (text) {
           setState(() {
-            validatePassword=false;
+            validatePassword = false;
           });
         },
         decoration: InputDecoration(
@@ -177,12 +186,13 @@ class _MyHomePageState extends State<MyHomePage> {
         }).then((response) {
       if (response.statusCode == 200) {
         // ignore: deprecated_member_use
-        int value = json.decode(response.body);
-        if (value == 1) {
+        String value = json.decode(response.body);
+        if (value != '-1') {
+          save('client_id', value);
           msg = 'Logged in successfully';
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => DashBoard()));
-        } else if (value == 0) {
+        } else {
           msg = 'Email or password is incorrect';
         }
       } else {
@@ -220,14 +230,14 @@ class _MyHomePageState extends State<MyHomePage> {
         return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
     }
   }
+}
 
-  Future<String> load(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key) ?? 0;
-  }
+Future<String> load(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString(key)?? '-1';
+}
 
-  void save(String key, String data) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, data);
-  }
+void save(String key, String data) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString(key, data);
 }
