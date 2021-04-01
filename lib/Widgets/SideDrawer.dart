@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import './SizeTransition.dart';
 import '../main.dart';
 import '../DashBoard.dart';
+import '../FeedBackPage.dart';
 
 class SideDrawer extends StatelessWidget {
   @override
@@ -57,8 +59,8 @@ class SideDrawer extends StatelessWidget {
             onTap: () => {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => DashBoard(),
+                SizeRoute(
+                  page: DashBoardPage(),
                 ),
               ),
             },
@@ -66,7 +68,14 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.border_color),
             title: Text('Feedback'),
-            onTap: () => {},
+            onTap: () => {
+              Navigator.push(
+                context,
+                SizeRoute(
+                  page: FeedBackPage(),
+                ),
+              ),
+            },
           ),
           Divider(
             color: Colors.red,
@@ -101,6 +110,6 @@ class SideDrawer extends StatelessWidget {
   void logOut(BuildContext context) {
     save('client_id', '-1');
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => MyHomePage()));
+        context, SizeRoute(page: MyHomePage()));
   }
 }
