@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+import 'Widgets/FloatingButton=%3EDashBoard.dart';
 import 'Widgets/MyAppBar.dart';
 import 'Widgets/SideDrawer.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,6 +23,7 @@ class GoogleMapApp extends StatelessWidget {
         preferredSize: const Size.fromHeight(50),
       ),
       drawer: SideDrawer(),
+      floatingActionButton: FloatingButton1(),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
