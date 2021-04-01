@@ -23,6 +23,9 @@ class GoogleMapApp extends StatelessWidget {
       floatingActionButton: FloatingButton1(),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
+        myLocationButtonEnabled: false,
+        mapToolbarEnabled: false,
+        zoomControlsEnabled: false,
         initialCameraPosition: CameraPosition(
           target: _center,
           zoom: 4,
