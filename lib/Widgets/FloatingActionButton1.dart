@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../DeviceStatus.dart';
+import 'package:login_cms_comdelta/DashBoard.dart';
+import '../DashBoard.dart';
 import './SizeTransition.dart';
 
-class FloatingButton extends StatelessWidget {
+class FloatingButton1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () {
                 Navigator.push(context,
-                    SizeRoute(page: DeviceStatus()));
+                    SizeRoute(page: DashBoard()));
       },
       label: const Text('Back'),
       icon: Icon(Icons.arrow_back),
