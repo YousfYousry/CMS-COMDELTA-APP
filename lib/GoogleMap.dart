@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Widgets/CustomeAppBar.dart';
 
 
 import 'Widgets/FloatingButtonDashBoard.dart';
-import 'Widgets/MyAppBar.dart';
+import 'Widgets/CustomeAppBar.dart';
 import 'Widgets/SideDrawer.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -19,7 +20,7 @@ class GoogleMapApp extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.blue[50],
       appBar: PreferredSize(
-        child: MyAppBar1(),
+        child: CustomeAppBar('Map'),
         preferredSize: const Size.fromHeight(50),
       ),
       drawer: SideDrawer(),
