@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Widgets/CustomeAppBar.dart';
-
-
 import 'Widgets/FloatingButtonDashBoard.dart';
 import 'Widgets/CustomeAppBar.dart';
 import 'Classes/device.dart';
@@ -51,38 +49,40 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blue[50],
-        appBar: PreferredSize(
-          child: CustomeAppBar('Map'),
-          preferredSize: const Size.fromHeight(50),
-        ),
-        drawer: SideDrawer(),
-        floatingActionButton: FloatingButton1(),
-        body: Stack(
-          children: [
-            GoogleMap(
-              onMapCreated: _onMapCreated,
-              myLocationButtonEnabled: false,
-              mapToolbarEnabled: false,
-              zoomControlsEnabled: false,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: 4,
-              ),
-              markers: Set<Marker>.of(markers.values), // YOUR
+      backgroundColor: Colors.blue[50],
+      appBar: PreferredSize(
+        child: CustomeAppBar('Map'),
+        preferredSize: const Size.fromHeight(50),
+      ),
+      drawer: SideDrawer(),
+      floatingActionButton: FloatingButton1(),
+      body: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            myLocationButtonEnabled: false,
+            mapToolbarEnabled: false,
+            zoomControlsEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: _center,
+              zoom: 4,
             ),
-            Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
-              ),
+            markers: Set<Marker>.of(markers.values), // YOUR
+          ),
+          Center(
+            child: Visibility(
+              child: CircularProgressIndicatorApp(),
+              visible: loading,
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> getDevices() async {
-    load('client_id').then((value) => value != '-1' ? sendPost(value) : toast('User was not found!'));
+    load('client_id').then((value) =>
+        value != '-1' ? sendPost(value) : toast('User was not found!'));
   }
 
   void sendPost(String clientId) {
@@ -122,35 +122,50 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   void showDevices(List<Device> devices) {
     // ignore: deprecated_member_use
     List<LatLng> positions = new List<LatLng>();
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png')
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png')
         .then((customIcon) {
       setState(() {
         for (Device device in devices) {
-          if (getDouble(device.getLong()) != 0 && getDouble(device.getLat()) != 0) {
-            positions.add(new LatLng(getDouble(device.getLong()), getDouble(device.getLat())));
+          if (getDouble(device.getLong()) != 0 &&
+              getDouble(device.getLat()) != 0) {
+            positions.add(new LatLng(
+                getDouble(device.getLong()), getDouble(device.getLat())));
             markers[MarkerId(device.getName())] = Marker(
               anchor: const Offset(0.5, 0.5),
               markerId: MarkerId(device.getName()),
-              position: LatLng(getDouble(device.getLong()), getDouble(device.getLat())),
-              infoWindow: InfoWindow(title: 'Site name: ' + device.getDeviceDetail(),),
+              position: LatLng(
+                  getDouble(device.getLong()), getDouble(device.getLat())),
+              infoWindow: InfoWindow(
+                title: 'Site name: ' + device.getDeviceDetail(),
+              ),
               icon: customIcon,
               draggable: false,
               zIndex: 1,
             );
           }
         }
-        mapController.animateCamera(CameraUpdate.newLatLngBounds(_bounds(positions), 20));
+        mapController.animateCamera(
+            CameraUpdate.newLatLngBounds(_bounds(positions), 20));
         loading = false;
       });
     });
   }
 
   LatLngBounds _bounds(List<LatLng> positions) {
-    final southwestLat = positions.map((p) => p.latitude).reduce((value, element) => value < element ? value : element); // smallest
-    final southwestLon = positions.map((p) => p.longitude).reduce((value, element) => value < element ? value : element);
-    final northeastLat = positions.map((p) => p.latitude).reduce((value, element) => value > element ? value : element); // biggest
-    final northeastLon = positions.map((p) => p.longitude).reduce((value, element) => value > element ? value : element);
-    return LatLngBounds(southwest: LatLng(southwestLat, southwestLon), northeast: LatLng(northeastLat, northeastLon));
+    final southwestLat = positions.map((p) => p.latitude).reduce(
+        (value, element) => value < element ? value : element); // smallest
+    final southwestLon = positions
+        .map((p) => p.longitude)
+        .reduce((value, element) => value < element ? value : element);
+    final northeastLat = positions.map((p) => p.latitude).reduce(
+        (value, element) => value > element ? value : element); // biggest
+    final northeastLon = positions
+        .map((p) => p.longitude)
+        .reduce((value, element) => value > element ? value : element);
+    return LatLngBounds(
+        southwest: LatLng(southwestLat, southwestLon),
+        northeast: LatLng(northeastLat, northeastLon));
   }
 
   Future<String> load(String key) async {
