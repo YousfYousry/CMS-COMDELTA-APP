@@ -76,7 +76,7 @@ var spanUp = WidgetSpan(
 
 class _TotalDeviceCard extends State<TotalDeviceCardPage> {
   TextEditingController searchController = new TextEditingController();
-  bool loading = true;
+  bool loading = true,validate=false;
 
   // ignore: deprecated_member_use
   var items = List<DeviceElement>();
@@ -133,6 +133,7 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
 //  someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
 
   void filterSearchResults(String query) {
+    bool resultFound=false;
     // ignore: deprecated_member_use
     var dummySearchList = List<DeviceElement>();
     dummySearchList.addAll(duplicateItems);
@@ -146,17 +147,20 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
                 .toLowerCase()
                 .contains(query.toLowerCase()) ||
             item.getLocation().toLowerCase().contains(query.toLowerCase())) {
+          resultFound=true;
           item.setHighLight(query);
           dummyListData.add(item);
         }
       });
       setState(() {
+        validate = !resultFound;
         items.clear();
         items.addAll(dummyListData);
       });
       return;
     } else {
       setState(() {
+        validate = false;
         span1 = spanDown;
         span2 = spanDefault;
         span3 = spanDefault;
@@ -188,6 +192,7 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
                     },
                     controller: searchController,
                     decoration: InputDecoration(
+                      errorText: validate ? 'No result was found' : null,
                       labelText: "Search",
                       hintText: "Search",
                       contentPadding: EdgeInsets.all(20.0),
