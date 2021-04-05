@@ -4,8 +4,7 @@ class DataTableInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 320,
-        height: 200,
+        width: double.infinity,
         child: Table(
           border: TableBorder.symmetric(
             inside: BorderSide(width: 1, color: Colors.grey),
@@ -41,7 +40,6 @@ class DataTableInfo extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
               ],
             ),
           ],

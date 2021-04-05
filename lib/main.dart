@@ -8,7 +8,6 @@ import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   load('client_id').then((value) => runApp(MaterialApp(home: value == '-1' ? MyApp() : DashBoard())));
