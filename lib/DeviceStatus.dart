@@ -20,8 +20,6 @@ class DeviceStatus extends StatelessWidget {
       floatingActionButton: FloatingButton1(),
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               width: double.infinity,

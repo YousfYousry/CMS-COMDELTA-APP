@@ -3,6 +3,7 @@ import './SizeTransition.dart';
 import '../main.dart';
 import '../DashBoard.dart';
 import '../FeedBackPage.dart';
+import '../UserProfilePage.dart';
 
 class SideDrawer extends StatelessWidget {
   @override
@@ -19,8 +20,9 @@ class SideDrawer extends StatelessWidget {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                        border: Border.all(width: 4),
-                        borderRadius: BorderRadius.circular(50.0)),
+                      border: Border.all(width: 4),
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
                     child: ClipOval(
                       child: Image.asset(
                         'assets/image/Avatar.jpeg',
@@ -72,6 +74,7 @@ class SideDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 SizeRoute(
+                  page: FeedBackPage(),
                 ),
               ),
             },
@@ -89,7 +92,14 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.people),
             title: Text("User Profile"),
-            onTap: () => {},
+            onTap: () => {
+              Navigator.push(
+                context,
+                SizeRoute(
+                  page: UserProfile(),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.vpn_key),
@@ -108,7 +118,6 @@ class SideDrawer extends StatelessWidget {
 
   void logOut(BuildContext context) {
     save('client_id', '-1');
-    Navigator.pushReplacement(
-        context, SizeRoute(page: MyHomePage()));
+    Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
   }
 }

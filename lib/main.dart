@@ -10,7 +10,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  load('client_id').then((value) => runApp(MaterialApp(home: value == '-1' ? MyApp() : DashBoard())));
+  load('client_id').then(
+    (value) => runApp(
+      MaterialApp(
+        home: value == '-1' ? MyApp() : DashBoard(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -233,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 Future<String> load(String key) async {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(key)?? '-1';
+  return prefs.getString(key) ?? '-1';
 }
 
 void save(String key, String data) async {
