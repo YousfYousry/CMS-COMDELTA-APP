@@ -9,14 +9,6 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final _text = TextEditingController();
-  bool _validate = false;
-
-  void dispose() {
-    _text.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
