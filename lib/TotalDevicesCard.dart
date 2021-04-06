@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Widgets/CustomeAppBar.dart';
 import 'Widgets/DeviceElement.dart';
-import 'Widgets/MyAppBar.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/SideDrawer.dart';
 import 'package:http/http.dart' as http;
@@ -176,7 +176,7 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: PreferredSize(
-          child: MyAppBar1(),
+          child: CustomeAppBar('Total Devices'),
           preferredSize: const Size.fromHeight(50),
         ),
         drawer: SideDrawer(),
