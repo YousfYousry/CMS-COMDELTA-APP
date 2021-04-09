@@ -4,13 +4,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/DashBoard.dart';
 import 'DashBoard.dart';
+// import 'NewPages/DashBoardNew.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  load('client_id').then(
+  load('user_id').then(
     (value) => runApp(
       MaterialApp(
         home: value == '-1' ? MyApp() : DashBoard(),
@@ -86,25 +87,28 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     ]); //Email Text Field
-    final passwordField = Stack(children: [
-      TextFieldShadow(),
-      TextField(
-        controller: passFieldController,
-        obscureText: true,
-        style: style,
-        onChanged: (text) {
-          setState(() {
-            validatePassword = false;
-          });
-        },
-        decoration: InputDecoration(
-          errorText: validatePassword ? 'Password is required' : null,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          hintText: "Password",
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+    final passwordField = Stack(
+      children: [
+        TextFieldShadow(),
+        TextField(
+          controller: passFieldController,
+          obscureText: true,
+          style: style,
+          onChanged: (text) {
+            setState(() {
+              validatePassword = false;
+            });
+          },
+          decoration: InputDecoration(
+            errorText: validatePassword ? 'Password is required' : null,
+            contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+            hintText: "Password",
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+          ),
         ),
-      ),
-    ]); // Password Text Field
+      ],
+    ); // Password Text Field
     final loginButton = Material(
       elevation: 5.0,
       shadowColor: Colors.black,
@@ -193,10 +197,16 @@ class _MyHomePageState extends State<MyHomePage> {
         // ignore: deprecated_member_use
         String value = json.decode(response.body);
         if (value != '-1') {
-          save('client_id', value);
-          msg = 'Logged in successfully';
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => DashBoard()));
+          List<String> result = value.split(',');
+          if (result.length > 1) {
+            save('client_id', result[0]);
+            save('user_id', result[1]);
+            msg = 'Logged in successfully';
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => DashBoard()));
+          } else {
+            msg = 'Something wrong with the server!';
+          }
         } else {
           msg = 'Email or password is incorrect';
         }

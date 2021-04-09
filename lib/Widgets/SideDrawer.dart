@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import './SizeTransition.dart';
-import '../main.dart';
-import '../DashBoard.dart';
-import '../FeedBackPage.dart';
 import '../UserProfilePage.dart';
+import './SizeTransition.dart';
+import '../FeedBackPage.dart';
+import '../DashBoard.dart';
+import '../main.dart';
 
 class SideDrawer extends StatelessWidget {
   @override
@@ -20,7 +20,7 @@ class SideDrawer extends StatelessWidget {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width: 4),
+                      border: Border.all(width: 3),
                       borderRadius: BorderRadius.circular(50.0),
                     ),
                     child: ClipOval(
@@ -80,15 +80,29 @@ class SideDrawer extends StatelessWidget {
             },
           ),
           Divider(
-            color: Colors.red,
+            color: Colors.grey,
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(
-              "Setting",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Icon(Icons.arrow_drop_down)
-          ]),
+          Row(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 15,
+                  top: 10,
+                  bottom: 10,
+                ),
+            child: Text(
+                  "Settings",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      // fontSize: 16,
+                      color: Colors.black38,
+                  ),
+                ),
+              ),
+              // Icon(Icons.arrow_drop_down)
+            ],
+          ),
           ListTile(
             leading: Icon(Icons.people),
             title: Text("User Profile"),
@@ -118,6 +132,7 @@ class SideDrawer extends StatelessWidget {
 
   void logOut(BuildContext context) {
     save('client_id', '-1');
+    save('user_id', '-1');
     Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
   }
 }

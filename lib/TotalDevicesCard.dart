@@ -1,15 +1,15 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'Widgets/CustomeAppBar.dart';
 import 'Widgets/DeviceElement.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/SideDrawer.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:convert';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -88,12 +88,10 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
 
   void _sort1() {
     if (span1 != spanDown) {
-      items
-          .sort((a, b) => getDouble(a.getId()).compareTo(getDouble(b.getId())));
+      items.sort((a, b) => getDouble(a.getId()).compareTo(getDouble(b.getId())));
       span1 = spanDown;
     } else {
-      items
-          .sort((a, b) => getDouble(b.getId()).compareTo(getDouble(a.getId())));
+      items.sort((a, b) => getDouble(b.getId()).compareTo(getDouble(a.getId())));
       span1 = spanUp;
     }
     span2 = spanDefault;
