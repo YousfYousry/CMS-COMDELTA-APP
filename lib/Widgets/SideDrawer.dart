@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ForgotPasswordPage.dart';
 import './SizeTransition.dart';
 import '../main.dart';
 import '../DashBoard.dart';
@@ -104,7 +105,14 @@ class SideDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.vpn_key),
             title: Text("Change Passowrd"),
-            onTap: () => {},
+            onTap: () => {
+              Navigator.push(
+                context,
+                SizeRoute(
+                  page: ForgotPassword(),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
