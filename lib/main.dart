@@ -14,7 +14,7 @@ Future<void> main() async {
   load('user_id').then(
     (value) => runApp(
       MaterialApp(
-        home: value == '-1' ? MyApp() : DashBoardNew(),
+        home: value == '-1' ? MyApp() : DashBoard(),
       ),
     ),
   );

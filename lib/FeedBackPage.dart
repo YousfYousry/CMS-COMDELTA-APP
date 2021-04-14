@@ -31,29 +31,33 @@ class _FeedBackPageState extends State<FeedBackPage> {
           child: Column(
             children: [
               SizedBox(
-                height: 30,
+                height: 20,
               ),
-              Container(
-                color: Colors.white,
-                width: double.infinity,
-                height: 660,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                      heightFactor: 2,
-                      child: Text(
-                        'Feedback Report',
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
+              Center(
+                child: Container(
+                  width: 330,
+                  height: 670,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                        heightFactor: 2,
+                        child: Text(
+                          'Feedback Report',
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Divider(),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: FeedBackForm(),
-                    ),
-                  ],
+                      Divider(),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        child: FeedBackForm(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(height: 40),

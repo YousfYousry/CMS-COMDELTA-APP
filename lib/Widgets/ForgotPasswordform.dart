@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
-class FeedBackForm extends StatefulWidget {
+class ForgotPasswordForm extends StatefulWidget {
   @override
-  _FeedBackFormState createState() => _FeedBackFormState();
+  _ForgotPasswordFormState createState() => _ForgotPasswordFormState();
 }
 
-class _FeedBackFormState extends State<FeedBackForm> {
+class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   final _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -17,6 +16,16 @@ class _FeedBackFormState extends State<FeedBackForm> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Text(
+                  'Old information',
+                  style: TextStyle(fontSize: 22),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               RichText(
                 text: TextSpan(
                   text: 'Email',
@@ -51,7 +60,7 @@ class _FeedBackFormState extends State<FeedBackForm> {
               SizedBox(height: 15),
               RichText(
                 text: TextSpan(
-                  text: 'Name',
+                  text: 'Old Password',
                   style: TextStyle(fontSize: 16.0, color: Colors.black),
                   children: [
                     TextSpan(
@@ -65,25 +74,69 @@ class _FeedBackFormState extends State<FeedBackForm> {
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a correct name';
+                    return 'Please enter a correct password';
                   }
                   return null;
                 },
-                autofillHints: [AutofillHints.name],
-                keyboardType: TextInputType.name,
+                autofillHints: [AutofillHints.password],
+                keyboardType: TextInputType.visiblePassword,
                 decoration: InputDecoration(
-                  hintText: 'Name',
+                  hintText: 'Old Password',
                   contentPadding: EdgeInsets.all(15),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(0.0),
                   ),
                 ),
-              ), //Name text field
+              ), //Old Password field
+
+              SizedBox(
+                height: 20,
+              ),
+              Center(
+                child: Text(
+                  'New information',
+                  style: TextStyle(fontSize: 22),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              RichText(
+                text: TextSpan(
+                  text: 'New Password',
+                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  children: [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(color: Colors.red, fontSize: 16.0),
+                    ),
+                  ],
+                ),
+              ),
+              TextFormField(
+                // The validator receives the text that the user has entered.
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a vaild passowrd';
+                  }
+                  return null;
+                },
+                autofillHints: [AutofillHints.password],
+                keyboardType: TextInputType.visiblePassword,
+                decoration: InputDecoration(
+                  hintText: 'New Passowrd',
+                  contentPadding: EdgeInsets.all(15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0.0),
+                  ),
+                ),
+              ), // New Password Field
 
               SizedBox(height: 15),
               RichText(
                 text: TextSpan(
-                  text: 'Feedback Subject',
+                  text: 'Re-Type Password',
                   style: TextStyle(fontSize: 16.0, color: Colors.black),
                   children: [
                     TextSpan(
@@ -97,82 +150,20 @@ class _FeedBackFormState extends State<FeedBackForm> {
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
+                    return 'Please enter the same passowrd';
                   }
                   return null;
                 },
-                keyboardType: TextInputType.text,
+                autofillHints: [AutofillHints.password],
+                keyboardType: TextInputType.visiblePassword,
                 decoration: InputDecoration(
-                  hintText: 'Subject',
+                  hintText: 'Re-Type Password',
                   contentPadding: EdgeInsets.all(15),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(0.0),
                   ),
                 ),
-              ), // Feedback Subject Field
-
-              SizedBox(height: 15),
-              RichText(
-                text: TextSpan(
-                  text: 'Feedback Message',
-                  style: TextStyle(fontSize: 16.0, color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: ' *',
-                      style: TextStyle(color: Colors.red, fontSize: 16.0),
-                    ),
-                  ],
-                ),
-              ),
-              TextFormField(
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  hintText: 'Message',
-                  contentPadding: EdgeInsets.all(15),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(0.0),
-                  ),
-                ),
-              ), // Feedback Message
-
-              SizedBox(height: 15),
-              RichText(
-                text: TextSpan(
-                  text: 'To Email Address',
-                  style: TextStyle(fontSize: 16.0, color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: ' *',
-                      style: TextStyle(color: Colors.red, fontSize: 16.0),
-                    ),
-                  ],
-                ),
-              ),
-              TextFormField(
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a vaild email';
-                  }
-                  return null;
-                },
-                autofillHints: [AutofillHints.email],
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: 'Email Address',
-                  contentPadding: EdgeInsets.all(15),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(0.0),
-                  ),
-                ),
-              ), //Email text Field
+              ), // Re-Type Password Field
             ],
           ),
           SizedBox(height: 20),
@@ -187,13 +178,13 @@ class _FeedBackFormState extends State<FeedBackForm> {
                   // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Sending the Feedback'),
+                      content: Text('Changing the password'),
                     ),
                   );
                 }
               },
               child: Text(
-                'Send',
+                'Change Password',
                 style: TextStyle(fontSize: 18),
               ),
             ),
