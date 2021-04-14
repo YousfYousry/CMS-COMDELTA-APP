@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class CustomAppBar extends StatelessWidget {
+class CustomAppBarBack extends StatelessWidget {
   String title = '';
+  BuildContext con;
+  CustomAppBarBack(this.con,this.title);
 
-  CustomAppBar(this.title);
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      // centerTitle: true,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () => Navigator.pop(con,false),
+      ),
       title: Text(
         title,
-//        textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20),
       ),
     );
