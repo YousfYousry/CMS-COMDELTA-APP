@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:login_cms_comdelta/DeviceStatus.dart';
-
+import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
+import 'Widgets/DashBoardHeader.dart';
+import 'Widgets/SizeTransition.dart';
 import 'Widgets/SideDrawer.dart';
 import 'Widgets/MyAppBar.dart';
 import './GoogleMap.dart';
-import 'Widgets/DashBoardHeader.dart';
-import 'Widgets/SizeTransition.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -51,8 +50,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
             SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.push(context,
-                    SizeRoute(page: DeviceStatus()));
+                Navigator.push(context, SizeRoute(page: DeviceStatus()));
               },
               child: Container(
                 width: 320,
@@ -100,29 +98,35 @@ class _DashBoardPageState extends State<DashBoardPage> {
             SizedBox(height: 30),
             InkWell(
               onTap: () {
-                Navigator.push(context,
-                    SizeRoute(page: GoogleMapApp()));
+                Navigator.push(
+                  context,
+                  SizeRoute(
+                    page: GoogleMapApp(),
+                  ),
+                );
               },
               child: Container(
                 width: 320,
                 height: 130,
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3))
-                    ]),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3))
+                  ],
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                        width: 80,
-                        height: 110,
-                        child: Image.asset('assets/image/maps.png')),
+                      width: 80,
+                      height: 110,
+                      child: Image.asset('assets/image/maps.png'),
+                    ),
                     Container(
                       width: 200,
                       height: 110,
@@ -141,14 +145,14 @@ class _DashBoardPageState extends State<DashBoardPage> {
                                         TextStyle(fontWeight: FontWeight.bold))
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            ) //Container for Map
+            ), //Container for Map
           ],
         ), // Column for DasbBoard Cards
       ),
