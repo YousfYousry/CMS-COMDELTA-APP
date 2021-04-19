@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/DashBoard.dart';
 import 'DashBoard.dart';
-import 'NewPages/DashBoardNew.dart';
+// import 'NewPages/DashBoardNew.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +14,7 @@ Future<void> main() async {
   load('user_id').then(
     (value) => runApp(
       MaterialApp(
-        home: value == '-1' ? MyApp() : DashBoardNew(),
+        home: value == '-1' ? MyApp() : DashBoard(),
       ),
     ),
   );
@@ -199,6 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
         if (value != '-1') {
           List<String> result = value.split(',');
           if (result.length > 1) {
+            save('profile_pic', '-1');
             save('client_id', result[0]);
             save('user_id', result[1]);
             msg = 'Logged in successfully';

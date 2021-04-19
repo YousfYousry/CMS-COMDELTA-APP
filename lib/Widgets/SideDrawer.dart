@@ -1,11 +1,30 @@
+import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../UserProfilePage.dart';
 import './SizeTransition.dart';
 import '../FeedBackPage.dart';
 import '../DashBoard.dart';
 import '../main.dart';
 
-class SideDrawer extends StatelessWidget {
+class SideDrawer extends StatefulWidget {
+  @override
+  _SideDrawer createState() => _SideDrawer();
+}
+
+class _SideDrawer extends State<SideDrawer> {
+  var profilePic =
+      'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png';
+  var name = '';
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -24,18 +43,21 @@ class SideDrawer extends StatelessWidget {
                       borderRadius: BorderRadius.circular(50.0),
                     ),
                     child: ClipOval(
-                      child: Image.asset(
-                        'assets/image/Avatar.jpeg',
-                        height: 80.0,
-                        width: 80.0,
-                        fit: BoxFit.contain,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(profilePic),
+                          ),
+                        ),
+                        width: 80,
+                        height: 80,
                       ),
                     ),
                   ),
                   SizedBox(
                     height: 5,
                   ),
-                  Text("EDOTCO COMDELTA"),
+                  Text(name),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -48,9 +70,9 @@ class SideDrawer extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.green,
                         ),
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -91,12 +113,12 @@ class SideDrawer extends StatelessWidget {
                   top: 10,
                   bottom: 10,
                 ),
-            child: Text(
+                child: Text(
                   "Settings",
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      // fontSize: 16,
-                      color: Colors.black38,
+                    fontWeight: FontWeight.bold,
+                    // fontSize: 16,
+                    color: Colors.black38,
                   ),
                 ),
               ),
@@ -130,9 +152,65 @@ class SideDrawer extends StatelessWidget {
     );
   }
 
+  Future<void> getInfo() async {
+    load('user_id').then((value) =>
+        value != '-1' ? sendPost(value) : toast('User was not found!'));
+    load('profile_pic').then((value) => value.isNotEmpty && value != '-1'
+        ? setState(() => profilePic = value)
+        : profilePic =
+            'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png');
+  }
+
+  void sendPost(String userId) {
+    http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/getUserProfile.php'),
+        body: {
+          'user_id': userId,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        // ignore: deprecated_member_use
+        String value = json.decode(response.body);
+        if (value != '-1') {
+          List<String> result = value.split(',');
+          if (result.length > 3) {
+            setState(() {
+              name = result[0] + ' ' + result[1];
+              if (result[3].isNotEmpty) {
+                profilePic = result[3];
+                save('profile_pic', profilePic);
+              }
+            });
+          } else {
+            toast('Something wrong with the server!');
+          }
+        } else {
+          toast('User does not exist');
+        }
+      } else {
+        throw Exception("Unable to get devices list");
+      }
+    }).onError((error, stackTrace) {
+      toast('Error: ' + error.message);
+    });
+  }
+
+  Future<String> load(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? '-1';
+  }
+
   void logOut(BuildContext context) {
+    save('profile_pic', '-1');
     save('client_id', '-1');
     save('user_id', '-1');
     Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
+  }
+
+  void toast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1);
   }
 }

@@ -5,11 +5,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'Widgets/CustomAppBar.dart';
-import 'Widgets/CustomeAppBar.dart';
+// import 'Widgets/CustomAppBar.dart';
+// import 'Widgets/CustomeAppBar.dart';
 import 'Widgets/DeviceElement.dart';
 import 'Widgets/ProgressBar.dart';
-import 'Widgets/SideDrawer.dart';
+// import 'Widgets/SideDrawer.dart';
 import 'dart:math' as math;
 import 'dart:convert';
 

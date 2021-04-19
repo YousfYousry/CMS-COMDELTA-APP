@@ -73,7 +73,6 @@ class DeviceStatus extends StatelessWidget {
                       ),
                     ),
                   ), // Total Devices
-
                   SizedBox(height: 30),
                   InkWell(
                     onTap: () {

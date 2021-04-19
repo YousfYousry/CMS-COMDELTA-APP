@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  image_cropper: ^1.4.0
+  image_picker: ^0.7.4
   google_maps_flutter: ^2.0.1
   http: ^0.13.1
   fluttertoast: ^8.0.3
