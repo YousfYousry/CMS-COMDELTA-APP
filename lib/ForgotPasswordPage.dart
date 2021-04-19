@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'Widgets/CustomeFormFeedBack.dart';
-import 'Widgets/SideDrawer.dart';
-import 'Widgets/CustomeAppBar.dart';
+import './Widgets/ForgotPasswordform.dart';
+import './Widgets/CustomeAppBar.dart';
+import './Widgets/SideDrawer.dart';
 
-class FeedBackPage extends StatefulWidget {
+class ForgotPassword extends StatefulWidget {
   @override
-  _FeedBackPageState createState() => _FeedBackPageState();
+  _ForgotPasswordState createState() => _ForgotPasswordState();
 }
 
-class _FeedBackPageState extends State<FeedBackPage> {
+class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,7 +23,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
       child: Scaffold(
         backgroundColor: Colors.blue[50],
         appBar: PreferredSize(
-          child: CustomeAppBar('Feedback'),
+          child: CustomeAppBar('Forgot Password'),
           preferredSize: const Size.fromHeight(50),
         ),
         drawer: SideDrawer(),
@@ -36,17 +36,18 @@ class _FeedBackPageState extends State<FeedBackPage> {
               Center(
                 child: Container(
                   width: 330,
-                  height: 670,
+                  height: 660,
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20)),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20)
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Center(
                         heightFactor: 2,
                         child: Text(
-                          'Feedback Report',
+                          'Change your information',
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold),
                         ),
@@ -54,8 +55,8 @@ class _FeedBackPageState extends State<FeedBackPage> {
                       Divider(),
                       Container(
                         padding: EdgeInsets.all(10),
-                        child: FeedBackForm(),
-                      ),
+                        child: ForgotPasswordForm(),
+                      )
                     ],
                   ),
                 ),
