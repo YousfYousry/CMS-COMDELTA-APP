@@ -10,7 +10,7 @@ class CustomeAppBar extends StatelessWidget {
       centerTitle: true,
       title: Text(
         title,
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }

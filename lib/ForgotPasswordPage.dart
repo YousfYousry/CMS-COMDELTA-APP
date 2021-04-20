@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import './Widgets/ForgotPasswordform.dart';
 import './Widgets/CustomeAppBar.dart';
 import './Widgets/SideDrawer.dart';
@@ -23,7 +22,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       child: Scaffold(
         backgroundColor: Colors.blue[50],
         appBar: PreferredSize(
-          child: CustomeAppBar('Forgot Password'),
+          child: CustomeAppBar('Change Password'),
           preferredSize: const Size.fromHeight(50),
         ),
         drawer: SideDrawer(),
@@ -56,7 +55,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       Container(
                         padding: EdgeInsets.all(10),
                         child: ForgotPasswordForm(),
-                      )
+                      ),
                     ],
                   ),
                 ),

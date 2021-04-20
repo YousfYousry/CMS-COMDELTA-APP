@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../ForgotPasswordPage.dart';
 import '../UserProfilePage.dart';
 import './SizeTransition.dart';
 import '../FeedBackPage.dart';
@@ -102,6 +103,7 @@ class _SideDrawer extends State<SideDrawer> {
             },
           ),
           Divider(
+            height: 2,
             color: Colors.grey,
           ),
           Row(
@@ -139,8 +141,15 @@ class _SideDrawer extends State<SideDrawer> {
           ),
           ListTile(
             leading: Icon(Icons.vpn_key),
-            title: Text("Change Passowrd"),
-            onTap: () => {},
+            title: Text("Change Password"),
+            onTap: () => {
+              Navigator.push(
+                context,
+                SizeRoute(
+                  page: ForgotPassword(),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
@@ -157,8 +166,8 @@ class _SideDrawer extends State<SideDrawer> {
         value != '-1' ? sendPost(value) : toast('User was not found!'));
     load('profile_pic').then((value) => value.isNotEmpty && value != '-1'
         ? setState(() => profilePic = value)
-        : profilePic =
-            'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png');
+        :setState(() =>  profilePic =
+            'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png'));
   }
 
   void sendPost(String userId) {
@@ -176,8 +185,10 @@ class _SideDrawer extends State<SideDrawer> {
             setState(() {
               name = result[0] + ' ' + result[1];
               if (result[3].isNotEmpty) {
-                profilePic = result[3];
-                save('profile_pic', profilePic);
+                setState(() =>
+                profilePic = result[3]
+              );
+                save('profile_pic', result[3]);
               }
             });
           } else {
@@ -208,9 +219,10 @@ class _SideDrawer extends State<SideDrawer> {
 
   void toast(String msg) {
     Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1);
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+    );
   }
 }
