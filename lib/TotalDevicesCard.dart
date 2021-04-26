@@ -1,4 +1,5 @@
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
+import 'package:login_cms_comdelta/DeviceStatus.dart';
 import 'package:login_cms_comdelta/Widgets/CustomAppBarWithBack.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -176,7 +177,7 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: PreferredSize(
-          child: CustomAppBarBack(context,'Total Devices'),
+          child: CustomAppBarBack('Total Devices',DeviceStatus()),
           preferredSize: const Size.fromHeight(50),
         ),
         // drawer: SideDrawer(),

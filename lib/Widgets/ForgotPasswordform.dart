@@ -1,9 +1,8 @@
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class ForgotPasswordForm extends StatefulWidget {
   @override
@@ -231,7 +230,6 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                 style: TextStyle(fontSize: 18),
               ),
             ),
-            // Add TextFormFields and ElevatedButton here.
           ),
         ],
       ),
