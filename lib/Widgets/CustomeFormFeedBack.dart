@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class FeedBackForm extends StatefulWidget {
   @override
@@ -7,6 +11,14 @@ class FeedBackForm extends StatefulWidget {
 
 class _FeedBackFormState extends State<FeedBackForm> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController nameController = new TextEditingController(),
+      subjectController = new TextEditingController(),
+      messageController = new TextEditingController();
+
+  final snackBar = SnackBar(
+    content: Text('Sending Feedback'),
+    duration: Duration(seconds: 10),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +74,7 @@ class _FeedBackFormState extends State<FeedBackForm> {
                 ),
               ),
               TextFormField(
+                controller: nameController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -94,6 +107,7 @@ class _FeedBackFormState extends State<FeedBackForm> {
                 ),
               ),
               TextFormField(
+                controller: subjectController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -125,6 +139,7 @@ class _FeedBackFormState extends State<FeedBackForm> {
                 ),
               ),
               TextFormField(
+                controller: messageController,
                 // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -183,13 +198,10 @@ class _FeedBackFormState extends State<FeedBackForm> {
               onPressed: () {
                 // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Sending the Feedback'),
-                    ),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  if(nameController.text.isNotEmpty&&subjectController.text.isNotEmpty&&messageController.text.isNotEmpty) {
+                    sendFeedBack();
+                  }
                 }
               },
               child: Text(
@@ -201,6 +213,53 @@ class _FeedBackFormState extends State<FeedBackForm> {
           ),
         ],
       ),
+    );
+  }
+
+  // void getUser() {
+  //   load('user_id').then((value) =>
+  //   value != '-1' ? sendPost(value) : toast('User was not found!'));
+  // }
+
+
+  void sendFeedBack() {
+    http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/sendFeedBack.php'),
+        body: {
+          'from': nameController.text,
+          'to': 'yousfzaghlol@gmail.com',
+          'subject':subjectController.text,
+          'message':messageController.text,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        // ignore: deprecated_member_use
+        String value = json.decode(response.body);
+        if (value.contains("Message sent")) {
+          toast("Feedback has been sent successfully!");
+        } else {
+          toast('Error while sending Feedback');
+        }
+      } else {
+        throw Exception("Error with the server");
+      }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    }).onError((error, stackTrace) {
+      toast('Error: ' + error.message);
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    });
+  }
+
+  Future<String> load(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key) ?? '-1';
+  }
+
+  void toast(String msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
     );
   }
 }

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Widgets/CustomeAppBar.dart';
+// import 'Widgets/CustomeAppBar.dart';
+import 'Widgets/CustomAppBarWithBack.dart';
 import 'Widgets/DeviceElement.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/SideDrawer.dart';
@@ -12,11 +13,12 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 const PrimaryColor = const Color(0xff0065a3);
-
+var appBar;
 class InactiveDeviceCard extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    appBar = CustomAppBarBack(context,"Inactive Devices");
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -176,7 +178,7 @@ class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: PreferredSize(
-          child: CustomeAppBar('Inactive Devices'),
+          child: appBar,
           preferredSize: const Size.fromHeight(50),
         ),
         drawer: SideDrawer(),
@@ -399,6 +401,7 @@ class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
   void sendPost(String clientId, List<String> id, List<String> locationName) {
     http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/getDevice.php'),
         body: {
+          'devices': 'inActive',
           'client_id': clientId,
         }).then((response) {
       if (response.statusCode == 200) {

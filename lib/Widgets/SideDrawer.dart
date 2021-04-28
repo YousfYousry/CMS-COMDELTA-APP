@@ -210,13 +210,6 @@ class _SideDrawer extends State<SideDrawer> {
     return prefs.getString(key) ?? '-1';
   }
 
-  void logOut(BuildContext context) {
-    save('profile_pic', '-1');
-    save('client_id', '-1');
-    save('user_id', '-1');
-    Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
-  }
-
   void toast(String msg) {
     Fluttertoast.showToast(
       msg: msg,
@@ -224,5 +217,12 @@ class _SideDrawer extends State<SideDrawer> {
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 1,
     );
+  }
+
+  void logOut(BuildContext context) {
+    save('profile_pic', '-1');
+    save('client_id', '-1');
+    save('user_id', '-1');
+    Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
   }
 }

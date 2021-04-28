@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/DashBoard.dart';
 import 'DashBoard.dart';
-// import 'NewPages/DashBoardNew.dart';
+import 'NewPages/DashBoardNew.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,9 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   load('user_id').then(
     (value) => runApp(
-      MaterialApp(
-        home: value == '-1' ? MyApp() : DashBoard(),
-      ),
+      MaterialApp(home: value == '-1' ? MyApp() : DashBoard()),
     ),
   );
 }

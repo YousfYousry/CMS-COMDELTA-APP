@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'Widgets/CustomeFormFeedBack.dart';
 import 'Widgets/SideDrawer.dart';
 import 'Widgets/CustomeAppBar.dart';
@@ -28,40 +28,34 @@ class _FeedBackPageState extends State<FeedBackPage> {
         ),
         drawer: SideDrawer(),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Container(
-                  width: 330,
-                  height: 670,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Center(
-                        heightFactor: 2,
-                        child: Text(
-                          'Feedback Report',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Center(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      heightFactor: 2,
+                      child: Text(
+                        'Feedback Report',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
-                      Divider(),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: FeedBackForm(),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Divider(),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: FeedBackForm(),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 40),
-            ],
+            ),
           ),
         ),
       ),
