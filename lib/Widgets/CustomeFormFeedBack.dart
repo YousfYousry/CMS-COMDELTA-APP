@@ -227,7 +227,7 @@ class _FeedBackFormState extends State<FeedBackForm> {
         Uri.parse('http://103.18.247.174:8080/AmitProject/sendFeedBack.php'),
         body: {
           'from': nameController.text,
-          'to': 'yousfzaghlol@gmail.com',
+          'to': 'info@comdelta.com.my',
           'subject':subjectController.text,
           'message':messageController.text,
         }).then((response) {

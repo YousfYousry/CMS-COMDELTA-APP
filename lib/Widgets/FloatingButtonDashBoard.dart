@@ -9,8 +9,7 @@ class FloatingButton1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () {
-                Navigator.push(context,
-                    SizeRoute(page: DashBoard()));
+                Navigator.pop(context);
       },
       label: const Text('Back'),
       icon: Icon(Icons.arrow_back),
