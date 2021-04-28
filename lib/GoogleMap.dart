@@ -13,29 +13,14 @@ import 'dart:convert';
 
 const PrimaryColor = const Color(0xff0065a3);
 
-class GoogleMapApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Maps',
-      theme: ThemeData(
-        primaryColor: PrimaryColor,
-      ),
-      home: GoogleMapPage(title: 'Google maps'),
-    );
-  }
-}
-
-class GoogleMapPage extends StatefulWidget {
-  GoogleMapPage({Key key, this.title}) : super(key: key);
-  final String title;
+class GoogleMapApp extends StatefulWidget {
+  final String title = 'Maps';
 
   @override
   _GoogleMapPageState createState() => _GoogleMapPageState();
 }
 
-class _GoogleMapPageState extends State<GoogleMapPage> {
+class _GoogleMapPageState extends State<GoogleMapApp> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   GoogleMapController mapController;
   final LatLng _center = const LatLng(2.944590144570856, 101.60274569735296);
