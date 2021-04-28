@@ -33,9 +33,11 @@ class _FeedBackPageState extends State<FeedBackPage> {
             child: Center(
               child: Container(
                 width: double.infinity,
+                height: 670,
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

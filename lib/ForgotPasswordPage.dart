@@ -27,41 +27,36 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         ),
         drawer: SideDrawer(),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Container(
-                  width: 330,
-                  height: 660,
-                  decoration: BoxDecoration(
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Center(
+              child: Container(
+                width: double.infinity,
+                height: 660,
+                decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20)
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Center(
-                        heightFactor: 2,
-                        child: Text(
-                          'Change your information',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      heightFactor: 2,
+                      child: Text(
+                        'Change your information',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
-                      Divider(),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: ForgotPasswordForm(),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Divider(),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: ForgotPasswordForm(),
+                    ),
+                    SizedBox(height: 40),
+                  ],
                 ),
               ),
-              SizedBox(height: 40),
-            ],
+            ),
           ),
         ),
       ),
