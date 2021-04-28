@@ -82,7 +82,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                           Text(
                             'Device Status',
                             style: TextStyle(
-                                fontSize: 26, fontWeight: FontWeight.bold),
+                                fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           Text.rich(TextSpan(
                               text: 'Signal of the Devices',
@@ -135,7 +135,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                         children: [
                           Text('Map',
                               style: TextStyle(
-                                  fontSize: 26, fontWeight: FontWeight.bold)),
+                                  fontSize: 24, fontWeight: FontWeight.bold)),
                           Text.rich(
                             TextSpan(
                               children: [

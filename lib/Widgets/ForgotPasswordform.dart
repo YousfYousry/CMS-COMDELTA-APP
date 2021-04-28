@@ -222,7 +222,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           ),
           SizedBox(height: 20),
           Container(
-            width: 180,
+            width: double.infinity,
             height: 50,
             child: ElevatedButton(
               onPressed: () => changePass(),
