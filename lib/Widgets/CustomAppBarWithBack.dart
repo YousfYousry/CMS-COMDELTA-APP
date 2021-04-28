@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class CustomAppBarBack extends StatelessWidget {
   String title = '';
-  CustomAppBarBack(this.title,this.route);
-  var route;
+  BuildContext context;
+  CustomAppBarBack(this.context,this.title);
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +12,8 @@ class CustomAppBarBack extends StatelessWidget {
       centerTitle: true,
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
-        onPressed: () =>
-        {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => route)),
-        }),
+        onPressed: () => Navigator.pop(this.context),
+      ),
       title: Text(
         title,
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

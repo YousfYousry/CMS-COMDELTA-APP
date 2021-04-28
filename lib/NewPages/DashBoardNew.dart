@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:login_cms_comdelta/ActiveDeviceCard.dart';
 import 'package:login_cms_comdelta/Classes/device.dart';
-import 'package:login_cms_comdelta/DeviceStatus.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
@@ -13,9 +12,7 @@ import 'package:login_cms_comdelta/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/Widgets/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawer.dart';
-import 'package:login_cms_comdelta/Widgets/SizeTransition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../GoogleMap.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -92,7 +89,8 @@ class _DashBoardPageState extends State<DashBoardPage> {
               children: [
                 InkWell(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => TotalDeviceCard()),);
+                    // Navigator.pushNamed(context, '/TotalDeviceCard');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => TotalDeviceCard()));
                   },
                   child: Padding(
                     padding: EdgeInsets.all(5),

@@ -28,8 +28,7 @@ class DeviceStatus extends StatelessWidget {
                   SizedBox(height: 40),
                   InkWell(
                     onTap: () {
-                      Navigator.push(
-                          context, SizeRoute(page: TotalDeviceCard()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => TotalDeviceCard()));
                     },
                     child: Container(
                       width: 320,
