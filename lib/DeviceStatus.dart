@@ -6,6 +6,7 @@ import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
 import 'package:login_cms_comdelta/Widgets/CustomeAppBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Widgets/CustomAppBarWithBack.dart';
 import 'Widgets/FloatingButtonDashBoard.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/SideDrawer.dart';
@@ -34,7 +35,7 @@ class _DeviceStatus extends State<DeviceStatus> {
     return Scaffold(
       backgroundColor: Colors.blue[50],
       appBar: PreferredSize(
-        child: CustomeAppBar('Device Status'),
+        child: CustomAppBarBack(context,"Device Status"),
         preferredSize: const Size.fromHeight(50),
       ),
       drawer: SideDrawer(),

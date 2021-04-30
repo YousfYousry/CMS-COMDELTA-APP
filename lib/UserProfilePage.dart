@@ -315,7 +315,7 @@ class _UserProfileState extends State<UserProfile> {
         setState(() {
           loading = false;
         });
-        throw Exception("Unable to get devices list");
+        throw Exception("Unable to get user info");
       }
     }).onError((error, stackTrace) {
       setState(() {

@@ -85,7 +85,7 @@ class _SideDrawer extends State<SideDrawer> {
               Navigator.push(
                 context,
                 SizeRoute(
-                  page: DashBoardPage(),
+                  page: DashBoard(),
                 ),
               ),
             },

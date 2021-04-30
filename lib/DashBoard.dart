@@ -7,24 +7,24 @@ import 'Widgets/SideDrawer.dart';
 import 'Widgets/MyAppBar.dart';
 import './GoogleMap.dart';
 
-const PrimaryColor = const Color(0xff0065a3);
+// const PrimaryColor = const Color(0xff0065a3);
 
-class DashBoard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CMS Login UI',
-      theme: ThemeData(
-        primaryColor: PrimaryColor,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: DashBoardPage(title: 'CMS Dashboard'),
-    );
-  }
-}
+// class DashBoard extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'CMS Login UI',
+//       theme: ThemeData(
+//         primaryColor: PrimaryColor,
+//       ),
+//       debugShowCheckedModeBanner: false,
+//       home: DashBoardPage(title: 'CMS Dashboard'),
+//     );
+//   }
+// }
 
-class DashBoardPage extends StatefulWidget {
-  DashBoardPage({Key key, this.title}) : super(key: key);
+class DashBoard extends StatefulWidget {
+  DashBoard({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -32,7 +32,7 @@ class DashBoardPage extends StatefulWidget {
   _DashBoardPageState createState() => _DashBoardPageState();
 }
 
-class _DashBoardPageState extends State<DashBoardPage> {
+class _DashBoardPageState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

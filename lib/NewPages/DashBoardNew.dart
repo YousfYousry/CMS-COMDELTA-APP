@@ -8,30 +8,31 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
-import 'package:login_cms_comdelta/Widgets/CustomAppBar.dart';
+// import 'package:login_cms_comdelta/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_cms_comdelta/Widgets/CustomeAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const PrimaryColor = const Color(0xff0065a3);
+// const PrimaryColor = const Color(0xff0065a3);
 
-class DashBoardNew extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CMS Login UI',
-      theme: ThemeData(
-        primaryColor: PrimaryColor,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: DashBoardPage(title: 'CMS Dashboard'),
-    );
-  }
-}
+// class DashBoardNew extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'CMS Login UI',
+//       theme: ThemeData(
+//         primaryColor: PrimaryColor,
+//       ),
+//       debugShowCheckedModeBanner: false,
+//       home: DashBoardPage(title: 'CMS Dashboard'),
+//     );
+//   }
+// }
 
-class DashBoardPage extends StatefulWidget {
-  DashBoardPage({Key key, this.title}) : super(key: key);
+class DashBoardNew extends StatefulWidget {
+  DashBoardNew({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -39,7 +40,7 @@ class DashBoardPage extends StatefulWidget {
   _DashBoardPageState createState() => _DashBoardPageState();
 }
 
-class _DashBoardPageState extends State<DashBoardPage> {
+class _DashBoardPageState extends State<DashBoardNew> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   GoogleMapController mapController;
   final LatLng _center = const LatLng(2.944590144570856, 101.60274569735296);
@@ -58,10 +59,9 @@ class _DashBoardPageState extends State<DashBoardPage> {
         .width - 40;
     var numStyle=TextStyle(fontWeight: FontWeight.bold),titleStyle =TextStyle(fontSize: 12);
     return Scaffold(
-      backgroundColor: Colors.blue[50],
       appBar: PreferredSize(
-        child: CustomAppBar("DashBoard"),
-        preferredSize: const Size.fromHeight(50),
+        child: CustomeAppBar("DashBoard"),
+        preferredSize: const Size.fromHeight(40),
       ),
       drawer: SideDrawer(), // sidebar
       body: Stack(
