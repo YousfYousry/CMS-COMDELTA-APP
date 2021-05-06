@@ -20,20 +20,12 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus.unfocus();
-        }
-      },
-      child: MaterialApp(
-        title: 'CMS Login UI',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: MyHomePage(title: 'CMS Login'),
+    return MaterialApp(
+      title: 'CMS Login UI',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: MyHomePage(title: 'CMS Login'),
     );
   }
 }
@@ -64,21 +56,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final emailField = Stack(children: [
       TextFieldShadow(),
-      TextField(
-        controller: emailFieldController,
-        obscureText: false,
-        style: style,
-        onChanged: (text) {
-          setState(() {
-            validateEmail = false;
-          });
-        },
-        decoration: InputDecoration(
-          errorText: validateEmail ? 'Username is required' : null,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          hintText: "Username",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32.0),
+      Theme(
+        data: Theme.of(context).copyWith(splashColor: Colors.transparent),
+        child: TextField(
+          controller: emailFieldController,
+          obscureText: false,
+          style: style,
+          onChanged: (text) {
+            setState(() {
+              validateEmail = false;
+            });
+          },
+          decoration: InputDecoration(
+            fillColor: Colors.white.withOpacity(0.2),
+            filled: true,
+            errorText: validateEmail ? 'Username is required' : null,
+            contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+            hintText: "Username",
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32.0),
+            ),
           ),
         ),
       ),
@@ -96,6 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
           decoration: InputDecoration(
+            fillColor: Colors.white.withOpacity(0.2),
+            filled: true,
             errorText: validatePassword ? 'Password is required' : null,
             contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
             hintText: "Password",
@@ -109,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
       elevation: 5.0,
       shadowColor: Colors.black,
       borderRadius: BorderRadius.circular(30.0),
-      color: Color(0xff0065a3),
+      color: Color(0xff0065a3).withOpacity(0.9),
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -123,46 +122,70 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ); //Login Button
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100.0,
-                      child: Image.asset(
-                        "assets/image/logo.png",
-                        fit: BoxFit.contain,
-                      ), // Image setting
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus.unfocus();
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/image/background1.jpg"),
+              fit: BoxFit.cover),
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Stack(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 100.0,
+                          child: Image.asset(
+                            "assets/image/DesignLogo.png",
+                            fit: BoxFit.contain,
+                          ), // Image setting
+                        ),
+
+                      Text(
+                'Satellite Managment System',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+              ),
+
+                        SizedBox(height: 20.0),
+                        Text('Welcome to Comdelta Tracking System',
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.white)),
+                        SizedBox(height: 20.0),
+                        emailField,
+                        SizedBox(height: 20.0),
+                        passwordField,
+                        SizedBox(height: 25.0),
+                        loginButton,
+                        SizedBox(height: 100.0),
+                      ],
                     ),
-                    SizedBox(height: 20.0),
-                    Text('Welcome to Comdelta Tracking System',
-                        style: TextStyle(fontSize: 16, color: Colors.black)),
-                    SizedBox(height: 20.0),
-                    emailField,
-                    SizedBox(height: 20.0),
-                    passwordField,
-                    SizedBox(height: 25.0),
-                    loginButton,
-                    SizedBox(height: 100.0),
-                  ],
+                  ), // Setting for Text Field, Password Field and Login Button
                 ),
-              ), // Setting for Text Field, Password Field and Login Button
-            ),
+              ),
+              Center(
+                child: Visibility(
+                  child: CircularProgressIndicatorApp(),
+                  visible: loading,
+                ),
+              ),
+            ],
           ),
-          Center(
-            child: Visibility(
-              child: CircularProgressIndicatorApp(),
-              visible: loading,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
