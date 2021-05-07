@@ -8,10 +8,10 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      // centerTitle: true,
+      centerTitle: true,
       title: Text(
         title,
-//        textAlign: TextAlign.center,
+       textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20),
       ),
     );
