@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:login_cms_comdelta/ActiveDeviceCard.dart';
@@ -8,9 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/TotalDevicesCard.dart';
-// import 'package:login_cms_comdelta/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
-import 'package:login_cms_comdelta/Widgets/CustomeAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/DashBoardAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +41,10 @@ class DashBoardNew extends StatefulWidget {
 }
 
 class _DashBoardPageState extends State<DashBoardNew> {
+  TextEditingController totalDevices = new TextEditingController(),
+      activeDevices = new TextEditingController(),
+      inactiveDevices = new TextEditingController();
+
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   GoogleMapController mapController;
   final LatLng _center = const LatLng(2.944590144570856, 101.60274569735296);
@@ -52,154 +56,162 @@ class _DashBoardPageState extends State<DashBoardNew> {
   }
 
   @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width - 40;
-    var numStyle=TextStyle(fontWeight: FontWeight.bold),titleStyle =TextStyle(fontSize: 12);
+    double width = MediaQuery.of(context).size.width - 40;
+    var numStyle = TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        titleStyle = TextStyle(color: Colors.white, fontSize: 12);
+    var decoration =  BoxDecoration(
+      color: Color(0xff0065a3),
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: [
+        BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 3,
+            blurRadius: 4,
+            offset: Offset(0, 1))
+      ],
+    );
     return Scaffold(
       appBar: PreferredSize(
-        child: CustomeAppBar("DashBoard"),
-        preferredSize: const Size.fromHeight(40),
+        child: DashboardAppBar("DashBoard"),
+        preferredSize: const Size.fromHeight(70),
       ),
-      drawer: SideDrawer(), // sidebar
+      drawer: SideDrawer(),
       body: Stack(
         children: [
-          GoogleMap(
-            onMapCreated: _onMapCreated,
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: 4,
+          Expanded(
+            child: Container(
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                myLocationButtonEnabled: false,
+                mapToolbarEnabled: false,
+                zoomControlsEnabled: false,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 4,
+                ),
+                markers: Set<Marker>.of(markers.values), // YOUR
+              ),
             ),
-            markers: Set<Marker>.of(markers.values), // YOUR
           ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Container(
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: (){
+
+                      // toast("mmmmm");
+                      // MapsLauncher.launchCoordinates(2.944579429900434, 101.60271351084474);
+
+                      // MapUtils.openMap(2.944579429900434, 101.60271351084474);
+
+                      // Navigator.pushNamed(context, '/TotalDeviceCard');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TotalDeviceCard()));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(0),
+                      child: Container(
+                        decoration: decoration,
+                        height: 50,
+                        width: width / 3,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              totalDevices.text,
+                              style: numStyle,
+                            ),
+                            Text(
+                              'Total Devices',
+                              style: titleStyle,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ActiveDeviceCard()),
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 10,right: 10),
+                      child: Container(
+                        decoration: decoration,
+                        height: 50,
+                        width: width / 3,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              activeDevices.text,
+                              style: numStyle,
+                            ),
+                            Text(
+                              'Active Devices',
+                              style: titleStyle,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => InactiveDeviceCard()),
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(0),
+                      child: Container(
+                        decoration: decoration,
+                        height: 50,
+                        width: width / 3,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              inactiveDevices.text,
+                              style: numStyle,
+                            ),
+                            Text(
+                              'Inactive Devices',
+                              style: titleStyle,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           Center(
             child: Visibility(
               child: CircularProgressIndicatorApp(),
               visible: loading,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(5),
-            child: Row(
-              children: [
-                InkWell(
-                  onTap: () {
-                    // Navigator.pushNamed(context, '/TotalDeviceCard');
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => TotalDeviceCard()));
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Container(
-                      height: 45,
-                      width: width / 3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 3,
-                              blurRadius: 4,
-                              offset: Offset(0, 1))
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '229',
-                            style: numStyle,
-                          ),
-                          Text(
-                            'Total Devices',
-                            style: titleStyle,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ActiveDeviceCard()),);
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Container(
-                      height: 45,
-                      width: width / 3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 3,
-                              blurRadius: 4,
-                              offset: Offset(0, 1))
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '190',
-                            style: numStyle,
-                          ),
-                          Text(
-                            'Active Devices',
-                            style: titleStyle,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => InactiveDeviceCard()),);
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Container(
-                      height: 45,
-                      width: width / 3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 3,
-                              blurRadius: 4,
-                              offset: Offset(0, 1))
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '10',
-                            style: numStyle,
-                          ),
-                          Text(
-                            'Inactive Devices',
-                            style: titleStyle,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // Row(
           //   children: [
           //     InkWell(
@@ -306,7 +318,7 @@ class _DashBoardPageState extends State<DashBoardNew> {
 
   Future<void> getDevices() async {
     load('client_id').then((value) =>
-    value != '-1' ? sendPost(value) : toast('User was not found!'));
+        value != '-1' ? sendPost(value) : toast('User was not found!'));
   }
 
   void sendPost(String clientId) {
@@ -347,7 +359,7 @@ class _DashBoardPageState extends State<DashBoardNew> {
     // ignore: deprecated_member_use
     List<LatLng> positions = new List<LatLng>();
     BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png')
+            ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png')
         .then((customIcon) {
       setState(() {
         for (Device device in devices) {
@@ -378,18 +390,63 @@ class _DashBoardPageState extends State<DashBoardNew> {
 
   LatLngBounds _bounds(List<LatLng> positions) {
     final southwestLat = positions.map((p) => p.latitude).reduce(
-            (value, element) => value < element ? value : element); // smallest
+        (value, element) => value < element ? value : element); // smallest
     final southwestLon = positions
         .map((p) => p.longitude)
         .reduce((value, element) => value < element ? value : element);
     final northeastLat = positions.map((p) => p.latitude).reduce(
-            (value, element) => value > element ? value : element); // biggest
+        (value, element) => value > element ? value : element); // biggest
     final northeastLon = positions
         .map((p) => p.longitude)
         .reduce((value, element) => value > element ? value : element);
     return LatLngBounds(
         southwest: LatLng(southwestLat, southwestLon),
         northeast: LatLng(northeastLat, northeastLon));
+  }
+  Future<void> getInfo() async {
+    load('client_id').then((value) =>
+    value != '-1' ? getDeviceNum(value) : toast('User was not found!'));
+  }
+
+  void getDeviceNum(String clientId) {
+    http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/getDeviceNumber.php'),
+        body: {
+          'client_id': clientId,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        // ignore: deprecated_member_use
+        String value = json.decode(response.body);
+        if (value != '-1') {
+          List<String> result = value.split(',');
+          if (result.length > 2) {
+            setState(() {
+              totalDevices.text = result[0];
+              activeDevices.text = result[1];
+              inactiveDevices.text = result[2];
+            });
+          } else {
+            toast('Something wrong with the server!');
+          }
+        } else {
+          toast('User does not exist');
+        }
+
+        setState(() {
+          loading = false;
+        });
+      } else {
+        setState(() {
+          loading = false;
+        });
+        throw Exception("Unable to get devices list");
+      }
+    }).onError((error, stackTrace) {
+      setState(() {
+        loading = false;
+      });
+      toast('Error: ' + error.message);
+    });
   }
 
   Future<String> load(String key) async {

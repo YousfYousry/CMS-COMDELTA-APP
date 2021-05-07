@@ -29,6 +29,7 @@ class _SideDrawer extends State<SideDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+
       child: Column(
         children: <Widget>[
           DrawerHeader(

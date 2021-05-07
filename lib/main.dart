@@ -13,7 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   load('user_id').then(
     (value) => runApp(
-      MaterialApp(home: value == '-1' ? MyApp() : DashBoard()),
+      MaterialApp(home: value == '-1' ? MyApp() : DashBoardNew()),
     ),
   );
 }
