@@ -39,7 +39,7 @@ class _DashBoardPageState extends State<DashBoard> {
               DashBoardHeader(),
 
               Text(
-                'Satellite Managment System',
+                'Satellite Management System',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
 

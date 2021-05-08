@@ -1,45 +1,44 @@
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
-import 'package:login_cms_comdelta/Widgets/CustomAppBarWithBack.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'GoogleMap.dart';
+import 'Widgets/CustomAppBarWithBack.dart';
 import 'Widgets/DeviceElement.dart';
 import 'Widgets/ProgressBar.dart';
 import 'dart:math' as math;
 import 'dart:convert';
 
-const PrimaryColor = const Color(0xff0065a3);
-var appBar;
+// const PrimaryColor = const Color(0xff0065a3);
+// var appBar;
+// class TotalDeviceCard extends StatelessWidget {
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     appBar = CustomAppBarBack(context, "Total Devices");
+//     return GestureDetector(
+//       onTap: () {
+//         FocusScopeNode currentFocus = FocusScope.of(context);
+//         if (!currentFocus.hasPrimaryFocus &&
+//             currentFocus.focusedChild != null) {
+//           FocusManager.instance.primaryFocus.unfocus();
+//         }
+//       },
+//       child: MaterialApp(
+//         title: 'Devices',
+//         theme: ThemeData(
+//           primaryColor: PrimaryColor,
+//         ),
+//         home: TotalDeviceCardPage(title: 'Total Devices'),
+//       ),
+//     );
+//   }
+// }
 
-class TotalDeviceCard extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    appBar = CustomAppBarBack(context, "Total Devices");
-    return GestureDetector(
-      onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus &&
-            currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus.unfocus();
-        }
-      },
-      child: MaterialApp(
-        title: 'Devices',
-        theme: ThemeData(
-          primaryColor: PrimaryColor,
-        ),
-        home: TotalDeviceCardPage(title: 'Total Devices'),
-      ),
-    );
-  }
-}
-
-class TotalDeviceCardPage extends StatefulWidget {
-  TotalDeviceCardPage({Key key, this.title}) : super(key: key);
+class TotalDeviceCard extends StatefulWidget {
+  TotalDeviceCard({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
@@ -76,7 +75,7 @@ var spanUp = WidgetSpan(
           )),
     );
 
-class _TotalDeviceCard extends State<TotalDeviceCardPage> {
+class _TotalDeviceCard extends State<TotalDeviceCard> {
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
 
@@ -175,10 +174,14 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+      onTap: () {
+          clearFocus();
+      },
+      child: Scaffold(
         backgroundColor: Colors.white,
         appBar: PreferredSize(
-          child: appBar,
+          child: CustomAppBarBack(context, "Total Devices"),
           preferredSize: const Size.fromHeight(50),
         ),
         // drawer: SideDrawer(),
@@ -327,10 +330,20 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
                                     // toast(items[index].getLatitud().toString()+","+ items[index].getLongitud().toString());
                                     // String title =
                                     //     items[index].getDeviceDetail();
-                                    MapsLauncher.launchCoordinates(
-                                        items[index].getLatitud(),
-                                        items[index].getLongitud(),
-                                      "title");
+                                    // MaterialPageRoute(
+                                    //     builder: (context) => GoogleMapApp(
+                                    //         name: items[index].getId()));
+                                    clearFocus();
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => GoogleMapApp(
+                                                name: items[index]
+                                                    .getID())));
+                                    // MapsLauncher.launchCoordinates(
+                                    //       items[index].getLatitud(),
+                                    //       items[index].getLongitud(),
+                                    //     "title");
                                   }
                                 },
                                 child: listItem(
@@ -367,7 +380,9 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
               ),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 
   Future<void> getDevices() async {
@@ -466,6 +481,14 @@ class _TotalDeviceCard extends State<TotalDeviceCardPage> {
       return double.parse(str);
     } catch (e) {
       return 0;
+    }
+  }
+
+  void clearFocus(){
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus &&
+        currentFocus.focusedChild != null) {
+      FocusManager.instance.primaryFocus.unfocus();
     }
   }
 }

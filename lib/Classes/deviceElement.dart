@@ -1,5 +1,6 @@
 class DeviceElement {
   String Id = "";
+  String ID = "";
   String DeviceDetail = "";
   String Location = "";
   String highLight = "";
@@ -20,6 +21,10 @@ class DeviceElement {
     return Id;
   }
 
+  String getID() {
+    return ID;
+  }
+
   String getDeviceDetail() {
     return DeviceDetail;
   }
@@ -37,7 +42,8 @@ class DeviceElement {
   }
 
   DeviceElement(
-      {this.Id,
+      {this.ID,
+      this.Id,
       this.DeviceDetail,
       this.Location,
       this.deviceLatitud,
@@ -47,6 +53,7 @@ class DeviceElement {
       List<String> locId, List<String> locName) {
     return DeviceElement(
       Id: id,
+      ID: json['device_id'].toString(),
       DeviceDetail: json['device_detail'].toString(),
       Location:
           locName.elementAt(locId.indexOf(json['location_id'].toString())),
