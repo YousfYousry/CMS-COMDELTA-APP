@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +11,58 @@ import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  'This channel is used for important notifications.', // description
+  importance: Importance.high,
+);
+
+Future<void> _messageHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  notification(message);
+}
+
+void notification(RemoteMessage message) {
+  RemoteNotification notification = message.notification;
+  AndroidNotification android = message.notification?.android;
+  if (notification != null && android != null) {
+    flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channel.description,
+            // TODO add a proper drawable resource to android, for now using
+            //      one that already exists in example app.
+            // icon: 'launch_background',
+          ),
+        ));
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
   load('user_id').then(
     (value) => runApp(
       MaterialApp(home: value == '-1' ? MyApp() : DashBoard()),
@@ -44,6 +97,45 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController emailFieldController = new TextEditingController(),
       passFieldController = new TextEditingController();
   bool validateEmail = false, validatePassword = false, loading = false;
+
+  FirebaseMessaging messaging;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    // var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    // var iOS = new IOSInitializationSettings();
+    // var initSetttings = new InitializationSettings(android: android, iOS: iOS);
+    // flutterLocalNotificationsPlugin.initialize(initSetttings,
+    //     onSelectNotification: onSelectNotification);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      notification(message);
+    });
+    //
+    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+    //   print("message recieved");
+    //   // showNotification();
+    //   print(event.notification.body);
+    // });
+    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    //   print('Message clicked!');
+    // });
+  }
+
+  // ignore: missing_return
+  // Future onSelectNotification(String payload) {
+  //   debugPrint("payload : $payload");
+  //   showDialog(
+  //     context: context,
+  //     builder: (_) => new AlertDialog(
+  //       title: new Text('Notification'),
+  //       content: new Text('$payload'),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -155,12 +247,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             fit: BoxFit.contain,
                           ), // Image setting
                         ),
-
-                      Text(
-                'Satellite Managment System',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
-              ),
-
+                        Text(
+                          'Satellite Managment System',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.white),
+                        ),
                         SizedBox(height: 20.0),
                         Text('Welcome to Comdelta Tracking System',
                             style:
@@ -206,7 +299,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     setState(() => loading = true);
 
-    String msg = '';
     http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
         body: {
           'email': emailFieldController.text,
@@ -218,35 +310,60 @@ class _MyHomePageState extends State<MyHomePage> {
         if (value != '-1') {
           List<String> result = value.split(',');
           if (result.length > 1) {
-            save('profile_pic', '-1');
-            save('client_id', result[0]);
-            save('user_id', result[1]);
-            msg = 'Logged in successfully';
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => DashBoard()));
+            FirebaseMessaging.instance.getToken().then((value) {
+              http.post(
+                  Uri.parse('http://103.18.247.174:8080/AmitProject/saveToken.php'),
+                  body: {
+                    'client_id':result[0],
+                    'token': value,
+                  }).then((response) {
+                String res = json.decode(response.body);
+                if (res.contains("200")) {
+                  save('token', value);
+                  save('profile_pic', '-1');
+                  save('client_id', result[0]);
+                  save('user_id', result[1]);
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => DashBoard()));
+                  // print(">>>:"+value+":<<<");
+                  toast('Logged in successfully');
+                  setState(() => loading = false);
+                } else {
+                  toast(res);
+                  setState(() => loading = false);
+                }
+              }).onError((error, stackTrace) {
+                toast('Error: ' + error.message);
+                setState(() => loading = false);
+              });
+            }).onError((error, stackTrace) {
+              toast('Error getting notification token');
+              setState(() => loading = false);
+            });
           } else {
-            msg = 'Something wrong with the server!';
+            toast('Something wrong with the server!');
+            setState(() => loading = false);
           }
         } else {
-          msg = 'Email or password is incorrect';
+          toast('Email or password is incorrect');
+          setState(() => loading = false);
         }
       } else {
-        msg = getResponseError(response);
+        toast(getResponseError(response));
+        setState(() => loading = false);
       }
-      Fluttertoast.showToast(
-          msg: msg,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1);
-      setState(() => loading = false);
     }).onError((error, stackTrace) {
-      Fluttertoast.showToast(
-          msg: 'Error: ' + error.message,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1);
+      toast('Error: ' + error.message);
       setState(() => loading = false);
     });
+  }
+
+  void toast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1);
   }
 
   String getResponseError(http.Response response) {

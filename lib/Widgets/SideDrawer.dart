@@ -29,7 +29,6 @@ class _SideDrawer extends State<SideDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-
       child: Column(
         children: <Widget>[
           DrawerHeader(
@@ -167,7 +166,7 @@ class _SideDrawer extends State<SideDrawer> {
         value != '-1' ? sendPost(value) : toast('User was not found!'));
     load('profile_pic').then((value) => value.isNotEmpty && value != '-1'
         ? setState(() => profilePic = value)
-        :setState(() =>  profilePic =
+        : setState(() => profilePic =
             'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png'));
   }
 
@@ -186,9 +185,7 @@ class _SideDrawer extends State<SideDrawer> {
             setState(() {
               name = result[0] + ' ' + result[1];
               if (result[3].isNotEmpty) {
-                setState(() =>
-                profilePic = result[3]
-              );
+                setState(() => profilePic = result[3]);
                 save('profile_pic', result[3]);
               }
             });
@@ -221,9 +218,25 @@ class _SideDrawer extends State<SideDrawer> {
   }
 
   void logOut(BuildContext context) {
-    save('profile_pic', '-1');
-    save('client_id', '-1');
-    save('user_id', '-1');
-    Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
+    load('token').then((value) {
+      http.post(
+          Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
+          body: {
+            'token': value,
+          }).then((response) {
+        String res = json.decode(response.body);
+        if (res=="200") {
+          save('token', '-1');
+          save('profile_pic', '-1');
+          save('client_id', '-1');
+          save('user_id', '-1');
+          Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
+        }else{
+          toast("Error logging out!");
+        }
+      }).onError((error, stackTrace) {
+        toast('Error: ' + error.message);
+      });
+    });
   }
 }

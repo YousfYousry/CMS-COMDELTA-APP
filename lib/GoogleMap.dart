@@ -214,7 +214,7 @@ class _GoogleMapPageState extends State<GoogleMapApp>
             ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png')
         .then((customIcon) {
       setState(() {
-        var chosenId;
+        // var chosenId;
         for (Device device in devices) {
           if (getDouble(device.getLong()) != 0 &&
               getDouble(device.getLat()) != 0) {
@@ -226,7 +226,7 @@ class _GoogleMapPageState extends State<GoogleMapApp>
               lat = getDouble(device.getLong());
               title = device.getDeviceDetail();
               _animationController.forward();
-              chosenId = id;
+              // chosenId = id;
             }
             positions.add(new LatLng(
                 getDouble(device.getLong()), getDouble(device.getLat())));

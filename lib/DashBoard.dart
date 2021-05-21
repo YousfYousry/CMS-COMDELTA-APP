@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:login_cms_comdelta/DeviceStatus.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'Widgets/CustomeAppBar.dart';
 import './GoogleMap.dart';
 
 class DashBoard extends StatefulWidget {
+
   DashBoard({Key key, this.title}) : super(key: key);
 
   final String title;
@@ -17,6 +20,21 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardPageState extends State<DashBoard> {
+  Future<void> _messageHandler(RemoteMessage message) async {
+    print('background message ${message.notification.body}');
+    // showNotification();
+  }
+
+
+  Future<void> initNot() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(_messageHandler);
+
+    WidgetsFlutterBinding.ensureInitialized();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
