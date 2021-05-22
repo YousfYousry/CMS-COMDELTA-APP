@@ -16,10 +16,14 @@ PODS:
     - TOCropViewController (~> 2.6.0)
   - image_picker (0.0.1):
     - Flutter
+  - maps_launcher (0.0.1):
+    - Flutter
   - shared_preferences (0.0.1):
     - Flutter
   - Toast (4.0.0)
   - TOCropViewController (2.6.0)
+  - url_launcher (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -27,7 +31,9 @@ DEPENDENCIES:
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
+  - maps_launcher (from `.symlinks/plugins/maps_launcher/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
   trunk:
@@ -46,8 +52,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_cropper/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
+  maps_launcher:
+    :path: ".symlinks/plugins/maps_launcher/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
@@ -56,9 +66,11 @@ SPEC CHECKSUMS:
   GoogleMaps: 4b5346bddfe6911bb89155d43c903020170523ac
   image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
   image_picker: 50e7c7ff960e5f58faa4d1f4af84a771c671bc4a
+  maps_launcher: eae38ee13a9c3f210fa04e04bb4c073fa4c6ed92
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
