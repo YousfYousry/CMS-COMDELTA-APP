@@ -98,11 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
       passFieldController = new TextEditingController();
   bool validateEmail = false, validatePassword = false, loading = false;
 
-  FirebaseMessaging messaging;
+  // FirebaseMessaging messaging;
 
-  @override
-  void initState() {
-    super.initState();
+  // @override
+  // void initState() {
+  //   super.initState();
 
     // flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     // var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -111,9 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // flutterLocalNotificationsPlugin.initialize(initSetttings,
     //     onSelectNotification: onSelectNotification);
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      notification(message);
-    });
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   notification(message);
+    // });
     //
     // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
     //   print("message recieved");
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // FirebaseMessaging.onMessageOpenedApp.listen((message) {
     //   print('Message clicked!');
     // });
-  }
+  // }
 
   // ignore: missing_return
   // Future onSelectNotification(String payload) {
