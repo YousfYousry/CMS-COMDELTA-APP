@@ -32,7 +32,6 @@ dependencies:
   substring_highlight: ^0.1.2
   maps_launcher: ^2.0.0
   firebase_messaging: ^9.1.4
-  firebase_core: ^1.1.1
   overlay_support: ^1.2.1
   flutter_local_notifications: ^5.0.0+4
 
