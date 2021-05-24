@@ -1,5 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:login_cms_comdelta/DeviceStatus.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,16 @@ import 'Widgets/SizeTransition.dart';
 import 'Widgets/SideDrawer.dart';
 import 'Widgets/CustomeAppBar.dart';
 import './GoogleMap.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  'This channel is used for important notifications.', // description
+  importance: Importance.high,
+);
 
 class DashBoard extends StatefulWidget {
 
@@ -20,18 +30,33 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardPageState extends State<DashBoard> {
-  Future<void> _messageHandler(RemoteMessage message) async {
-    print('background message ${message.notification.body}');
-    // showNotification();
+  void notification(RemoteMessage message) {
+    RemoteNotification notification = message.notification;
+    AndroidNotification android = message.notification?.android;
+    if (notification != null && android != null) {
+      flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channel.description,
+              // TODO add a proper drawable resource to android, for now using
+              //      one that already exists in example app.
+              // icon: 'launch_background',
+            ),
+          ));
+    }
   }
 
-
-  Future<void> initNot() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(_messageHandler);
-
-    WidgetsFlutterBinding.ensureInitialized();
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      notification(message);
+    });
   }
 
 
