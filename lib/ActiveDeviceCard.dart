@@ -81,11 +81,8 @@ class _ActiveDeviceCard extends State<ActiveDeviceCardPage> {
   TextEditingController searchController = new TextEditingController();
   bool loading = true,validate=false;
 
-  // ignore: deprecated_member_use
-  var items = List<DeviceElement>();
-
-  // ignore: deprecated_member_use
-  var duplicateItems = List<DeviceElement>();
+  var items = [];
+  var duplicateItems = [];
 
   var span1 = spanDown, span2 = spanDefault, span3 = spanDefault;
 
@@ -137,12 +134,10 @@ class _ActiveDeviceCard extends State<ActiveDeviceCardPage> {
 
   void filterSearchResults(String query) {
     bool resultFound=false;
-    // ignore: deprecated_member_use
-    var dummySearchList = List<DeviceElement>();
+    var dummySearchList = [];
     dummySearchList.addAll(duplicateItems);
     if (query.isNotEmpty) {
-      // ignore: deprecated_member_use
-      var dummyListData = List<DeviceElement>();
+      var dummyListData = [];
       dummySearchList.forEach((item) {
         if (item.getId().toLowerCase().contains(query.toLowerCase()) ||
             item
@@ -367,13 +362,10 @@ class _ActiveDeviceCard extends State<ActiveDeviceCardPage> {
         .get(Uri.parse(
         'http://103.18.247.174:8080/AmitProject/getLocations.php'))
         .then((value) {
-      // ignore: deprecated_member_use
-      List<String> id = new List<String>();
-      // ignore: deprecated_member_use
-      List<String> locationName = new List<String>();
+      List<String> id = [];
+      List<String> locationName = [];
       if (value.statusCode == 200) {
-        // ignore: deprecated_member_use
-        List<dynamic> values = new List<dynamic>();
+        List<dynamic> values = [];
         values = json.decode(value.body);
         if (values.length > 0) {
           for (int i = 0; i < values.length; i++) {
@@ -406,10 +398,8 @@ class _ActiveDeviceCard extends State<ActiveDeviceCardPage> {
           'client_id': clientId,
         }).then((response) {
       if (response.statusCode == 200) {
-        // ignore: deprecated_member_use
-        List<DeviceElement> devices = new List<DeviceElement>();
-        // ignore: deprecated_member_use
-        List<dynamic> values = new List<dynamic>();
+        List<DeviceElement> devices = [];
+        List<dynamic> values = [];
         values = json.decode(response.body);
         // print(values);
         if (values.length > 0) {

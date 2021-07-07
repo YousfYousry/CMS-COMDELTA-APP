@@ -2,23 +2,50 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Admin/AddEditClient.dart';
+import 'package:login_cms_comdelta/Admin/ManageClients.dart';
+import 'package:login_cms_comdelta/Admin/ManageDevices.dart';
+import 'package:login_cms_comdelta/Widgets/MiddleLeft.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../ForgotPasswordPage.dart';
-import '../UserProfilePage.dart';
-import './SizeTransition.dart';
-import '../FeedBackPage.dart';
-import '../Client/DashBoard.dart';
-import '../main.dart';
+import '../../ForgotPasswordPage.dart';
+import '../../UserProfilePage.dart';
+import '../SizeTransition.dart';
+import '../../Client/DashBoard.dart';
+import '../../main.dart';
 
-class SideDrawer extends StatefulWidget {
+class SideDrawerAdmin extends StatefulWidget {
   @override
   _SideDrawer createState() => _SideDrawer();
 }
 
-class _SideDrawer extends State<SideDrawer> {
+class _SideDrawer extends State<SideDrawerAdmin> {
   var profilePic =
       'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png';
   var name = '';
+  bool button1 = false, button2 = false;
+
+  Widget itemChild(var title, var route) {
+    return InkWell(
+      child: Container(
+        padding: EdgeInsets.only(left: 72),
+        height: 30,
+        child: MiddleLeft(
+          Text(
+            title,
+            style: TextStyle(fontSize: 14, color: Color(0xff5e5e5e)),
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          SizeRoute(
+            page: route,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -90,17 +117,146 @@ class _SideDrawer extends State<SideDrawer> {
               ),
             },
           ),
-          ListTile(
-            leading: Icon(Icons.border_color),
-            title: Text('Feedback'),
-            onTap: () => {
-              Navigator.push(
-                context,
-                SizeRoute(
-                  page: FeedBackPage(),
-                ),
-              ),
+          // ExpansionPanelList(
+          //   elevation: 0,
+          //   expandedHeaderPadding: EdgeInsets.all(0),
+          //   dividerColor: Color(0xfffafafa),
+          //   expansionCallback: (int index, bool isExpanded) {
+          //     setState(() {
+          //       _data[index].isExpanded = !isExpanded;
+          //     });
+          //   },
+          //   children: _data.map<ExpansionPanel>((Item item) {
+          //     return ExpansionPanel(
+          //       backgroundColor: Color(0xfffafafa),
+          //       headerBuilder: (BuildContext context, bool isExpanded) {
+          //         return ListTile(
+          //           title: Text(item.headerValue),
+          //         );
+          //       },
+          //       body: ListTile(
+          //           title: Text(item.expandedValue),
+          //           subtitle:
+          //           const Text('To delete this panel, tap the trash can icon'),
+          //           trailing: const Icon(Icons.delete),
+          //           onTap: () {
+          //             setState(() {
+          //               _data.removeWhere((Item currentItem) => item == currentItem);
+          //             });
+          //           }),
+          //       isExpanded: item.isExpanded,
+          //     );
+          //   }).toList(),
+          // ),
+
+          ExpansionPanelList(
+            elevation: 0,
+            expandedHeaderPadding: EdgeInsets.all(0),
+            animationDuration: Duration(milliseconds: 500),
+            dividerColor: Color(0xfffafafa),
+            expansionCallback: (int index, bool isExpanded) {
+              setState(() {
+                button1 = !isExpanded;
+                button2 = false;
+              });
             },
+            children: [
+              ExpansionPanel(
+                backgroundColor: Color(0xfffafafa),
+                headerBuilder: (BuildContext context, bool isExpanded) {
+                  return ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text('Client'),
+                    onTap: () {
+                      setState(() {
+                        button1 = !isExpanded;
+                        button2 = false;
+                      });
+                    },
+                  );
+                },
+                body: Column(
+                  children: [
+                    itemChild("Manage Client", ManageClient()),
+                    itemChild("Add Client", AddClient()),
+                    // Container(
+                    //   height: 20,
+                    //   child: Center(
+                    //     child: Text(
+                    //       'Add Client',
+                    //       style: TextStyle(fontSize: 14, color: Colors.black87),
+                    //     ),
+                    //   ),
+                    // ),
+                    // ListTile(
+                    //   title: Text('                Add Client'),
+                    //   // subtitle: Text('Details goes here'),
+                    //   onTap: () {
+                    //     toast("tapped 2");
+                    //   },
+                    // ),
+                  ],
+                ),
+                isExpanded: button1,
+              ),
+            ],
+          ),
+
+          ExpansionPanelList(
+            elevation: 0,
+            animationDuration: Duration(milliseconds: 500),
+            expandedHeaderPadding: EdgeInsets.all(0),
+            dividerColor: Color(0xfffafafa),
+            expansionCallback: (int index, bool isExpanded) {
+              setState(() {
+                button2 = !isExpanded;
+                button1 = false;
+              });
+            },
+            children: [
+              ExpansionPanel(
+                backgroundColor: Color(0xfffafafa),
+                headerBuilder: (BuildContext context, bool isExpanded) {
+                  return ListTile(
+                    leading: Icon(Icons.ad_units_sharp),
+                    title: Text('Device'),
+                    onTap: () {
+                      setState(() {
+                        button2 = !isExpanded;
+                        button1 = false;
+                      });
+                    },
+                  );
+                },
+                body: Column(
+                  children: [
+                    itemChild("Manage Device", ManageDevice()),
+                    itemChild("Add Device", DashBoard()),
+                    itemChild("Failed Device", DashBoard()),
+                    //
+                    // ListTile(
+                    //   title: Text('                Manage Device'),
+                    //   onTap: () {
+                    //     toast("tapped 1");
+                    //   },
+                    // ),
+                    // ListTile(
+                    //   title: Text('                Add Device'),
+                    //   onTap: () {
+                    //     toast("tapped 2");
+                    //   },
+                    // ),
+                    // ListTile(
+                    //   title: Text('                Failed Device'),
+                    //   onTap: () {
+                    //     toast("tapped 3");
+                    //   },
+                    // ),
+                  ],
+                ),
+                isExpanded: button2,
+              ),
+            ],
           ),
           Divider(
             height: 2,
@@ -225,13 +381,13 @@ class _SideDrawer extends State<SideDrawer> {
             'token': value,
           }).then((response) {
         String res = json.decode(response.body);
-        if (res=="200") {
+        if (res == "200") {
           save('token', '-1');
           save('profile_pic', '-1');
           save('client_id', '-1');
           save('user_id', '-1');
           Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
-        }else{
+        } else {
           toast("Error logging out!");
         }
       }).onError((error, stackTrace) {

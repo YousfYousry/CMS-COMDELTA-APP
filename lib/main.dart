@@ -5,8 +5,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/DashBoard.dart';
-import 'DashBoard.dart';
+import 'package:login_cms_comdelta/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/NewPages/DashBoardNew.dart';
+import 'Client/DashBoard.dart';
 import 'Widgets/ProgressBar.dart';
 import 'Widgets/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -104,25 +105,25 @@ class _MyHomePageState extends State<MyHomePage> {
   // void initState() {
   //   super.initState();
 
-    // flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    // var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
-    // var iOS = new IOSInitializationSettings();
-    // var initSetttings = new InitializationSettings(android: android, iOS: iOS);
-    // flutterLocalNotificationsPlugin.initialize(initSetttings,
-    //     onSelectNotification: onSelectNotification);
+  // flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+  // var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+  // var iOS = new IOSInitializationSettings();
+  // var initSetttings = new InitializationSettings(android: android, iOS: iOS);
+  // flutterLocalNotificationsPlugin.initialize(initSetttings,
+  //     onSelectNotification: onSelectNotification);
 
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   notification(message);
-    // });
-    //
-    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-    //   print("message recieved");
-    //   // showNotification();
-    //   print(event.notification.body);
-    // });
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   print('Message clicked!');
-    // });
+  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //   notification(message);
+  // });
+  //
+  // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+  //   print("message recieved");
+  //   // showNotification();
+  //   print(event.notification.body);
+  // });
+  // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+  //   print('Message clicked!');
+  // });
   // }
 
   // ignore: missing_return
@@ -139,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     // load('client_id').then((value) {
     //   if (value != '-1') {
     //     Navigator.pushReplacement(
@@ -305,41 +307,54 @@ class _MyHomePageState extends State<MyHomePage> {
           'password': passFieldController.text
         }).then((response) {
       if (response.statusCode == 200) {
-        // ignore: deprecated_member_use
         String value = json.decode(response.body);
         if (value != '-1') {
           List<String> result = value.split(',');
-          if (result.length > 1) {
-            FirebaseMessaging.instance.getToken().then((value) {
-              http.post(
-                  Uri.parse('http://103.18.247.174:8080/AmitProject/saveToken.php'),
-                  body: {
-                    'client_id':result[0],
-                    'token': value,
-                  }).then((response) {
-                String res = json.decode(response.body);
-                if (res.contains("200")) {
-                  save('token', value);
-                  save('profile_pic', '-1');
-                  save('client_id', result[0]);
-                  save('user_id', result[1]);
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => DashBoard()));
-                  // print(">>>:"+value+":<<<");
-                  toast('Logged in successfully');
+          if (result.length > 2) {
+            if (result[2].compareTo('3') != 0) {
+              FirebaseMessaging.instance.getToken().then((value) {
+                http.post(
+                    Uri.parse(
+                        'http://103.18.247.174:8080/AmitProject/saveToken.php'),
+                    body: {
+                      'client_id': result[0],
+                      'token': value,
+                    }).then((response) {
+                  String res = json.decode(response.body);
+                  if (res.contains("200")) {
+                    save('token', value);
+                    save('profile_pic', '-1');
+                    save('client_id', result[0]);
+                    save('user_id', result[1]);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DashBoard()));
+                    // print(">>>:"+value+":<<<");
+                    toast('Logged in successfully');
+                    setState(() => loading = false);
+                  } else {
+                    toast(res);
+                    setState(() => loading = false);
+                  }
+                }).onError((error, stackTrace) {
+                  toast('Error: ' + error.message);
                   setState(() => loading = false);
-                } else {
-                  toast(res);
-                  setState(() => loading = false);
-                }
+                });
               }).onError((error, stackTrace) {
-                toast('Error: ' + error.message);
+                toast('Error getting notification token');
                 setState(() => loading = false);
               });
-            }).onError((error, stackTrace) {
-              toast('Error getting notification token');
+            } else {
+              save('profile_pic', '-1');
+              save('client_id', result[0]);
+              save('user_id', result[1]);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => DashBoard()));
+              // print(">>>:"+value+":<<<");
+              toast('Logged in successfully');
               setState(() => loading = false);
-            });
+            }
           } else {
             toast('Something wrong with the server!');
             setState(() => loading = false);

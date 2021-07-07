@@ -14,11 +14,12 @@ import 'dart:math' as math;
 
 const PrimaryColor = const Color(0xff0065a3);
 var appBar;
+
 class InactiveDeviceCard extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    appBar = CustomAppBarBack(context,"Inactive Devices");
+    appBar = CustomAppBarBack(context, "Inactive Devices");
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -47,15 +48,15 @@ class InactiveDeviceCardPage extends StatefulWidget {
 }
 
 var spanUp = WidgetSpan(
-  child: Padding(
-    padding: EdgeInsets.only(left: 2, bottom: 2),
-    child: ImageIcon(
-      AssetImage('assets/image/sortup.png'),
-      size: 12,
-      color: Colors.black,
+      child: Padding(
+        padding: EdgeInsets.only(left: 2, bottom: 2),
+        child: ImageIcon(
+          AssetImage('assets/image/sortup.png'),
+          size: 12,
+          color: Colors.black,
+        ),
+      ),
     ),
-  ),
-),
     spanDown = WidgetSpan(
       child: Padding(
         padding: EdgeInsets.only(left: 2, bottom: 2),
@@ -68,17 +69,18 @@ var spanUp = WidgetSpan(
     ),
     spanDefault = WidgetSpan(
       child: Transform.rotate(
-          angle: 90 * math.pi / 180,
-          child: Icon(
-            Icons.sync_alt,
-            size: 15,
-            color: Colors.grey,
-          )),
+        angle: 90 * math.pi / 180,
+        child: Icon(
+          Icons.sync_alt,
+          size: 15,
+          color: Colors.grey,
+        ),
+      ),
     );
 
 class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
   TextEditingController searchController = new TextEditingController();
-  bool loading = true,validate=false;
+  bool loading = true, validate = false;
 
   // ignore: deprecated_member_use
   var items = List<DeviceElement>();
@@ -135,7 +137,7 @@ class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
 //  someObjects.sort((a, b) => a.someProperty.compareTo(b.someProperty));
 
   void filterSearchResults(String query) {
-    bool resultFound=false;
+    bool resultFound = false;
     // ignore: deprecated_member_use
     var dummySearchList = List<DeviceElement>();
     dummySearchList.addAll(duplicateItems);
@@ -149,7 +151,7 @@ class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
                 .toLowerCase()
                 .contains(query.toLowerCase()) ||
             item.getLocation().toLowerCase().contains(query.toLowerCase())) {
-          resultFound=true;
+          resultFound = true;
           item.setHighLight(query);
           dummyListData.add(item);
         }
@@ -358,13 +360,13 @@ class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
 
   Future<void> getDevices() async {
     load('client_id').then((value) =>
-    value != '-1' ? sendGet(value) : toast('User was not found!'));
+        value != '-1' ? sendGet(value) : toast('User was not found!'));
   }
 
   void sendGet(String clientId) {
     http
         .get(Uri.parse(
-        'http://103.18.247.174:8080/AmitProject/getLocations.php'))
+            'http://103.18.247.174:8080/AmitProject/getLocations.php'))
         .then((value) {
       // ignore: deprecated_member_use
       List<String> id = new List<String>();

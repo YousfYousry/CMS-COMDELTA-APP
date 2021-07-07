@@ -26,12 +26,13 @@ dependencies:
   image_cropper: ^1.4.0
   image_picker: ^0.7.4
   google_maps_flutter: ^2.0.1
-  http: ^0.13.1
+  http: ^0.13.3
+  flutter_slidable: ^0.6.0
   fluttertoast: ^8.0.7
   shared_preferences: ^2.0.6
   substring_highlight: ^0.1.2
   maps_launcher: ^2.0.0
-  firebase_messaging: ^9.1.4
+  firebase_messaging: ^10.0.0
   firebase_core: ^1.2.0
   overlay_support: ^1.2.1
   flutter_local_notifications: ^5.0.0+4

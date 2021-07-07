@@ -3,11 +3,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:login_cms_comdelta/DeviceStatus.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
-import 'Widgets/DashBoardHeader.dart';
-import 'Widgets/SizeTransition.dart';
-import 'Widgets/SideDrawer.dart';
-import 'Widgets/CustomeAppBar.dart';
-import './GoogleMap.dart';
+import '../Widgets/DashBoardHeader.dart';
+import '../Widgets/SizeTransition.dart';
+import '../Widgets/Admin/SideDrawerAdmin.dart';
+import '../Widgets/CustomeAppBar.dart';
+import '../GoogleMap.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
@@ -73,7 +73,7 @@ class _DashBoardPageState extends State<DashBoard> {
           child: CustomeAppBar('Dashboard'),
           preferredSize: const Size.fromHeight(50),
         ),
-        drawer: SideDrawer(), // sidebar
+        drawer: SideDrawerAdmin(), // sidebar
         body: SingleChildScrollView(
           child: Column(
             children: [
