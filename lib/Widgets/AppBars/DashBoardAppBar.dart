@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Widgets/Center.dart';
+import 'package:login_cms_comdelta/Widgets/Position/Center.dart';
 
 // ignore: must_be_immutable
 class DashboardAppBar extends StatelessWidget {

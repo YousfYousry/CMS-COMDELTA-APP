@@ -4,11 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:login_cms_comdelta/Widgets/BottomRight.dart';
-import 'package:login_cms_comdelta/Widgets/CustomeAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/SideDrawer.dart';
+import 'package:login_cms_comdelta/Widgets/Position/BottomRight.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomeAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Widgets/ProgressBar.dart';
+import '../Widgets/ProgressBars/ProgressBar.dart';
 import 'dart:convert';
 import 'dart:io';
 

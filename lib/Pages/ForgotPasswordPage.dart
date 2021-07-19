@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import './Widgets/ForgotPasswordform.dart';
-import './Widgets/CustomeAppBar.dart';
-import './Widgets/SideDrawer.dart';
+import '../Widgets/Others/ForgotPasswordform.dart';
+import '../Widgets/AppBars/CustomeAppBar.dart';
+import '../Widgets/SideDrawers/SideDrawer.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override

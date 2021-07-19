@@ -1,4 +1,4 @@
-class ClientElement {
+class ClientJason {
   // String _id = "";
   String _clientName = "";
 
@@ -21,7 +21,7 @@ class ClientElement {
     _highLight = value;
   }
 
-  ClientElement(
+  ClientJason(
     // this._id,
     this._clientName,
     // this._clientAddress,
@@ -37,8 +37,8 @@ class ClientElement {
     // this._modifiedDate,
   );
 
-  factory ClientElement.fromJson(Map<String, dynamic> json) {
-    return ClientElement(
+  factory ClientJason.fromJson(Map<String, dynamic> json) {
+    return ClientJason(
         // json['client_id'].toString(),
         json['client_name'].toString(),
         // json['client_address'].toString(),
@@ -55,7 +55,7 @@ class ClientElement {
         );
   }
 
-  double getDoube(String str) {
+  double getDouble(String str) {
     try {
       return double.parse(str);
     } catch (e) {

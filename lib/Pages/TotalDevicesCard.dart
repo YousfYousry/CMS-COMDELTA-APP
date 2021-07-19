@@ -5,9 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'GoogleMap.dart';
-import 'Widgets/CustomAppBarWithBack.dart';
-import 'Widgets/DeviceElement.dart';
-import 'Widgets/ProgressBar.dart';
+import '../Widgets/AppBars/CustomAppBarWithBack.dart';
+import '../Widgets/Others/DeviceElement.dart';
+import '../Widgets/ProgressBars/ProgressBar.dart';
 import 'dart:math' as math;
 import 'dart:convert';
 

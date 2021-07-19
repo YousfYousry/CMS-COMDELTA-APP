@@ -4,10 +4,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'Widgets/CustomeAppBar.dart';
-import 'Widgets/CustomAppBarWithBack.dart';
-import 'Widgets/DeviceElement.dart';
-import 'Widgets/ProgressBar.dart';
-import 'Widgets/SideDrawer.dart';
+import '../Widgets/AppBars/CustomAppBarWithBack.dart';
+import '../Widgets/Others/DeviceElement.dart';
+import '../Widgets/ProgressBars/ProgressBar.dart';
+import '../Widgets/SideDrawers/SideDrawer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math' as math;
@@ -390,7 +390,7 @@ class _InactiveDeviceCard extends State<InactiveDeviceCardPage> {
         setState(() {
           loading = false;
         });
-        throw Exception("Unable to get devices list");
+        throw Exception("Unable to get locations");
       }
     }).onError((error, stackTrace) {
       setState(() {

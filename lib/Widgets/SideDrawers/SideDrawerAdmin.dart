@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Admin/AddEditClient.dart';
-import 'package:login_cms_comdelta/Admin/ManageClients.dart';
-import 'package:login_cms_comdelta/Admin/ManageDevices.dart';
-import 'package:login_cms_comdelta/Widgets/MiddleLeft.dart';
+import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
+import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
+import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
+import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../ForgotPasswordPage.dart';
-import '../../UserProfilePage.dart';
-import '../SizeTransition.dart';
-import '../../Client/DashBoard.dart';
-import '../../main.dart';
+import '../../Pages/ForgotPasswordPage.dart';
+import '../../Pages/UserProfilePage.dart';
+import '../Others/SizeTransition.dart';
+import '../../Pages/main.dart';
 
 class SideDrawerAdmin extends StatefulWidget {
   @override

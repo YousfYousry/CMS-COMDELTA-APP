@@ -4,14 +4,15 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:login_cms_comdelta/Admin/AddEditClient.dart';
-import 'package:login_cms_comdelta/Classes/clientElement.dart';
-import 'package:login_cms_comdelta/Widgets/CustomAppBarWithBack.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBar.dart';
-import 'package:login_cms_comdelta/Widgets/SizeTransition.dart';
+import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:substring_highlight/substring_highlight.dart';
+
+import 'AddEditClient.dart';
 
 // const PrimaryColor = const Color(0xff0065a3);
 
@@ -91,7 +92,7 @@ class _ManageClient extends State<ManageClient> {
             Navigator.push(context, SizeRoute(page: AddClient()));
           },
           child: const Icon(Icons.add),
-          backgroundColor: Colors.indigoAccent,
+          backgroundColor: Color(0xff0065a3),
         ),
 
         // drawer: SideDrawerAdmin(),
@@ -135,7 +136,7 @@ class _ManageClient extends State<ManageClient> {
                           child: new ListTile(
                             leading: new CircleAvatar(
                               radius: 20,
-                              backgroundColor: Colors.indigoAccent,
+                              backgroundColor: Color(0xff0065a3),
                               child: new Text(clients[index].clientName[0]),
                               foregroundColor: Colors.white,
                             ),
@@ -261,7 +262,7 @@ class _ManageClient extends State<ManageClient> {
             'http://103.18.247.174:8080/AmitProject/admin/getClients.php')) // client_id	client_name	client_address	client_contact	client_email	client_logo	stat_three	stat_two	status	CreatedBy	CreatedDate	ModifiedBy	ModifiedDate
         .then((value) {
       if (value.statusCode == 200) {
-        List<ClientElement> clients = [];
+        List<ClientJason> clients = [];
         List<dynamic> values = [];
         values = json.decode(value.body);
 
@@ -269,7 +270,7 @@ class _ManageClient extends State<ManageClient> {
           for (int i = 0; i < values.length; i++) {
             if (values[i] != null) {
               Map<String, dynamic> map = values[i];
-              clients.add(ClientElement.fromJson(map));
+              clients.add(ClientJason.fromJson(map));
             }
           }
         }
@@ -278,7 +279,7 @@ class _ManageClient extends State<ManageClient> {
         setState(() {
           loading = false;
         });
-        throw Exception("Unable to get devices list");
+        throw Exception("Unable to get Clients");
       }
     }).onError((error, stackTrace) {
       setState(() {
@@ -288,7 +289,7 @@ class _ManageClient extends State<ManageClient> {
     });
   }
 
-  void showClients(List<ClientElement> clients) {
+  void showClients(List<ClientJason> clients) {
     setState(() {
       this.duplicateClients.addAll(clients);
       this.clients.addAll(clients);

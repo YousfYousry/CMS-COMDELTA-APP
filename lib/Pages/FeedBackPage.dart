@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'Widgets/ProgressBar.dart';
-import 'Widgets/SideDrawer.dart';
-import 'Widgets/CustomeAppBar.dart';
+import '../Widgets/ProgressBars/ProgressBar.dart';
+import '../Widgets/SideDrawers/SideDrawer.dart';
+import '../Widgets/AppBars/CustomeAppBar.dart';
 
 class FeedBackPage extends StatefulWidget {
   @override

@@ -1,13 +1,15 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:login_cms_comdelta/DeviceStatus.dart';
+import 'package:login_cms_comdelta/Pages/DeviceStatus.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
-import '../Widgets/DashBoardHeader.dart';
-import '../Widgets/SizeTransition.dart';
-import '../Widgets/Admin/SideDrawerAdmin.dart';
-import '../Widgets/CustomeAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomeAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/Headers/DashBoardHeader.dart';
+import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
+import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+
 import '../GoogleMap.dart';
+
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();

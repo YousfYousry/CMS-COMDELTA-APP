@@ -1,14 +1,14 @@
-import 'package:login_cms_comdelta/Widgets/CustomAppBarWithBack.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'Widgets/Bottom.dart';
-import 'Widgets/ProgressBar.dart';
-import 'Widgets/SideDrawer.dart';
-import 'Classes/device.dart';
+import '../Widgets/Position/Bottom.dart';
+import '../Widgets/ProgressBars/ProgressBar.dart';
+import '../Widgets/SideDrawers/SideDrawer.dart';
+import '../Classes/device.dart';
 import 'dart:convert';
 
 const PrimaryColor = const Color(0xff0065a3);

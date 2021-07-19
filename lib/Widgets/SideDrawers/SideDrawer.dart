@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../ForgotPasswordPage.dart';
-import '../UserProfilePage.dart';
-import './SizeTransition.dart';
-import '../FeedBackPage.dart';
-import '../Client/DashBoard.dart';
-import '../main.dart';
+import '../../Pages/ForgotPasswordPage.dart';
+import '../../Pages/UserProfilePage.dart';
+import '../Others/SizeTransition.dart';
+import '../../Pages/FeedBackPage.dart';
+import '../../Pages/main.dart';
 
 class SideDrawer extends StatefulWidget {
   @override
