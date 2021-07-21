@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
+import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
 import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
@@ -231,7 +232,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                 body: Column(
                   children: [
                     itemChild("Manage Device", ManageDevice()),
-                    itemChild("Add Device", DashBoard()),
+                    itemChild("Add Device", AddDevice()),
                     itemChild("Failed Device", DashBoard()),
                     //
                     // ListTile(

@@ -6,12 +6,13 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
-import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'dart:math' as math;
 
-// const PrimaryColor = const Color(0xff0065a3);
+const PrimaryColor = const Color(0xff0065a3);
 
 class ManageDevice extends StatefulWidget {
   @override
@@ -55,6 +56,85 @@ class _ManageDevice extends State<ManageDevice> {
   var span1 = spanDown, span2 = spanDefault, span3 = spanDefault;
   var devices = [];
   var duplicateDevices = [];
+
+  Widget details(String title, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 5),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(
+                title,
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                value,
+                style: TextStyle(
+                    fontSize: 13, color: Colors.black.withOpacity(0.6)),
+                maxLines: 2,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget l123(String title, bool value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 5),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(title,
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.bold),),
+            ),
+            Icon(
+              Icons.lightbulb,
+              color: value ? Colors.green : Colors.red,
+              size: 20.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget status(String title, bool value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(title,
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.bold),),
+            ),
+            Icon(
+              value ? Icons.check : Icons.close,
+              color: value ? Colors.green : Colors.red,
+              size: 20.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _sort1() {
     if (span1 != spanDown) {
@@ -145,7 +225,7 @@ class _ManageDevice extends State<ManageDevice> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: CustomAppBarBack(context, "Manage Device"),
+          child: ManageDevicesAppBar(context, "Manage Device"),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -178,7 +258,7 @@ class _ManageDevice extends State<ManageDevice> {
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
-                          Radius.circular(0),
+                          Radius.circular(10),
                         ),
                       ),
                     ),
@@ -198,16 +278,17 @@ class _ManageDevice extends State<ManageDevice> {
                           height: 30,
                           color: Colors.black12,
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Expanded(
                                 flex: 1,
-                                child: new GestureDetector(
+                                child: InkWell(
                                   onTap: () {
                                     setState(() {
                                       _sort1();
                                     });
                                   },
-                                  child: Padding(
+                                  child: MiddleLeft(Padding(
                                     padding: EdgeInsets.only(left: 10),
                                     child: RichText(
                                       text: TextSpan(
@@ -221,7 +302,7 @@ class _ManageDevice extends State<ManageDevice> {
                                         ],
                                       ),
                                     ),
-                                  ),
+                                  )),
                                 ),
                               ),
                               Container(
@@ -231,13 +312,13 @@ class _ManageDevice extends State<ManageDevice> {
                               ),
                               Expanded(
                                 flex: 4,
-                                child: new GestureDetector(
+                                child: InkWell(
                                   onTap: () {
                                     setState(() {
                                       _sort2();
                                     });
                                   },
-                                  child: Padding(
+                                  child: MiddleLeft(Padding(
                                     padding: EdgeInsets.only(left: 10),
                                     child: RichText(
                                       text: TextSpan(
@@ -251,7 +332,7 @@ class _ManageDevice extends State<ManageDevice> {
                                         ],
                                       ),
                                     ),
-                                  ),
+                                  )),
                                 ),
                               ),
                               Container(
@@ -261,13 +342,13 @@ class _ManageDevice extends State<ManageDevice> {
                               ),
                               Expanded(
                                 flex: 2,
-                                child: new GestureDetector(
+                                child: InkWell(
                                   onTap: () {
                                     setState(() {
                                       _sort3();
                                     });
                                   },
-                                  child: Padding(
+                                  child: MiddleLeft(Padding(
                                     padding: EdgeInsets.only(left: 10),
                                     child: RichText(
                                       text: TextSpan(
@@ -281,7 +362,7 @@ class _ManageDevice extends State<ManageDevice> {
                                         ],
                                       ),
                                     ),
-                                  ),
+                                  )),
                                 ),
                               ),
                             ],
@@ -310,30 +391,113 @@ class _ManageDevice extends State<ManageDevice> {
                                         child: InkWell(
                                           onTap: () {
                                             AwesomeDialog(
+                                              dialogBackgroundColor:
+                                                  Color(0xfafafafa),
                                               context: context,
                                               animType: AnimType.SCALE,
                                               dialogType: DialogType.NO_HEADER,
-                                              body: Center(child: Text(
-                                                'If the body is specified, then title and description will be ignored, this allows to further customize the dialogue.',
-                                                style: TextStyle(fontStyle: FontStyle.italic),
-                                              ),),
-                                              title: 'This is Ignored',
-                                              desc:   'This is also Ignored',
-                                              btnOkOnPress: () {},
-                                            )..show();
+                                              body: Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: 15, right: 15),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    details('ID',
+                                                        devices[index].id),
+                                                    details(
+                                                        'Device Name',
+                                                        devices[index]
+                                                            .deviceName),
+                                                    details(
+                                                        'Device Detail',
+                                                        devices[index]
+                                                            .deviceDetails),
+                                                    details(
+                                                        'Height',
+                                                        devices[index]
+                                                            .deviceHeight),
+                                                    details(
+                                                        'Activation Date',
+                                                        devices[index]
+                                                            .activationDate),
+                                                    details(
+                                                        'Location',
+                                                        devices[index]
+                                                            .deviceLocation),
+                                                    details(
+                                                        'Last Signal',
+                                                        devices[index]
+                                                            .lastSignal),
+                                                    l123('L1#',
+                                                        devices[index].l1),
+                                                    l123('L2#',
+                                                        devices[index].l2),
+                                                    l123('L3#',
+                                                        devices[index].l3),
+                                                    details('Battery',
+                                                        devices[index].battery),
+                                                    details('Rssi',
+                                                        devices[index].rssi),
+                                                    status('Status',
+                                                        devices[index].status),
+                                                    ElevatedButton(
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(PrimaryColor),
+                                                        shape:
+                                                        MaterialStateProperty.all<
+                                                            RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.circular(
+                                                                30),
+                                                            side: BorderSide(
+                                                                color:
+                                                                Colors.black12),
+                                                          ),
+                                                        ),
+                                                      ),
 
-                                            // AwesomeDialog(
-                                            //   context: context,
-                                            //   dialogType: DialogType.INFO,
-                                            //   animType: AnimType.BOTTOMSLIDE,
-                                            //   title: 'Delete Device',
-                                            //   desc:
-                                            //   'Do you really want to delete ' +
-                                            //       devices[index].deviceName,
-                                            //   btnCancelOnPress: () {},
-                                            //   btnOkOnPress: () {},
-                                            // )..show();
-                                            // toast('tapped');
+                                                      onPressed: () {},
+                                                      // tooltip: 'Google maps',
+                                                      child: Center(
+                                                        child: Container(
+                                                          height: 30,
+                                                          child: Row(
+                                                            children: [
+                                                              Spacer(),
+                                                              Text(
+                                                                "Show on google maps",
+                                                                style: TextStyle(
+                                                                    fontSize: 15,
+                                                                    fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                EdgeInsets.all(5),
+                                                                child: Image(
+                                                                  image: AssetImage(
+                                                                      'assets/image/google_maps.png'),
+                                                                ),
+                                                              ),
+                                                              Spacer(),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              title: 'This is Ignored',
+                                              desc: 'This is also Ignored',
+                                            )..show();
                                           },
                                           child: Container(
                                             height: 40,

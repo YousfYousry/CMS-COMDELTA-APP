@@ -3,19 +3,16 @@ class DeviceJason {
   String _deviceName = "";
   String _deviceLocation = "";
   String _highLight = "";
-
-  // String _clientAddress = "";
-  // String _clientContact = "";
-  // String _clientEmail = "";
-  // String _clientLogo = "";
-  // String _statThree = "";
-  // String _statTwo = "";
-  // String _status = "";
-  // String _createdBy = "";
-  // String _createdDate = "";
-  // String _modifiedBy = "";
-  // String _modifiedDate = "";
-  // String _highLight = "";
+  String _deviceDetails = "";
+  String _deviceHeight = "";
+  String _activationDate = "";
+  String _lastSignal = "";
+  bool _l1 = false;
+  bool _l2 = false;
+  bool _l3 = false;
+  String _battery = "";
+  String _rssi = "";
+  bool _status = false;
 
   void setHighLight(String value) {
     _highLight = value;
@@ -25,17 +22,16 @@ class DeviceJason {
     this._id,
     this._deviceName,
     this._deviceLocation,
-    // this._clientAddress,
-    // this._clientContact,
-    // this._clientEmail,
-    // this._clientLogo,
-    // this._statThree,
-    // this._statTwo,
-    // this._status,
-    // this._createdBy,
-    // this._createdDate,
-    // this._modifiedBy,
-    // this._modifiedDate,
+    this._deviceDetails,
+      this._deviceHeight,
+      this._activationDate,
+      this._lastSignal,
+      this._l1,
+      this._l2,
+      this._l3,
+      this._battery,
+      this._rssi,
+      this._status
   );
 
   factory DeviceJason.fromJson(
@@ -44,17 +40,26 @@ class DeviceJason {
       json['device_id'].toString(),
       json['device_name'].toString(),
       deviceLocation,
-      // json['client_address'].toString(),
-      // json['client_contact'].toString(),
-      // json['client_email'].toString(),
-      // json['client_logo'].toString(),
-      // json['stat_three'].toString(),
-      // json['stat_two'].toString(),
-      // json['status'].toString(),
-      // json['CreatedBy'].toString(),
-      //   json['CreatedDate'].toString(),
-      //   json['ModifiedBy'].toString(),
-      //   json['ModifiedDate'].toString(),
+      "",
+      "",
+      "",
+      "",
+      true,
+      true,
+      true,
+      "",
+      "",
+      true,
+      // json['device_name'].toString(),
+      // json['device_name'].toString(),
+      // json['device_name'].toString(),
+      // json['device_name'].toString(),
+      // true,
+      // true,
+      // true,
+      // json['device_name'].toString(),
+      // json['device_name'].toString(),
+      // true,
     );
   }
 
@@ -73,16 +78,24 @@ class DeviceJason {
   String get deviceLocation => _deviceLocation;
 
   String get highLight => _highLight;
-// String get clientAddress => _clientAddress;
-// String get clientContact => _clientContact;
-// String get clientEmail => _clientEmail;
-// String get clientLogo => _clientLogo;
-// String get statThree => _statThree;
-// String get statTwo => _statTwo;
-// String get status => _status;
-// String get createdBy => _createdBy;
-// String get createdDate => _createdDate;
-// String get modifiedBy => _modifiedBy;
-// String get modifiedDate => _modifiedDate;
-// String get highLight => _highLight;
+
+  String get rssi => _rssi;
+
+  String get battery => _battery;
+
+  bool get l3 => _l3;
+
+  bool get l2 => _l2;
+
+  bool get l1 => _l1;
+
+  String get lastSignal => _lastSignal;
+
+  String get activationDate => _activationDate;
+
+  String get deviceHeight => _deviceHeight;
+
+  String get deviceDetails => _deviceDetails;
+
+  bool get status => _status;
 }

@@ -82,7 +82,7 @@ class _ManageClient extends State<ManageClient> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
           child: CustomAppBarBack(context, "Manage Client"),
           preferredSize: const Size.fromHeight(50),
@@ -109,14 +109,16 @@ class _ManageClient extends State<ManageClient> {
                     },
                     controller: searchController,
                     decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
                       errorText: validate ? 'No result was found' : null,
                       labelText: "Search",
                       hintText: "Search",
-                      contentPadding: EdgeInsets.all(17.0),
+                      contentPadding: EdgeInsets.all(15.0),
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
-                          Radius.circular(50),
+                          Radius.circular(10),
                         ),
                       ),
                     ),
@@ -132,7 +134,6 @@ class _ManageClient extends State<ManageClient> {
                         actionExtentRatio: 0.25,
                         child: new Container(
                           height: 80,
-                          color: Colors.white,
                           child: new ListTile(
                             leading: new CircleAvatar(
                               radius: 20,
