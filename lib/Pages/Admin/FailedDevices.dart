@@ -2,26 +2,21 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+// import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
-
-// import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
-import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/FailedDevicesAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'dart:math' as math;
 
 const PrimaryColor = const Color(0xff0065a3);
 
-class ManageDevice extends StatefulWidget {
+class FailedDevice extends StatefulWidget {
   @override
-  _ManageDevice createState() => _ManageDevice();
+  _FailedDevice createState() => _FailedDevice();
 }
 
 var spanUp = WidgetSpan(
@@ -54,7 +49,7 @@ var spanUp = WidgetSpan(
           )),
     );
 
-class _ManageDevice extends State<ManageDevice> {
+class _FailedDevice extends State<FailedDevice> {
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
 
@@ -73,7 +68,8 @@ class _ManageDevice extends State<ManageDevice> {
               width: 110,
               child: Text(
                 title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.bold),
               ),
             ),
             Flexible(
@@ -101,10 +97,9 @@ class _ManageDevice extends State<ManageDevice> {
           children: [
             Container(
               width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
+              child: Text(title,
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.bold),),
             ),
             Icon(
               Icons.lightbulb,
@@ -126,10 +121,9 @@ class _ManageDevice extends State<ManageDevice> {
           children: [
             Container(
               width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
+              child: Text(title,
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.bold),),
             ),
             Icon(
               value ? Icons.check : Icons.close,
@@ -231,7 +225,7 @@ class _ManageDevice extends State<ManageDevice> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: ManageDevicesAppBar(context, "Manage Device"),
+          child: FailedDevicesAppBar(context, "Failed Device"),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -385,10 +379,14 @@ class _ManageDevice extends State<ManageDevice> {
                             child: ListView.builder(
                               itemCount: devices.length,
                               itemBuilder: (context, index) {
-                                return Slidable(
-                                  actionPane: SlidableDrawerActionPane(),
-                                  actionExtentRatio: 0.20,
-                                  child: new Column(
+                                return
+
+                                  // Slidable(
+                                  // actionPane: SlidableDrawerActionPane(),
+                                  // actionExtentRatio: 0.20,
+                                  // child: new
+
+                                  Column(
                                     children: [
                                       Material(
                                         color: (index % 2 == 0)
@@ -452,63 +450,23 @@ class _ManageDevice extends State<ManageDevice> {
                                                     ElevatedButton(
                                                       style: ButtonStyle(
                                                         backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                (devices[
-                                                                index]
-                                                                    .lat !=
-                                                                    500 &&
-                                                                    devices[
-                                                                    index]
-                                                                        .lon !=
-                                                                        500 &&
-                                                                    devices[
-                                                                    index]
-                                                                        .deviceName
-                                                                        .isNotEmpty)
-                                                                    ? PrimaryColor
-                                                                    : Colors.grey),
-                                                        shape: MaterialStateProperty
-                                                            .all<
-                                                                RoundedRectangleBorder>(
+                                                        MaterialStateProperty.all<
+                                                            Color>(PrimaryColor),
+                                                        shape:
+                                                        MaterialStateProperty.all<
+                                                            RoundedRectangleBorder>(
                                                           RoundedRectangleBorder(
                                                             borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
+                                                            BorderRadius.circular(
+                                                                30),
                                                             side: BorderSide(
-                                                                color: Colors
-                                                                    .black12),
+                                                                color:
+                                                                Colors.black12),
                                                           ),
                                                         ),
                                                       ),
 
-                                                      onPressed: () => (devices[
-                                                                          index]
-                                                                      .lat !=
-                                                                  500 &&
-                                                              devices[
-                                                                          index]
-                                                                      .lon !=
-                                                                  500 &&
-                                                              devices[
-                                                                      index]
-                                                                  .deviceName
-                                                                  .isNotEmpty)
-                                                          ? MapsLauncher
-                                                              .launchCoordinates(
-                                                                  devices[index]
-                                                                      .lat,
-                                                                  devices[index]
-                                                                      .lon,
-                                                                  devices[index]
-                                                                      .deviceName)
-                                                          : toast(
-                                                              "Location is unavailable")
-                                                      // if (lat != 500 && lon != 500 && title.isNotEmpty) {
-                                                      //   MapsLauncher.launchCoordinates(lat, lon, title);
-                                                      // }
-                                                      ,
+                                                      onPressed: () {},
                                                       // tooltip: 'Google maps',
                                                       child: Center(
                                                         child: Container(
@@ -519,45 +477,15 @@ class _ManageDevice extends State<ManageDevice> {
                                                               Text(
                                                                 "Show on google maps",
                                                                 style: TextStyle(
-                                                                  color: (devices[
-                                                                  index]
-                                                                      .lat !=
-                                                                      500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .lon !=
-                                                                          500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .deviceName
-                                                                          .isNotEmpty)
-                                                                      ? null
-                                                                      : Colors.black54,
-                                                                    fontSize:
-                                                                        15,
+                                                                    fontSize: 15,
                                                                     fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
+                                                                    FontWeight
+                                                                        .bold),
                                                               ),
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsets
-                                                                        .all(5),
+                                                                EdgeInsets.all(5),
                                                                 child: Image(
-                                                                  color: (devices[
-                                                                  index]
-                                                                      .lat !=
-                                                                      500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .lon !=
-                                                                          500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .deviceName
-                                                                          .isNotEmpty)
-                                                                      ? null
-                                                                      : Colors.black54,
                                                                   image: AssetImage(
                                                                       'assets/image/google_maps.png'),
                                                                 ),
@@ -687,50 +615,48 @@ class _ManageDevice extends State<ManageDevice> {
                                         color: Colors.grey,
                                       ),
                                     ],
-                                  ),
-                                  actions: [
-                                    new IconSlideAction(
-                                      caption: 'Logs',
-                                      color: Color(0xffFFB61E),
-                                      icon: Icons.signal_cellular_alt,
-                                      onTap: () => toast('Logs'),
-                                    ),
-                                    new IconSlideAction(
-                                      caption: 'Download',
-                                      color: Colors.green,
-                                      icon: Icons.download,
-                                      onTap: () => toast('Downloading'),
-                                    ),
-                                  ],
-                                  secondaryActions: <Widget>[
-                                    new IconSlideAction(
-                                      caption: 'Edit',
-                                      color: Color(0xff62D0F1),
-                                      icon: Icons.edit,
-                                      onTap: () {
-                                        toast("Edit Device");
-                                      },
-                                    ),
-                                    new IconSlideAction(
-                                      caption: 'Delete',
-                                      color: Color(0xffE5343D),
-                                      icon: Icons.delete,
-                                      onTap: () {
-                                        AwesomeDialog(
-                                          context: context,
-                                          dialogType: DialogType.WARNING,
-                                          animType: AnimType.BOTTOMSLIDE,
-                                          title: 'Delete Device',
-                                          desc:
-                                              'Do you really want to delete ' +
-                                                  devices[index].deviceName,
-                                          btnCancelOnPress: () {},
-                                          btnOkOnPress: () {},
-                                        )..show();
-                                      },
-                                    ),
-                                  ],
-                                );
+                                  );
+                                //   actions: [
+                                //     new IconSlideAction(
+                                //       caption: 'Logs',
+                                //       color: Color(0xffFFB61E),
+                                //       icon: Icons.signal_cellular_alt,
+                                //       onTap: () => toast('Logs'),
+                                //     ),
+                                //     new IconSlideAction(
+                                //       caption: 'Download',
+                                //       color: Colors.green,
+                                //       icon: Icons.download,
+                                //       onTap: () => toast('Downloading'),
+                                //     ),
+                                //   ],
+                                //   secondaryActions: <Widget>[
+                                //     new IconSlideAction(
+                                //       caption: 'Edit',
+                                //       color: Color(0xff62D0F1),
+                                //       icon: Icons.edit,
+                                //       onTap: () => toast('Edit'),
+                                //     ),
+                                //     new IconSlideAction(
+                                //       caption: 'Delete',
+                                //       color: Color(0xffE5343D),
+                                //       icon: Icons.delete,
+                                //       onTap: () {
+                                //         AwesomeDialog(
+                                //           context: context,
+                                //           dialogType: DialogType.WARNING,
+                                //           animType: AnimType.BOTTOMSLIDE,
+                                //           title: 'Delete Device',
+                                //           desc:
+                                //               'Do you really want to delete ' +
+                                //                   devices[index].deviceName,
+                                //           btnCancelOnPress: () {},
+                                //           btnOkOnPress: () {},
+                                //         )..show();
+                                //       },
+                                //     ),
+                                //   ],
+                                // );
                               },
                             ),
                           ),

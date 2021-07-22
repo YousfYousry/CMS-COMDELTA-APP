@@ -1,38 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
+// import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
-import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
-
-String title = "Add Client";
+// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
 class AddClient extends StatefulWidget {
-  AddClient({title});
+  final String title;
+  final ClientJason client;
+
+  AddClient({this.title, this.client});
 
   @override
-  _AddClient createState() => _AddClient();
+  _AddClient createState() => _AddClient(title, client);
 }
 
 class _AddClient extends State<AddClient> {
   String dropdownValue = "Hidden";
   String dropdownValue2 = "Hidden";
+  TextEditingController clientName = TextEditingController();
+  TextEditingController address = TextEditingController();
+  TextEditingController contactNum = TextEditingController();
+  TextEditingController email = TextEditingController();
+  String title;
+  final ClientJason client;
+
+  _AddClient(this.title, this.client) {
+    if (this.title == null || this.title.isEmpty) {
+      this.title = "Add Client";
+    }else if (this.client != null) {
+      dropdownValue = (client.statTwo.contains("0")) ? "Shown" : "Hidden";
+      dropdownValue2 = (client.statThree.contains("0")) ? "Shown" : "Hidden";
+      clientName.text = client.clientName;
+      address.text = client.clientAddress;
+      contactNum.text = client.clientContact;
+      email.text = client.clientEmail;
+    }
+  }
+
   List<String> spinnerItems = [
     'Hidden',
     'Shown',
   ];
 
-  bool loading = !title.contains("Add");
+  // bool loading = !title.contains("Add");
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
-    void unFocus(){
+    void unFocus() {
       FocusScopeNode currentFocus = FocusScope.of(context);
-      if (!currentFocus.hasPrimaryFocus &&
-          currentFocus.focusedChild != null) {
+      if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
         FocusManager.instance.primaryFocus.unfocus();
       }
     }
+
     return GestureDetector(
       onTap: () => unFocus(),
       child: Scaffold(
@@ -43,10 +66,12 @@ class _AddClient extends State<AddClient> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context, SizeRoute(page: DashBoard()));
+
+
+
           },
           child: const Icon(Icons.save),
-          backgroundColor: Colors.indigoAccent,
+          backgroundColor: Color(0xff0065a3),
         ),
 
         // drawer: SideDrawerAdmin(),
@@ -75,7 +100,7 @@ class _AddClient extends State<AddClient> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: clientName,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
@@ -98,7 +123,7 @@ class _AddClient extends State<AddClient> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: address,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
@@ -121,7 +146,7 @@ class _AddClient extends State<AddClient> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: contactNum,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
@@ -144,7 +169,7 @@ class _AddClient extends State<AddClient> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: email,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
@@ -169,7 +194,7 @@ class _AddClient extends State<AddClient> {
                         color: Colors.white,
                         shape: RoundedRectangleBorder(
                           side:
-                          BorderSide(width: 1.0, style: BorderStyle.solid),
+                              BorderSide(width: 1.0, style: BorderStyle.solid),
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                         ),
                       ),
@@ -198,7 +223,6 @@ class _AddClient extends State<AddClient> {
                         }).toList(),
                       ),
                     ),
-
                     SizedBox(height: 20),
                     RichText(
                       text: TextSpan(

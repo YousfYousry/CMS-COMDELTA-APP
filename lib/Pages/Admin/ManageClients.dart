@@ -1,6 +1,7 @@
 // import 'dart:convert';
 import 'dart:convert';
 import 'dart:ui';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,25 +24,77 @@ class ManageClient extends StatefulWidget {
 
 class _ManageClient extends State<ManageClient> {
   TextEditingController searchController = new TextEditingController();
-  bool loading = true,validate=false;
+  bool loading = true, validate = false;
 
   var clients = [];
   var duplicateClients = [];
 
+  Widget details(String title, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 5),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                value,
+                style: TextStyle(
+                    fontSize: 13, color: Colors.black.withOpacity(0.6)),
+                maxLines: 2,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget status(String title, bool value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Icon(
+              value ? Icons.check : Icons.close,
+              color: value ? Colors.green : Colors.red,
+              size: 20.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void filterSearchResults(String query) {
-    bool resultFound=false;
+    bool resultFound = false;
     var dummySearchList = [];
     dummySearchList.addAll(duplicateClients);
     if (query.isNotEmpty) {
       var dummyListData = [];
       dummySearchList.forEach((client) {
         if (client.clientName.toLowerCase().contains(query.toLowerCase()) ||
-            client
-                .clientContact
-                .toLowerCase()
-                .contains(query.toLowerCase()) ||
+            client.clientContact.toLowerCase().contains(query.toLowerCase()) ||
             client.clientEmail.toLowerCase().contains(query.toLowerCase())) {
-          resultFound=true;
+          resultFound = true;
           client.setHighLight(query);
           dummyListData.add(client);
         }
@@ -63,6 +116,43 @@ class _ManageClient extends State<ManageClient> {
         clients.forEach((client) => client.setHighLight(''));
       });
     }
+  }
+
+  Widget dialogButton(
+      Color btnColor, String title, Widget btnIcon,{ VoidCallback onPressed} ) {
+    return Expanded(
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(btnColor),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: Colors.black12),
+            ),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Center(
+          child: Container(
+            height: 30,
+            child: Row(
+              children: [
+                Spacer(),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: btnIcon,
+                ),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                Spacer(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -129,114 +219,202 @@ class _ManageClient extends State<ManageClient> {
                     itemCount: clients.length,
                     itemBuilder: (context, index) {
                       return Slidable(
-                        // delegate: new SlidableDrawerDelegate(),
                         actionPane: SlidableDrawerActionPane(),
-                        actionExtentRatio: 0.25,
+                        actionExtentRatio: 0.17,
                         child: new Container(
                           height: 80,
-                          child: new ListTile(
-                            leading: new CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Color(0xff0065a3),
-                              child: new Text(clients[index].clientName[0]),
-                              foregroundColor: Colors.white,
-                            ),
-                            title: Padding(
-                              padding: EdgeInsets.only(top: 13),
-                              child:
-                              SubstringHighlight(
-                                text: clients[index].clientName,
-                                term: clients[index].highLight,
-                                textStyleHighlight: TextStyle(fontSize: 16,color: Colors.red, fontWeight: FontWeight.bold,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                AwesomeDialog(
+                                  dialogBackgroundColor: Color(0xfafafafa),
+                                  context: context,
+                                  animType: AnimType.SCALE,
+                                  dialogType: DialogType.NO_HEADER,
+                                  body: Padding(
+                                    padding:
+                                        EdgeInsets.only(left: 15, right: 15),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        details('ID', "devices[index].id"),
+                                        details('Device Name',
+                                            "devices[index].deviceName"),
+                                        details('Device Detail',
+                                            "devices[index].deviceDetails"),
+                                        status('Status', true),
+                                        Row(
+                                          children: [
+                                            dialogButton(
+                                                Colors.black45,
+                                                "Edit",
+                                                Icon(Icons.edit, size: 18),
+                                                onPressed:()=>editClient(clients[index])),
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            dialogButton(
+                                                Colors.red,
+                                                "Delete",
+                                                Icon(Icons.delete, size: 18),
+                                                onPressed:() {
+                                                  Navigator.pop(context);
+                                                  deleteClient(clients[index],context);
+                                                }),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  title: 'This is Ignored',
+                                  desc: 'This is also Ignored',
+                                  // btnOkColor: Colors.red,
+                                  // btnOkOnPress: (){},
+                                  // btnOkIcon: Icons.delete,
+                                  // btnOkText: "Delete",
+                                  //
+                                  // btnCancelColor: Colors.black45,
+                                  // btnCancelOnPress: (){},
+                                  // btnCancelIcon: Icons.edit,
+                                  // btnCancelText: "Edit",
+                                )..show();
+                              },
+                              child: ListTile(
+                                leading: (clients[index]
+                                            .clientLogo
+                                            .toString()
+                                            .trim()
+                                            .isNotEmpty &&
+                                        !clients[index]
+                                            .clientLogo
+                                            .toString()
+                                            .contains("null"))
+                                    ? new CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: NetworkImage(
+                                            "${clients[index].clientLogo}"),
+                                        backgroundColor: Colors.transparent,
+                                      )
+                                    : new CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: Color(0xff0065a3),
+                                        child: new Text(
+                                            clients[index].clientName[0]),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                title: Padding(
+                                  padding: EdgeInsets.only(top: 13),
+                                  child: SubstringHighlight(
+                                    text: clients[index].clientName,
+                                    term: clients[index].highLight,
+                                    textStyleHighlight: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textStyle: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+
+                                  // new Text(
+                                  //   clients[index].clientName,
+                                  //   style: TextStyle(fontWeight: FontWeight.bold),
+                                  // ),
                                 ),
-                                textStyle: TextStyle(fontSize: 16,color: Colors.black,fontWeight: FontWeight.bold),
+                                subtitle: new Column(
+                                  children: [
+                                    Visibility(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(right: 5),
+                                            child: Icon(Icons.email,
+                                                color: Colors.black54,
+                                                size: 13),
+                                          ),
+
+                                          SubstringHighlight(
+                                            text: clients[index].clientEmail,
+                                            term: clients[index].highLight,
+                                            textStyleHighlight: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textStyle: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                          // Text(clients[index].clientEmail),
+                                        ],
+                                      ),
+                                      visible: clients[index]
+                                          .clientEmail
+                                          .toString()
+                                          .isNotEmpty,
+                                    ),
+                                    Visibility(
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(right: 5),
+                                            child: Icon(Icons.phone,
+                                                color: Colors.black54,
+                                                size: 13),
+                                          ),
+
+                                          SubstringHighlight(
+                                            text: clients[index].clientContact,
+                                            term: clients[index].highLight,
+                                            textStyleHighlight: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textStyle: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                          // Text(clients[index].clientContact),
+                                        ],
+                                      ),
+                                      visible: clients[index]
+                                          .clientContact
+                                          .toString()
+                                          .isNotEmpty,
+                                    ),
+                                  ],
+                                ),
                               ),
-
-                              // new Text(
-                              //   clients[index].clientName,
-                              //   style: TextStyle(fontWeight: FontWeight.bold),
-                              // ),
-                            ),
-                            subtitle: new Column(
-                              children: [
-                                Visibility(
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 5),
-                                        child: Icon(Icons.email,
-                                            color: Colors.black54, size: 13),
-                                      ),
-
-                                      SubstringHighlight(
-                                        text: clients[index].clientEmail,
-                                        term: clients[index].highLight,
-                                        textStyleHighlight: TextStyle(fontSize: 14,color: Colors.red, fontWeight: FontWeight.bold,
-                                        ),
-                                        textStyle: TextStyle(fontSize: 14,color: Colors.black54,),
-                                      ),
-                                      // Text(clients[index].clientEmail),
-                                    ],
-                                  ),
-                                  visible: clients[index]
-                                      .clientEmail
-                                      .toString()
-                                      .isNotEmpty,
-                                ),
-                                Visibility(
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 5),
-                                        child: Icon(Icons.phone,
-                                            color: Colors.black54, size: 13),
-                                      ),
-
-                                      SubstringHighlight(
-                                        text: clients[index].clientContact,
-                                        term: clients[index].highLight,
-                                        textStyleHighlight: TextStyle(fontSize: 14,color: Colors.red, fontWeight: FontWeight.bold,
-                                        ),
-                                        textStyle: TextStyle(fontSize: 14,color: Colors.black54,),
-                                      ),
-                                      // Text(clients[index].clientContact),
-                                    ],
-                                  ),
-                                  visible: clients[index]
-                                      .clientContact
-                                      .toString()
-                                      .isNotEmpty,
-                                ),
-                              ],
                             ),
                           ),
                         ),
-                        // actions: <Widget>[
-                        //   new IconSlideAction(
-                        //     caption: 'Archive',
-                        //     color: Colors.blue,
-                        //     icon: Icons.archive,
-                        //     onTap: () => toast('Archive'),
-                        //   ),
-                        //   new IconSlideAction(
-                        //     caption: 'Share',
-                        //     color: Colors.indigo,
-                        //     icon: Icons.share,
-                        //     onTap: () => toast('Share'),
-                        //   ),
-                        // ],
                         secondaryActions: <Widget>[
-                          new IconSlideAction(
-                            caption: 'Edit',
-                            color: Colors.black45,
-                            icon: Icons.edit,
-                            onTap: () => toast('More'),
+                          Padding(
+                            padding: EdgeInsets.only(top: 12, bottom: 12),
+                            child: IconSlideAction(
+                              caption: 'Edit',
+                              color: Colors.black45,
+                              icon: Icons.edit,
+                              onTap: () =>editClient(clients[index]),
+                            ),
                           ),
-                          new IconSlideAction(
-                            caption: 'Delete',
-                            color: Colors.red,
-                            icon: Icons.delete,
-                            onTap: () => toast('Delete'),
+                          Padding(
+                            padding: EdgeInsets.only(top: 12, bottom: 12),
+                            child: IconSlideAction(
+                              caption: 'Delete',
+                              color: Colors.red,
+                              icon: Icons.delete,
+                              onTap: () => deleteClient(clients[index],context),
+                            ),
                           ),
                         ],
                       );
@@ -255,6 +433,36 @@ class _ManageClient extends State<ManageClient> {
         ),
       ),
     );
+  }
+
+  void editClient(ClientJason client){
+      Navigator.push(
+        context,
+        SizeRoute(
+          page: AddClient(
+              title: "Edit Client",
+              client: client),
+        ),
+      );
+  }
+
+  void deleteClient(ClientJason client,context){
+    AwesomeDialog(
+      context: context,
+      dialogBackgroundColor: Color(0xfafafafa),
+      dialogType: DialogType.WARNING,
+      animType: AnimType.BOTTOMSLIDE,
+      title: 'Delete Client',
+      desc: 'Do you really want to delete ' +
+          client.clientName,
+      btnCancelColor: Colors.green,
+      btnOkColor: Colors.red,
+      btnOkIcon: Icons.delete,
+      btnCancelIcon: Icons.cancel,
+      btnOkText: "Delete",
+      btnCancelOnPress: () {},
+      btnOkOnPress: () {},
+    )..show();
   }
 
   void getClients() {

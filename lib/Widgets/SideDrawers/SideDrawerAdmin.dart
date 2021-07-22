@@ -6,6 +6,7 @@ import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
+import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
 import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -233,7 +234,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   children: [
                     itemChild("Manage Device", ManageDevice()),
                     itemChild("Add Device", AddDevice()),
-                    itemChild("Failed Device", DashBoard()),
+                    itemChild("Failed Device", FailedDevice()),
                     //
                     // ListTile(
                     //   title: Text('                Manage Device'),

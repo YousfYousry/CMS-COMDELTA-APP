@@ -13,16 +13,18 @@ class DeviceJason {
   String _battery = "";
   String _rssi = "";
   bool _status = false;
+  double _lat = 500;
+  double _lon = 500;
 
   void setHighLight(String value) {
     _highLight = value;
   }
 
   DeviceJason(
-    this._id,
-    this._deviceName,
-    this._deviceLocation,
-    this._deviceDetails,
+      this._id,
+      this._deviceName,
+      this._deviceLocation,
+      this._deviceDetails,
       this._deviceHeight,
       this._activationDate,
       this._lastSignal,
@@ -31,44 +33,39 @@ class DeviceJason {
       this._l3,
       this._battery,
       this._rssi,
-      this._status
-  );
+      this._status,
+      this._lat,
+      this._lon);
 
   factory DeviceJason.fromJson(
       Map<String, dynamic> json, String deviceLocation) {
+    double getDouble(String str) {
+      try {
+        return double.parse(str);
+      } catch (e) {
+        return 500;
+      }
+    }
     return DeviceJason(
       json['device_id'].toString(),
       json['device_name'].toString(),
       deviceLocation,
+      json['device_detail'].toString(),
+      ((json['device_height'].toString().contains("0")) ? "Below" : "Above") +
+          " 45m",
+      json['device_activation'].toString(),
+      json['LatestUpdateDate'].toString(),
+      false,
+      false,
+      false,
       "",
       "",
-      "",
-      "",
-      true,
-      true,
-      true,
-      "",
-      "",
-      true,
       // json['device_name'].toString(),
       // json['device_name'].toString(),
-      // json['device_name'].toString(),
-      // json['device_name'].toString(),
-      // true,
-      // true,
-      // true,
-      // json['device_name'].toString(),
-      // json['device_name'].toString(),
-      // true,
+      (json['status'].toString().contains("1")),
+      getDouble(json['device_longitud'].toString()),
+      getDouble(json['device_latitud'].toString()),
     );
-  }
-
-  double getDouble(String str) {
-    try {
-      return double.parse(str);
-    } catch (e) {
-      return 500;
-    }
   }
 
   String get id => _id;
@@ -98,4 +95,8 @@ class DeviceJason {
   String get deviceDetails => _deviceDetails;
 
   bool get status => _status;
+
+  double get lon => _lon;
+
+  double get lat => _lat;
 }

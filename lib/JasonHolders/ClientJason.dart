@@ -1,14 +1,14 @@
 class ClientJason {
-  // String _id = "";
+  String _id = "";
   String _clientName = "";
 
-  // String _clientAddress = "";
+  String _clientAddress = "";
   String _clientContact = "";
   String _clientEmail = "";
 
-  // String _clientLogo = "";
-  // String _statThree = "";
-  // String _statTwo = "";
+  String _clientLogo = "";
+  String _statThree = "";
+  String _statTwo = "";
   String _status = "";
 
   // String _createdBy = "";
@@ -22,14 +22,14 @@ class ClientJason {
   }
 
   ClientJason(
-    // this._id,
+    this._id,
     this._clientName,
-    // this._clientAddress,
+    this._clientAddress,
     this._clientContact,
     this._clientEmail,
-    // this._clientLogo,
-    // this._statThree,
-    // this._statTwo,
+    this._clientLogo,
+    this._statThree,
+    this._statTwo,
     this._status,
     // this._createdBy,
     // this._createdDate,
@@ -39,14 +39,14 @@ class ClientJason {
 
   factory ClientJason.fromJson(Map<String, dynamic> json) {
     return ClientJason(
-        // json['client_id'].toString(),
+        json['client_id'].toString(),
         json['client_name'].toString(),
-        // json['client_address'].toString(),
+        json['client_address'].toString(),
         json['client_contact'].toString(),
         json['client_email'].toString(),
-        // json['client_logo'].toString(),
-        // json['stat_three'].toString(),
-        // json['stat_two'].toString(),
+        json['client_logo'].toString(),
+        json['stat_three'].toString(),
+        json['stat_two'].toString(),
         json['status'].toString(),
         // json['CreatedBy'].toString(),
         //   json['CreatedDate'].toString(),
@@ -63,17 +63,17 @@ class ClientJason {
     }
   }
 
-  // String get id => _id;
+  String get id => _id;
   String get clientName => _clientName;
 
-  // String get clientAddress => _clientAddress;
+  String get clientAddress => _clientAddress;
   String get clientContact => _clientContact;
 
   String get clientEmail => _clientEmail;
 
-  // String get clientLogo => _clientLogo;
-  // String get statThree => _statThree;
-  // String get statTwo => _statTwo;
+  String get clientLogo => _clientLogo;
+  String get statThree => _statThree;
+  String get statTwo => _statTwo;
   String get status => _status;
 
   // String get createdBy => _createdBy;
