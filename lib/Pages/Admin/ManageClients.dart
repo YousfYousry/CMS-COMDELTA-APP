@@ -118,8 +118,8 @@ class _ManageClient extends State<ManageClient> {
     }
   }
 
-  Widget dialogButton(
-      Color btnColor, String title, Widget btnIcon,{ VoidCallback onPressed} ) {
+  Widget dialogButton(Color btnColor, String title, Widget btnIcon,
+      {VoidCallback onPressed}) {
     return Expanded(
       child: ElevatedButton(
         style: ButtonStyle(
@@ -241,30 +241,59 @@ class _ManageClient extends State<ManageClient> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        details('ID', "devices[index].id"),
-                                        details('Device Name',
-                                            "devices[index].deviceName"),
-                                        details('Device Detail',
-                                            "devices[index].deviceDetails"),
-                                        status('Status', true),
+                                        details('ID', clients[index].id),
+                                        details('Client Name',
+                                            clients[index].clientName),
+                                        details('Contact No',
+                                            clients[index].clientContact),
+                                        details('Email',
+                                            clients[index].clientEmail),
+                                        details('Created By',
+                                            clients[index].createdBy),
+                                        details('Created Date',
+                                            clients[index].createdDate),
+                                        details('Modified By',
+                                            clients[index].modifiedBy),
+                                        details('Modified Date',
+                                            clients[index].modifiedDate),
+                                        details(
+                                            'Active Device',
+                                            (clients[index]
+                                                    .statTwo
+                                                    .toString()
+                                                    .contains("1"))
+                                                ? "Hidden"
+                                                : "Shown"),
+                                        details(
+                                            'Inactive Device',
+                                            (clients[index]
+                                                    .statThree
+                                                    .toString()
+                                                    .contains("1"))
+                                                ? "Hidden"
+                                                : "Shown"),
+                                        status('Status', clients[index]
+                                            .status
+                                            .toString()
+                                            .contains("1")),
                                         Row(
                                           children: [
-                                            dialogButton(
-                                                Colors.black45,
-                                                "Edit",
+                                            dialogButton(Colors.black45, "Edit",
                                                 Icon(Icons.edit, size: 18),
-                                                onPressed:()=>editClient(clients[index])),
+                                                onPressed: () {
+                                              Navigator.pop(context);
+                                              editClient(clients[index]);
+                                            }),
                                             SizedBox(
                                               width: 15,
                                             ),
-                                            dialogButton(
-                                                Colors.red,
-                                                "Delete",
+                                            dialogButton(Colors.red, "Delete",
                                                 Icon(Icons.delete, size: 18),
-                                                onPressed:() {
-                                                  Navigator.pop(context);
-                                                  deleteClient(clients[index],context);
-                                                }),
+                                                onPressed: () {
+                                              Navigator.pop(context);
+                                              deleteClient(
+                                                  clients[index], context);
+                                            }),
                                           ],
                                         ),
                                       ],
@@ -404,7 +433,7 @@ class _ManageClient extends State<ManageClient> {
                               caption: 'Edit',
                               color: Colors.black45,
                               icon: Icons.edit,
-                              onTap: () =>editClient(clients[index]),
+                              onTap: () => editClient(clients[index]),
                             ),
                           ),
                           Padding(
@@ -413,7 +442,8 @@ class _ManageClient extends State<ManageClient> {
                               caption: 'Delete',
                               color: Colors.red,
                               icon: Icons.delete,
-                              onTap: () => deleteClient(clients[index],context),
+                              onTap: () =>
+                                  deleteClient(clients[index], context),
                             ),
                           ),
                         ],
@@ -435,26 +465,23 @@ class _ManageClient extends State<ManageClient> {
     );
   }
 
-  void editClient(ClientJason client){
-      Navigator.push(
-        context,
-        SizeRoute(
-          page: AddClient(
-              title: "Edit Client",
-              client: client),
-        ),
-      );
+  void editClient(ClientJason client) {
+    Navigator.push(
+      context,
+      SizeRoute(
+        page: AddClient(title: "Edit Client", client: client),
+      ),
+    );
   }
 
-  void deleteClient(ClientJason client,context){
+  void deleteClient(ClientJason client, context) {
     AwesomeDialog(
       context: context,
       dialogBackgroundColor: Color(0xfafafafa),
       dialogType: DialogType.WARNING,
       animType: AnimType.BOTTOMSLIDE,
       title: 'Delete Client',
-      desc: 'Do you really want to delete ' +
-          client.clientName,
+      desc: 'Do you really want to delete ' + client.clientName,
       btnCancelColor: Colors.green,
       btnOkColor: Colors.red,
       btnOkIcon: Icons.delete,

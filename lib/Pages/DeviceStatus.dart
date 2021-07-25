@@ -5,6 +5,7 @@ import 'package:login_cms_comdelta/Pages/ActiveDeviceCard.dart';
 import 'package:login_cms_comdelta/Pages/InactiveDeviceCard.dart';
 import 'package:login_cms_comdelta/Pages/TotalDevicesCard.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomeAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/Functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Widgets/Others/FloatingButtonDashBoard.dart';
 import '../Widgets/ProgressBars/ProgressBar.dart';

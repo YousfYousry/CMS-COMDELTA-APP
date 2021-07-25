@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
+import 'package:login_cms_comdelta/Pages/TotalDevicesCard.dart';
+import 'package:http/http.dart' as http;
+
 // import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/functions.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 // import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
 class AddClient extends StatefulWidget {
@@ -17,6 +23,8 @@ class AddClient extends StatefulWidget {
 }
 
 class _AddClient extends State<AddClient> {
+  bool validate = false;
+  Snack saveSnack;
   String dropdownValue = "Hidden";
   String dropdownValue2 = "Hidden";
   TextEditingController clientName = TextEditingController();
@@ -29,7 +37,7 @@ class _AddClient extends State<AddClient> {
   _AddClient(this.title, this.client) {
     if (this.title == null || this.title.isEmpty) {
       this.title = "Add Client";
-    }else if (this.client != null) {
+    } else if (this.client != null) {
       dropdownValue = (client.statTwo.contains("0")) ? "Shown" : "Hidden";
       dropdownValue2 = (client.statThree.contains("0")) ? "Shown" : "Hidden";
       clientName.text = client.clientName;
@@ -49,6 +57,8 @@ class _AddClient extends State<AddClient> {
 
   @override
   Widget build(BuildContext context) {
+    saveSnack = new Snack(context, "Saving...");
+
     void unFocus() {
       FocusScopeNode currentFocus = FocusScope.of(context);
       if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
@@ -65,11 +75,7 @@ class _AddClient extends State<AddClient> {
           preferredSize: const Size.fromHeight(50),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-
-
-
-          },
+          onPressed: () => save(),
           child: const Icon(Icons.save),
           backgroundColor: Color(0xff0065a3),
         ),
@@ -101,9 +107,17 @@ class _AddClient extends State<AddClient> {
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
                       controller: clientName,
+                      onChanged: (text) {
+                        if (validate && text.isNotEmpty) {
+                          setState(() {
+                            validate = false;
+                          });
+                        }
+                      },
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
+                        errorText: validate ? "Client Name is required" : null,
                         hintText: 'Client Name',
                         contentPadding: EdgeInsets.all(15),
                         border: OutlineInputBorder(
@@ -266,6 +280,7 @@ class _AddClient extends State<AddClient> {
                         }).toList(),
                       ),
                     ),
+                    SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -282,11 +297,53 @@ class _AddClient extends State<AddClient> {
     );
   }
 
-  void toast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1);
+  void save() {
+    //check if name is written
+    //done then from server check if no name is found
+
+    if (clientName.text.isNotEmpty) {
+      saveSnack.show();
+      load('user_id').then((value) =>
+      value != '-1' ? postReq(value) : toast('User was not found!'));
+
+
+    } else {
+      setState(() {
+        validate = true;
+      });
+    }
+  }
+
+  void postReq(String userId){
+    http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/saveClient.php'),
+        body: {
+
+          'add_edit': this.title.toLowerCase().contains("add")?"add":"edit",
+          'client_name': clientName.text,
+          'address': address.text,
+          'contact_no': contactNum.text,
+    'email': email.text,
+    'active': dropdownValue.toLowerCase().contains("hidden")?"1":"0",
+    'inactive': dropdownValue2.toLowerCase().contains("hidden")?"1":"0",
+    'user_id': userId,
+
+        }).then((response) {
+      if (response.statusCode == 200) {
+        if (json.decode(response.body) == '0') {
+          toast("User has been added successfully");
+        } else {
+          toast(json.decode(response.body));
+        }
+        saveSnack.hide();
+      } else {
+        toast('Something wrong with the server!');
+        saveSnack.hide();
+      }
+    }).onError((error, stackTrace) {
+      toast('Error: ' + error.message);
+      saveSnack.hide();
+    });
   }
 }
