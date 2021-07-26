@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
-import 'package:login_cms_comdelta/Pages/TotalDevicesCard.dart';
 import 'package:http/http.dart' as http;
 
 // import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
@@ -23,6 +22,7 @@ class AddClient extends StatefulWidget {
 }
 
 class _AddClient extends State<AddClient> {
+  String validateText = "";
   bool validate = false;
   Snack saveSnack;
   String dropdownValue = "Hidden";
@@ -57,7 +57,7 @@ class _AddClient extends State<AddClient> {
 
   @override
   Widget build(BuildContext context) {
-    saveSnack = new Snack(context, "Saving...");
+    saveSnack = new Snack(context, "Saving...", 100);
 
     void unFocus() {
       FocusScopeNode currentFocus = FocusScope.of(context);
@@ -117,7 +117,7 @@ class _AddClient extends State<AddClient> {
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
-                        errorText: validate ? "Client Name is required" : null,
+                        errorText: validate ? validateText : null,
                         hintText: 'Client Name',
                         contentPadding: EdgeInsets.all(15),
                         border: OutlineInputBorder(
@@ -304,41 +304,55 @@ class _AddClient extends State<AddClient> {
     if (clientName.text.isNotEmpty) {
       saveSnack.show();
       load('user_id').then((value) =>
-      value != '-1' ? postReq(value) : toast('User was not found!'));
-
-
+          value != '-1' ? postReq(value) : toast('User was not found!'));
     } else {
       setState(() {
+        validateText = "Client Name is required";
         validate = true;
       });
     }
   }
 
-  void postReq(String userId){
+  void postReq(String userId) {
     http.post(
         Uri.parse(
             'http://103.18.247.174:8080/AmitProject/admin/saveClient.php'),
         body: {
-
-          'add_edit': this.title.toLowerCase().contains("add")?"add":"edit",
+          'add_edit': this.title.toLowerCase().contains("add") ? "add" : "edit",
           'client_name': clientName.text,
           'address': address.text,
           'contact_no': contactNum.text,
-    'email': email.text,
-    'active': dropdownValue.toLowerCase().contains("hidden")?"1":"0",
-    'inactive': dropdownValue2.toLowerCase().contains("hidden")?"1":"0",
-    'user_id': userId,
-
+          'email': email.text,
+          'active': dropdownValue.toLowerCase().contains("hidden") ? "1" : "0",
+          'inactive':
+              dropdownValue2.toLowerCase().contains("hidden") ? "1" : "0",
+          'user_id': userId,
         }).then((response) {
       if (response.statusCode == 200) {
-        if (json.decode(response.body) == '0') {
-          toast("User has been added successfully");
-        } else {
-          toast(json.decode(response.body));
+        String body = json.decode(response.body);
+        if (body == '0') {
+          toast("Client has been added successfully");
+          Navigator.pop(this.context);
+        } else if (body == '1') {
+          // toast("Client Name already exist!");
+          setState(() {
+            validateText = "Client Name already exist!";
+            validate = true;
+          });
+        } else if (body == '2') {
+          toast("Your email doesn't exist on the sever!");
+        } else if (body == '3') {
+          toast("Client was not found to edit!");
+        } else if (body == '10') {
+          toast("Client has been modified successfully");
+          Navigator.pop(this.context);
+        }else {
+          toast("Something wrong with the server");
+          print(body);
         }
         saveSnack.hide();
       } else {
-        toast('Something wrong with the server!');
+        print(response.body);
         saveSnack.hide();
       }
     }).onError((error, stackTrace) {

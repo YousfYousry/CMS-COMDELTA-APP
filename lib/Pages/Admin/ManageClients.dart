@@ -9,6 +9,7 @@ import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:substring_highlight/substring_highlight.dart';
@@ -22,13 +23,13 @@ class ManageClient extends StatefulWidget {
   _ManageClient createState() => _ManageClient();
 }
 
-class _ManageClient extends State<ManageClient> {
+class _ManageClient extends State<ManageClient> with WidgetsBindingObserver{
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
 
   var clients = [];
   var duplicateClients = [];
-
+  Snack deleteSnack;
   Widget details(String title, String value) {
     return Padding(
       padding: EdgeInsets.only(bottom: 5),
@@ -158,11 +159,28 @@ class _ManageClient extends State<ManageClient> {
   @override
   void initState() {
     getClients();
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getClients();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    deleteSnack = new Snack(this.context, "Deleting...", 100);
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -179,7 +197,7 @@ class _ManageClient extends State<ManageClient> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context, SizeRoute(page: AddClient()));
+            Navigator.push(context, SizeRoute(page: AddClient())).then((value) => getClients());
           },
           child: const Icon(Icons.add),
           backgroundColor: Color(0xff0065a3),
@@ -244,6 +262,8 @@ class _ManageClient extends State<ManageClient> {
                                         details('ID', clients[index].id),
                                         details('Client Name',
                                             clients[index].clientName),
+                                        details('Address',
+                                            clients[index].clientAddress),
                                         details('Contact No',
                                             clients[index].clientContact),
                                         details('Email',
@@ -471,7 +491,7 @@ class _ManageClient extends State<ManageClient> {
       SizeRoute(
         page: AddClient(title: "Edit Client", client: client),
       ),
-    );
+    ).then((value) => getClients());
   }
 
   void deleteClient(ClientJason client, context) {
@@ -488,8 +508,39 @@ class _ManageClient extends State<ManageClient> {
       btnCancelIcon: Icons.cancel,
       btnOkText: "Delete",
       btnCancelOnPress: () {},
-      btnOkOnPress: () {},
+      btnOkOnPress: () {
+        deleteSnack.show();
+        sendDeleteReq(client.clientName);
+      },
     )..show();
+  }
+  void sendDeleteReq(String clientName){
+    http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/deleteClient.php'),
+        body: {
+          'client_name': clientName,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        String body = json.decode(response.body);
+        if (body == '0') {
+          toast("Client has been deleted successfully");
+          getClients();
+        } else {
+          toast("Something wrong with the server");
+          print(body);
+        }
+      } else {
+        toast("Something wrong with the server");
+        print(response.body);
+      }
+      deleteSnack.hide();
+      getClients();
+    }).onError((error, stackTrace) {
+      deleteSnack.hide();
+      getClients();
+      toast('Error: ' + error.message);
+    });
   }
 
   void getClients() {
@@ -527,6 +578,8 @@ class _ManageClient extends State<ManageClient> {
 
   void showClients(List<ClientJason> clients) {
     setState(() {
+      this.duplicateClients.clear();
+      this.clients.clear();
       this.duplicateClients.addAll(clients);
       this.clients.addAll(clients);
       loading = false;
