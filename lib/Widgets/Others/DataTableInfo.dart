@@ -13,7 +13,7 @@ class DataTableInfo extends StatelessWidget {
           columnWidths: {
             0: FixedColumnWidth(50),
             1: FixedColumnWidth(50),
-            2: FixedColumnWidth(50)
+            2: FixedColumnWidth(50),
           },
           children: [
             TableRow(

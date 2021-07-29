@@ -1,9 +1,17 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Others/smartSelect.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+
+import '../../Choices.dart';
+// import 'package:smart_select/smart_select.dart';
 
 String title = "Add Device";
 
@@ -15,21 +23,15 @@ class AddDevice extends StatefulWidget {
 }
 
 class _AddDevice extends State<AddDevice> {
-  String clientValue = "Hidden";
-  String locationValue = "Hidden";
-  String heightValue = "Hidden";
-  List<String> clientItems = [
-    'Hidden',
-    'Shown',
-  ];
-  List<String> locationItems = [
-    'Hidden',
-    'Shown',
-  ];
-  List<String> heightItems = [
-    'Hidden',
-    'Shown',
-  ];
+  String clientValue = "Select option";
+  String locationValue = "Select option";
+  String heightValue = "Above 45m";
+  String siteRegionValue = "Select option";
+  String simProvider = "Select option";
+  String batteryStatus= "Inactive";
+  String rSSIStatus = "Inactive";
+  DateTime currentDate = DateTime.now();
+
 
   bool loading = !title.contains("Add");
 
@@ -54,7 +56,7 @@ class _AddDevice extends State<AddDevice> {
             Navigator.push(context, SizeRoute(page: DashBoard()));
           },
           child: const Icon(Icons.save),
-          backgroundColor: Colors.indigoAccent,
+          backgroundColor: Color(0xff0065a3),
         ),
 
         // drawer: SideDrawerAdmin(),
@@ -79,41 +81,7 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          side:
-                          BorderSide(width: 1.0, style: BorderStyle.solid,color: Colors.grey),
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                      ),
-                      child: DropdownButton<String>(
-                        value: clientValue,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                        underline: Container(
-                          height: 0,
-                          color: Colors.transparent,
-                        ),
-                        onChanged: (String data) {
-                          setState(() {
-                            clientValue = data;
-                          });
-                        },
-                        items: clientItems
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                    ModalFilter(clientValue, "Client", client,(val)=>clientValue=val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -129,41 +97,7 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          side:
-                          BorderSide(width: 1.0, style: BorderStyle.solid,color: Colors.grey),
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                      ),
-                      child: DropdownButton<String>(
-                        value: locationValue,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                        underline: Container(
-                          height: 0,
-                          color: Colors.transparent,
-                        ),
-                        onChanged: (String data) {
-                          setState(() {
-                            locationValue = data;
-                          });
-                        },
-                        items: locationItems
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                    ModalFilter(locationValue, "Location", location,(val)=>locationValue=val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -188,7 +122,7 @@ class _AddDevice extends State<AddDevice> {
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Device Name',
-                        contentPadding: EdgeInsets.all(15),
+                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -212,7 +146,7 @@ class _AddDevice extends State<AddDevice> {
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Device Detail',
-                        contentPadding: EdgeInsets.all(15),
+                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -222,7 +156,7 @@ class _AddDevice extends State<AddDevice> {
 
                     RichText(
                       text: TextSpan(
-                        text: 'Latitud',
+                        text: 'Latitude',
                         style: TextStyle(fontSize: 16.0, color: Colors.black),
                       ),
                     ),
@@ -235,8 +169,8 @@ class _AddDevice extends State<AddDevice> {
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: 'Latitud',
-                        contentPadding: EdgeInsets.all(15),
+                        hintText: 'Latitude',
+                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -246,7 +180,7 @@ class _AddDevice extends State<AddDevice> {
 
                     RichText(
                       text: TextSpan(
-                        text: 'Longitud',
+                        text: 'Longitude',
                         style: TextStyle(fontSize: 16.0, color: Colors.black),
                       ),
                     ),
@@ -259,8 +193,8 @@ class _AddDevice extends State<AddDevice> {
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: 'Longitud',
-                        contentPadding: EdgeInsets.all(15),
+                        hintText: 'Longitude',
+                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -281,44 +215,178 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          side:
-                          BorderSide(width: 1.0, style: BorderStyle.solid,color: Colors.grey),
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
+                    ModalFilter(heightValue, "Height", height,(val)=>heightValue=val),
+                    SizedBox(height: 20),
+
+                    RichText(
+                      text: TextSpan(
+                        text: 'Activation Date',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
                       ),
-                      child: DropdownButton<String>(
-                        value: heightValue,
-                        isExpanded: true,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: TextStyle(color: Colors.black, fontSize: 14),
-                        underline: Container(
-                          height: 0,
-                          color: Colors.transparent,
+                    ),
+                    SizedBox(height: 5),
+                    Material(
+                      color: Colors.white,
+                      child: InkWell(
+                        customBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        onChanged: (String data) {
-                          setState(() {
-                            heightValue = data;
-                          });
-                        },
-                        items: heightItems
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
+                        onTap: () => _selectDate(context),
+                        child: TextField(
+                          enabled: false,
+                          decoration: InputDecoration(
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            hintText: 'Activation Date',
+                            hintStyle:
+                                TextStyle(color: Colors.black54, fontSize: 16),
+                            contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(height: 20),
 
+                    RichText(
+                      text: TextSpan(
+                        text: 'Site Region',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    ModalFilter(siteRegionValue, "Site Region", siteRegion,(val)=>siteRegionValue=val),
+                    SizedBox(height: 20),
 
+                    RichText(
+                      text: TextSpan(
+                        text: 'Client Batch Number',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    TextField(
+                      // The validator receives the text that the user has entered.
+                      autofillHints: [AutofillHints.name],
+                      keyboardType: TextInputType.text,
+                      // controller: firstName,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Client Batch Number',
+                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    RichText(
+                      text: TextSpan(
+                        text: 'Sim serial Number',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    TextField(
+                      // The validator receives the text that the user has entered.
+                      autofillHints: [AutofillHints.name],
+                      keyboardType: TextInputType.text,
+                      // controller: firstName,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Sim serial Number',
+                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    RichText(
+                      text: TextSpan(
+                        text: 'Site Region',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    ModalFilter(simProvider, "Sim Provider", simCardProvider,(val)=>simProvider=val),
+                    SizedBox(height: 20),
+
+                    RichText(
+                      text: TextSpan(
+                        text: 'Battery Status',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    ModalFilter(batteryStatus, "Battery Status", status,(val)=>batteryStatus=val),
+                    SizedBox(height: 20),
+
+
+                    RichText(
+                      text: TextSpan(
+                        text: 'RSSI Status',
+                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    ModalFilter(rSSIStatus, "RSSI Status", status,(val)=>rSSIStatus=val),
+                    SizedBox(height: 20),
+
+                    // Material(
+                    //   color: Colors.white,
+                    //   child: InkWell(
+                    //     customBorder: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(10.0),
+                    //     ),
+                    //     //
+                    //     child: Container(
+                    //       // padding: EdgeInsets.symmetric(vertical: 10.0),
+                    //       decoration: ShapeDecoration(
+                    //         shape: RoundedRectangleBorder(
+                    //           side: BorderSide(
+                    //               width: 1.0,
+                    //               style: BorderStyle.solid,
+                    //               color: Colors.grey),
+                    //           borderRadius:
+                    //               BorderRadius.all(Radius.circular(10.0)),
+                    //         ),
+                    //       ),
+                    //       child: SmartSelect<String>.single(
+                    //         title: value,
+                    //         value: value,
+                    //         onChange: (state) =>
+                    //             setState(() => value = state.value),
+                    //         choiceItems: options,
+                    //         modalTitle: "Site Region",
+                    //         modalConfirm: false,
+                    //         modalType: S2ModalType.popupDialog,
+                    //         modalConfig: S2ModalConfig(
+                    //           style: S2ModalStyle(
+                    //             shape: RoundedRectangleBorder(
+                    //               borderRadius:
+                    //                   BorderRadius.all(Radius.circular(10.0)),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //         choiceGrouped: false,
+                    //         modalFilter: true,
+                    //         modalFilterAuto: true,
+                    //         tileBuilder: (context, state) {
+                    //           return S2Tile.fromState(
+                    //             state,
+                    //             hideValue: true,
+                    //           );
+                    //         },
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    SizedBox(height: 200),
                   ],
                 ),
               ),
@@ -335,11 +403,16 @@ class _AddDevice extends State<AddDevice> {
     );
   }
 
-  void toast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1);
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime pickedDate = await showDatePicker(
+        context: context,
+        initialDate: currentDate,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2050));
+    if (pickedDate != null && pickedDate != currentDate)
+      setState(() {
+        currentDate = pickedDate;
+        // toast(currentDate.toString());
+      });
   }
 }

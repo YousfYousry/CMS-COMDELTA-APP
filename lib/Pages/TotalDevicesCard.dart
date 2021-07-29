@@ -1,5 +1,5 @@
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/Functions.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';

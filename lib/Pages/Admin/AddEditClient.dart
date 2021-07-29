@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 // import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/functions.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 // import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
