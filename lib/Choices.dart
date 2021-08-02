@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:smart_select/smart_select.dart';
 
 List<S2Choice<String>> client = [
@@ -10,8 +11,11 @@ List<S2Choice<String>> client = [
   S2Choice<String>(value: 'Red One', title: 'Red One'),
   S2Choice<String>(value: 'xenox', title: 'xenox'),
   S2Choice<String>(value: 'sampugita', title: 'sampugita'),
-  S2Choice<String>(value: 'Research & Development Department', title: 'Research & Development Department'),
-  S2Choice<String>(value: 'Comdelta Technologies', title: 'Comdelta Technologies'),
+  S2Choice<String>(
+      value: 'Research & Development Department',
+      title: 'Research & Development Department'),
+  S2Choice<String>(
+      value: 'Comdelta Technologies', title: 'Comdelta Technologies'),
   S2Choice<String>(value: 'Test Log', title: 'Test Log'),
   S2Choice<String>(value: 'YTL', title: 'YTL'),
   S2Choice<String>(value: 'Telekom', title: 'Telekom'),
@@ -61,4 +65,15 @@ List<S2Choice<String>> status = [
   S2Choice<String>(value: 'Inactive', title: 'Inactive'),
 ];
 
-
+Map<int, Color> customColors = {
+  50: Color.fromRGBO(136, 14, 79, .1),
+  100: Color.fromRGBO(136, 14, 79, .2),
+  200: Color.fromRGBO(136, 14, 79, .3),
+  300: Color.fromRGBO(136, 14, 79, .4),
+  400: Color.fromRGBO(136, 14, 79, .5),
+  500: Color.fromRGBO(136, 14, 79, .6),
+  600: Color.fromRGBO(136, 14, 79, .7),
+  700: Color.fromRGBO(136, 14, 79, .8),
+  800: Color.fromRGBO(136, 14, 79, .9),
+  900: Color.fromRGBO(136, 14, 79, 1),
+};

@@ -1,16 +1,29 @@
 // import 'dart:html';
 
-import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
-import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
-import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/Others/smartSelect.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
-import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+// import 'package:fluttertoast/fluttertoast.dart';
+
+// import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+
+import 'package:login_cms_comdelta/Widgets/Others/smartSelect.dart';
+
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+
+import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import '../../Choices.dart';
+
 // import 'package:smart_select/smart_select.dart';
 
 String title = "Add Device";
@@ -23,20 +36,30 @@ class AddDevice extends StatefulWidget {
 }
 
 class _AddDevice extends State<AddDevice> {
+  Snack saveSnack;
+
   String clientValue = "Select option";
   String locationValue = "Select option";
   String heightValue = "Above 45m";
   String siteRegionValue = "Select option";
   String simProvider = "Select option";
-  String batteryStatus= "Inactive";
+  String batteryStatus = "Inactive";
   String rSSIStatus = "Inactive";
-  DateTime currentDate = DateTime.now();
+  DateTime initialDate = DateTime.now();
 
+  TextEditingController deviceName = new TextEditingController(),
+      deviceDetail = new TextEditingController(),
+      latitude = new TextEditingController(),
+      longitude = new TextEditingController(),
+      batchNum = new TextEditingController(),
+      serialNum = new TextEditingController(),
+      activationDate = new TextEditingController();
 
   bool loading = !title.contains("Add");
 
   @override
   Widget build(BuildContext context) {
+    saveSnack = new Snack(context,"Saving...",100);
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -52,9 +75,7 @@ class _AddDevice extends State<AddDevice> {
           preferredSize: const Size.fromHeight(50),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(context, SizeRoute(page: DashBoard()));
-          },
+          onPressed: () => save(),
           child: const Icon(Icons.save),
           backgroundColor: Color(0xff0065a3),
         ),
@@ -81,7 +102,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(clientValue, "Client", client,(val)=>clientValue=val),
+                    ModalFilter(clientValue, "Client", client,
+                        (val) => clientValue = val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -97,7 +119,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(locationValue, "Location", location,(val)=>locationValue=val),
+                    ModalFilter(locationValue, "Location", location,
+                        (val) => locationValue = val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -117,14 +140,16 @@ class _AddDevice extends State<AddDevice> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: deviceName,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Device Name',
-                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        contentPadding: EdgeInsets.only(
+                            left: 15, top: 19, bottom: 19, right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -141,14 +166,16 @@ class _AddDevice extends State<AddDevice> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: deviceDetail,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Device Detail',
-                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        contentPadding: EdgeInsets.only(
+                            left: 15, top: 19, bottom: 19, right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -165,14 +192,16 @@ class _AddDevice extends State<AddDevice> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: latitude,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Latitude',
-                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        contentPadding: EdgeInsets.only(
+                            left: 15, top: 19, bottom: 19, right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -189,14 +218,16 @@ class _AddDevice extends State<AddDevice> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: longitude,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Longitude',
-                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        contentPadding: EdgeInsets.only(
+                            left: 15, top: 19, bottom: 19, right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -215,7 +246,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(heightValue, "Height", height,(val)=>heightValue=val),
+                    ModalFilter(heightValue, "Height", height,
+                        (val) => heightValue = val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -233,15 +265,18 @@ class _AddDevice extends State<AddDevice> {
                         ),
                         onTap: () => _selectDate(context),
                         child: TextField(
+                          controller: activationDate,
                           enabled: false,
                           decoration: InputDecoration(
                             disabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide(color: Colors.grey),
                             ),
                             hintText: 'Activation Date',
                             hintStyle:
                                 TextStyle(color: Colors.black54, fontSize: 16),
-                            contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                            contentPadding: EdgeInsets.only(
+                                left: 15, top: 19, bottom: 19, right: 15),
                           ),
                         ),
                       ),
@@ -255,7 +290,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(siteRegionValue, "Site Region", siteRegion,(val)=>siteRegionValue=val),
+                    ModalFilter(siteRegionValue, "Site Region", siteRegion,
+                        (val) => siteRegionValue = val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -269,14 +305,16 @@ class _AddDevice extends State<AddDevice> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: batchNum,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Client Batch Number',
-                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        contentPadding: EdgeInsets.only(
+                            left: 15, top: 19, bottom: 19, right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -293,14 +331,16 @@ class _AddDevice extends State<AddDevice> {
                       // The validator receives the text that the user has entered.
                       autofillHints: [AutofillHints.name],
                       keyboardType: TextInputType.text,
-                      // controller: firstName,
+                      controller: serialNum,
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
                         hintText: 'Sim serial Number',
-                        contentPadding: EdgeInsets.only(left: 15,top: 19,bottom: 19,right: 15),
+                        contentPadding: EdgeInsets.only(
+                            left: 15, top: 19, bottom: 19, right: 15),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -313,7 +353,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(simProvider, "Sim Provider", simCardProvider,(val)=>simProvider=val),
+                    ModalFilter(simProvider, "Sim Provider", simCardProvider,
+                        (val) => simProvider = val),
                     SizedBox(height: 20),
 
                     RichText(
@@ -323,9 +364,9 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(batteryStatus, "Battery Status", status,(val)=>batteryStatus=val),
+                    ModalFilter(batteryStatus, "Battery Status", status,
+                        (val) => batteryStatus = val),
                     SizedBox(height: 20),
-
 
                     RichText(
                       text: TextSpan(
@@ -334,7 +375,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(rSSIStatus, "RSSI Status", status,(val)=>rSSIStatus=val),
+                    ModalFilter(rSSIStatus, "RSSI Status", status,
+                        (val) => rSSIStatus = val),
                     SizedBox(height: 20),
 
                     // Material(
@@ -386,7 +428,7 @@ class _AddDevice extends State<AddDevice> {
                     //     ),
                     //   ),
                     // ),
-                    SizedBox(height: 200),
+                    SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -405,14 +447,88 @@ class _AddDevice extends State<AddDevice> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2050));
-    if (pickedDate != null && pickedDate != currentDate)
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2050),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: MaterialColor(0xff0065a3, customColors),
+              primaryColorDark: Color(0xff0065a3),
+              accentColor: Color(0xff0065a3),
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child,
+        );
+      },
+    );
+
+    if (pickedDate != null && pickedDate != initialDate)
       setState(() {
-        currentDate = pickedDate;
-        // toast(currentDate.toString());
+        initialDate = pickedDate;
+        activationDate.text = formatDate(pickedDate);
+        // toast(formatDate(pickedDate));
       });
+  }
+
+  String formatDate(DateTime date) {
+    return DateFormat('dd-MM-yyyy').format(date);
+  }
+
+  void save() {
+    if (clientName.text.isNotEmpty) {
+      saveSnack.show();
+      load('user_id').then((value) =>
+      value != '-1' ? postReq(value) : toast('User was not found!'));
+    } else {
+      setState(() {
+        validateText = "Client Name is required";
+        validate = true;
+      });
+    }
+  }
+
+  void postReq(String userId) {
+    http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/saveDevice.php'),
+        body: {
+
+
+        }).then((response) {
+      if (response.statusCode == 200) {
+        String body = json.decode(response.body);
+        if (body == '0') {
+          toast("Client has been added successfully");
+          Navigator.pop(this.context);
+        } else if (body == '1') {
+          // toast("Client Name already exist!");
+          setState(() {
+            validateText = "Client Name already exist!";
+            validate = true;
+          });
+        } else if (body == '2') {
+          toast("Your email doesn't exist on the sever!");
+        } else if (body == '3') {
+          toast("Client was not found to edit!");
+        } else if (body == '10') {
+          toast("Client has been modified successfully");
+          Navigator.pop(this.context);
+        }else {
+          toast("Something wrong with the server");
+          print(body);
+        }
+        saveSnack.hide();
+      } else {
+        print(response.body);
+        saveSnack.hide();
+      }
+    }).onError((error, stackTrace) {
+      toast('Error: ' + error.message);
+      saveSnack.hide();
+    });
   }
 }

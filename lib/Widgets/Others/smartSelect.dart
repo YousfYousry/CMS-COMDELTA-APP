@@ -51,7 +51,6 @@ class _ModalFilter extends State<ModalFilter> {
             modalConfirm: false,
             modalType: S2ModalType.popupDialog,
             modalConfig: S2ModalConfig(
-
               style: S2ModalStyle(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
