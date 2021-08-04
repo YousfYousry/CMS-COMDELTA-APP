@@ -1,35 +1,27 @@
 // import 'dart:html';
 
+// import 'dart:convert';
+
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-// import 'package:fluttertoast/fluttertoast.dart';
-
-// import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-
 import 'package:login_cms_comdelta/Widgets/Others/smartSelect.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
-// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
+import 'package:smart_select/smart_select.dart';
 import '../../Choices.dart';
 
-// import 'package:smart_select/smart_select.dart';
-
-String title = "Add Device";
-
 class AddDevice extends StatefulWidget {
-  AddDevice({title});
+  final String title;
+  final DeviceJason editDevice;
+
+  AddDevice(this.title, this.editDevice);
 
   @override
   _AddDevice createState() => _AddDevice();
@@ -37,17 +29,19 @@ class AddDevice extends StatefulWidget {
 
 class _AddDevice extends State<AddDevice> {
   Snack saveSnack;
+  bool errorClient = false, errorLocation = false;
 
-  String clientValue = "Select option";
-  String locationValue = "Select option";
+  String clientValue = "";
+  String locationValue = "";
   String heightValue = "Above 45m";
-  String siteRegionValue = "Select option";
-  String simProvider = "Select option";
+  String siteRegionValue = "";
+  String simProvider = "";
   String batteryStatus = "Inactive";
-  String rSSIStatus = "Inactive";
+  String rssiStatus = "Inactive";
   DateTime initialDate = DateTime.now();
 
-  TextEditingController deviceName = new TextEditingController(),
+  TextEditingController quantity = TextEditingController()..text = "1",
+      deviceName = new TextEditingController(),
       deviceDetail = new TextEditingController(),
       latitude = new TextEditingController(),
       longitude = new TextEditingController(),
@@ -55,11 +49,38 @@ class _AddDevice extends State<AddDevice> {
       serialNum = new TextEditingController(),
       activationDate = new TextEditingController();
 
-  bool loading = !title.contains("Add");
+  bool loading = false;
+
+  @override
+  void initState() {
+    if (widget.editDevice != null && widget.title.contains("Edit")) {
+      setState(() {
+        clientValue = client[getInt(widget.editDevice.client) - 1].title;
+        locationValue = widget.editDevice.deviceLocation;
+        heightValue = widget.editDevice.deviceHeight;
+        siteRegionValue = widget.editDevice.siteRegion;
+        simProvider = widget.editDevice.simProvider;
+        batteryStatus = status[getInt(widget.editDevice.batteryStatus)].title;
+        rssiStatus = status[getInt(widget.editDevice.rssiStatus)].title;
+        activationDate.text = widget.editDevice.activationDate;
+        if(widget.editDevice.activationDate.isNotEmpty) {
+          initialDate =
+              DateFormat('dd-MM-yyyy').parse(widget.editDevice.activationDate);
+        }
+        deviceName.text = widget.editDevice.deviceName;
+        deviceDetail.text =widget.editDevice.deviceDetails;
+        latitude.text = widget.editDevice.lat==500?"":widget.editDevice.lat.toString();
+        longitude.text = widget.editDevice.lon==500?"":widget.editDevice.lon.toString();
+        batchNum.text = widget.editDevice.batchNum;
+        serialNum.text = widget.editDevice.serialNum;
+      });
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    saveSnack = new Snack(context,"Saving...",100);
+    saveSnack = new Snack(context, "Saving...", 100);
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -71,7 +92,7 @@ class _AddDevice extends State<AddDevice> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: CustomAppBarBack(context, title),
+          child: CustomAppBarBack(context, widget.title),
           preferredSize: const Size.fromHeight(50),
         ),
         floatingActionButton: FloatingActionButton(
@@ -89,6 +110,125 @@ class _AddDevice extends State<AddDevice> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+                    Visibility(
+                      child:
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                text: 'Quantity',
+                                style: TextStyle(fontSize: 16.0, color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                    text: ' *',
+                                    style: TextStyle(color: Colors.red, fontSize: 16.0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Material(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                    width: 1.0,
+                                    style: BorderStyle.solid,
+                                    color: Colors.grey),
+                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              ),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 1,
+                                    child: TextFormField(
+                                      textAlign: TextAlign.left,
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15, top: 19, bottom: 19, right: 15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                      controller: quantity,
+                                      keyboardType: TextInputType.numberWithOptions(
+                                        decimal: true,
+                                        signed: false,
+                                      ),
+                                      inputFormatters: <TextInputFormatter>[],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 55.0,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              child: Icon(
+                                                Icons.arrow_drop_up,
+                                                size: 22.0,
+                                              ),
+                                              onTap: () {
+                                                int currentValue =
+                                                int.parse(quantity.text);
+                                                setState(() {
+                                                  currentValue++;
+                                                  quantity.text = (currentValue)
+                                                      .toString(); // incrementing value
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            child: Icon(
+                                              Icons.arrow_drop_down,
+                                              size: 22.0,
+                                            ),
+                                            onTap: () {
+                                              int currentValue =
+                                              int.parse(quantity.text);
+                                              setState(() {
+                                                print("Setting state");
+                                                currentValue--;
+                                                quantity.text = (currentValue > 0
+                                                    ? currentValue
+                                                    : 1)
+                                                    .toString(); // decrementing value
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                      visible: widget.title.contains("Add"),
+                    ),
+
+
                     RichText(
                       text: TextSpan(
                         text: 'Client',
@@ -102,8 +242,10 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(clientValue, "Client", client,
-                        (val) => clientValue = val),
+                    ModalFilter(clientValue, "Client", client, (val) {
+                      clientValue = val;
+                      setState(() => errorClient = false);
+                    }, 'Please enter Client', errorClient),
                     SizedBox(height: 20),
 
                     RichText(
@@ -119,8 +261,10 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(locationValue, "Location", location,
-                        (val) => locationValue = val),
+                    ModalFilter(locationValue, "Location", location, (val) {
+                      locationValue = val;
+                      setState(() => errorLocation = false);
+                    }, 'Please enter Location', errorLocation),
                     SizedBox(height: 20),
 
                     RichText(
@@ -144,6 +288,8 @@ class _AddDevice extends State<AddDevice> {
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
+                        // errorText:
+                        //     nameError ? "Device Name already exist!" : null,
                         hintText: 'Device Name',
                         contentPadding: EdgeInsets.only(
                             left: 15, top: 19, bottom: 19, right: 15),
@@ -247,7 +393,7 @@ class _AddDevice extends State<AddDevice> {
                     ),
                     SizedBox(height: 5),
                     ModalFilter(heightValue, "Height", height,
-                        (val) => heightValue = val),
+                        (val) => heightValue = val, '', false),
                     SizedBox(height: 20),
 
                     RichText(
@@ -291,7 +437,7 @@ class _AddDevice extends State<AddDevice> {
                     ),
                     SizedBox(height: 5),
                     ModalFilter(siteRegionValue, "Site Region", siteRegion,
-                        (val) => siteRegionValue = val),
+                        (val) => siteRegionValue = val, '', false),
                     SizedBox(height: 20),
 
                     RichText(
@@ -348,13 +494,13 @@ class _AddDevice extends State<AddDevice> {
 
                     RichText(
                       text: TextSpan(
-                        text: 'Site Region',
+                        text: 'Sim Provider',
                         style: TextStyle(fontSize: 16.0, color: Colors.black),
                       ),
                     ),
                     SizedBox(height: 5),
                     ModalFilter(simProvider, "Sim Provider", simCardProvider,
-                        (val) => simProvider = val),
+                        (val) => simProvider = val, '', false),
                     SizedBox(height: 20),
 
                     RichText(
@@ -365,7 +511,7 @@ class _AddDevice extends State<AddDevice> {
                     ),
                     SizedBox(height: 5),
                     ModalFilter(batteryStatus, "Battery Status", status,
-                        (val) => batteryStatus = val),
+                        (val) => batteryStatus = val, '', false),
                     SizedBox(height: 20),
 
                     RichText(
@@ -375,8 +521,8 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    ModalFilter(rSSIStatus, "RSSI Status", status,
-                        (val) => rSSIStatus = val),
+                    ModalFilter(rssiStatus, "RSSI Status", status,
+                        (val) => rssiStatus = val, '', false),
                     SizedBox(height: 20),
 
                     // Material(
@@ -454,13 +600,16 @@ class _AddDevice extends State<AddDevice> {
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: MaterialColor(0xff0065a3, customColors),
-              primaryColorDark: Color(0xff0065a3),
-              accentColor: Color(0xff0065a3),
-            ),
-            dialogBackgroundColor: Colors.white,
-          ),
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: MaterialColor(0xff0065a3, customColors),
+                primaryColorDark: Color(0xff0065a3),
+                accentColor: Color(0xff0065a3),
+              ),
+              dialogBackgroundColor: Colors.white,
+              dialogTheme: DialogTheme(
+                  shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ))),
           child: child,
         );
       },
@@ -479,16 +628,31 @@ class _AddDevice extends State<AddDevice> {
   }
 
   void save() {
-    if (clientName.text.isNotEmpty) {
-      saveSnack.show();
-      load('user_id').then((value) =>
-      value != '-1' ? postReq(value) : toast('User was not found!'));
-    } else {
+    if (getInt(quantity.text) < 1) {
+      toast("Please enter a valid Quantity");
+      return;
+    }
+
+    if (clientValue.contains("Select option")) {
       setState(() {
-        validateText = "Client Name is required";
-        validate = true;
+        errorClient = true;
       });
     }
+
+    if (locationValue.contains("Select option")) {
+      setState(() {
+        errorLocation = true;
+      });
+    }
+
+    if (clientValue.contains("Select option") ||
+        locationValue.contains("Select option")) {
+      return;
+    }
+
+    saveSnack.show();
+    load('user_id').then((value) =>
+        value != '-1' ? postReq(value) : toast('User was not found!'));
   }
 
   void postReq(String userId) {
@@ -496,29 +660,54 @@ class _AddDevice extends State<AddDevice> {
         Uri.parse(
             'http://103.18.247.174:8080/AmitProject/admin/saveDevice.php'),
         body: {
-
-
+          'add_edit':
+              widget.title.toLowerCase().contains("add") ? "add" : "edit",
+          'quantity': quantity.text,
+          'device_id': widget.title.toLowerCase().contains("add") ? "" : widget.editDevice.id ,
+          'client': (client.indexOf(S2Choice<String>(
+                      value: clientValue, title: clientValue)) +
+                  1)
+              .toString(),
+          'location': (location.indexOf(S2Choice<String>(
+                      value: locationValue, title: locationValue)) +
+                  1)
+              .toString(),
+          'device_name': deviceName.text,
+          'device_detail': deviceDetail.text,
+          'latitude': latitude.text,
+          'longitude': longitude.text,
+          'height': (height.indexOf(
+                  S2Choice<String>(value: heightValue, title: heightValue)))
+              .toString(),
+          'activation_date': activationDate.text,
+          'site_region': siteRegionValue,
+          'batch_num': batchNum.text,
+          'serial_num': serialNum.text,
+          'sim_provider': simProvider,
+          'battery_status': (status.indexOf(
+                  S2Choice<String>(value: batteryStatus, title: batteryStatus)))
+              .toString(),
+          'rssi_status': (status.indexOf(
+                  S2Choice<String>(value: rssiStatus, title: rssiStatus)))
+              .toString(),
+          'user_id': userId,
         }).then((response) {
       if (response.statusCode == 200) {
         String body = json.decode(response.body);
         if (body == '0') {
-          toast("Client has been added successfully");
+          toast("Device has been added successfully");
           Navigator.pop(this.context);
         } else if (body == '1') {
-          // toast("Client Name already exist!");
-          setState(() {
-            validateText = "Client Name already exist!";
-            validate = true;
-          });
+          toast("Couldn't create Id for the new device!");
         } else if (body == '2') {
           toast("Your email doesn't exist on the sever!");
         } else if (body == '3') {
-          toast("Client was not found to edit!");
+          toast("Device was not found to edit!");
         } else if (body == '10') {
-          toast("Client has been modified successfully");
+          toast("Device has been modified successfully");
           Navigator.pop(this.context);
-        }else {
-          toast("Something wrong with the server");
+        } else {
+          toast("Something wrong with the server!");
           print(body);
         }
         saveSnack.hide();
@@ -530,5 +719,16 @@ class _AddDevice extends State<AddDevice> {
       toast('Error: ' + error.message);
       saveSnack.hide();
     });
+  }
+
+  int getInt(String s) {
+    try {
+      if (s == null || int.parse(s) == null) {
+        return 0;
+      }
+      return int.parse(s);
+    } catch (Exception) {
+      return 0;
+    }
   }
 }

@@ -233,7 +233,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                 body: Column(
                   children: [
                     itemChild("Manage Device", ManageDevice()),
-                    itemChild("Add Device", AddDevice()),
+                    itemChild("Add Device", AddDevice("Add Device", null)),
                     itemChild("Failed Device", FailedDevice()),
                     //
                     // ListTile(

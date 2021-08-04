@@ -37,7 +37,7 @@ class ClientJason {
   factory ClientJason.fromJson(Map<String, dynamic> json) {
     return ClientJason(
       (json['client_id'].toString().contains("null"))?" ":json['client_id'].toString(),
-      (json['client_name'].toString().contains("null"))?" ":json['client_name'].toString(),
+      (json['client_name'].toString().isEmpty)?" ":json['client_name'].toString(),
       (json['client_address'].toString().contains("null"))?" ":json['client_address'].toString(),
       (json['client_contact'].toString().contains("null"))?" ":json['client_contact'].toString(),
       (json['client_email'].toString().contains("null"))?" ":json['client_email'].toString(),

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:smart_select/smart_select.dart';
 
+List<S2Choice<String>> clientStatus = [
+  S2Choice<String>(value: 'Hidden', title: 'Hidden'),
+  S2Choice<String>(value: 'Shown', title: 'Shown'),
+];
+
 List<S2Choice<String>> client = [
   S2Choice<String>(value: 'DHarmoni', title: 'DHarmoni'),
   S2Choice<String>(value: 'Digi', title: 'Digi'),
@@ -61,8 +66,8 @@ List<S2Choice<String>> simCardProvider = [
 ];
 
 List<S2Choice<String>> status = [
-  S2Choice<String>(value: 'Active', title: 'Active'),
   S2Choice<String>(value: 'Inactive', title: 'Inactive'),
+  S2Choice<String>(value: 'Active', title: 'Active'),
 ];
 
 Map<int, Color> customColors = {

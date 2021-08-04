@@ -514,6 +514,7 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver{
       },
     )..show();
   }
+
   void sendDeleteReq(String clientName){
     http.post(
         Uri.parse(

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
-import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
-// ignore: must_be_immutable
 class ManageDevicesAppBar extends StatelessWidget {
-  String title = '';
-  BuildContext context;
-  ManageDevicesAppBar(this.context,this.title);
+  final title;
+  final context;
+  final func1;
+
+  ManageDevicesAppBar(this.context, this.title,this.func1);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,7 @@ class ManageDevicesAppBar extends StatelessWidget {
             itemBuilder: (context) => [
               PopupMenuItem<int>(
                 value: 0,
-                child:Row(
+                child: Row(
                   children: [
                     Icon(Icons.add),
                     const SizedBox(width: 8),
@@ -79,15 +78,11 @@ class ManageDevicesAppBar extends StatelessWidget {
       ],
     );
   }
+
   void onSelected(BuildContext context, int item) {
     switch (item) {
       case 0:
-        Navigator.push(
-          context,
-          SizeRoute(
-            page: AddDevice(),
-          ),
-        );
+        func1();
         break;
       case 1:
         // Navigator.of(context).push(
@@ -95,10 +90,10 @@ class ManageDevicesAppBar extends StatelessWidget {
         // );
         break;
       case 2:
-        // Navigator.of(context).pushAndRemoveUntil(
-        //   MaterialPageRoute(builder: (context) => LoginPage()),
-        //       (route) => false,
-        // );
+      // Navigator.of(context).pushAndRemoveUntil(
+      //   MaterialPageRoute(builder: (context) => LoginPage()),
+      //       (route) => false,
+      // );
     }
   }
 }

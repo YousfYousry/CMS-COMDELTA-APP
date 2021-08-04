@@ -6,9 +6,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
+import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 
 // import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
 // import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
@@ -54,11 +56,12 @@ var spanUp = WidgetSpan(
           )),
     );
 
-class _ManageDevice extends State<ManageDevice> {
+class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
+  int sortState = 1;
 
-  var span1 = spanDown, span2 = spanDefault, span3 = spanDefault;
+  var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
   var devices = [];
   var duplicateDevices = [];
 
@@ -144,9 +147,11 @@ class _ManageDevice extends State<ManageDevice> {
 
   void _sort1() {
     if (span1 != spanDown) {
+      sortState = 0;
       devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
       span1 = spanDown;
     } else {
+      sortState = 1;
       devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
       span1 = spanUp;
     }
@@ -156,9 +161,11 @@ class _ManageDevice extends State<ManageDevice> {
 
   void _sort2() {
     if (span2 != spanDown) {
+      sortState = 2;
       devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
       span2 = spanDown;
     } else {
+      sortState = 3;
       devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
       span2 = spanUp;
     }
@@ -168,9 +175,11 @@ class _ManageDevice extends State<ManageDevice> {
 
   void _sort3() {
     if (span3 != spanDown) {
+      sortState = 4;
       devices.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
       span3 = spanDown;
     } else {
+      sortState = 5;
       devices.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
       span3 = spanUp;
     }
@@ -215,7 +224,21 @@ class _ManageDevice extends State<ManageDevice> {
   @override
   void initState() {
     getLocations();
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getLocations();
+    }
   }
 
   @override
@@ -231,7 +254,7 @@ class _ManageDevice extends State<ManageDevice> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: ManageDevicesAppBar(context, "Manage Device"),
+          child: ManageDevicesAppBar(context, "Manage Device", addDevice),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -451,23 +474,18 @@ class _ManageDevice extends State<ManageDevice> {
                                                         devices[index].status),
                                                     ElevatedButton(
                                                       style: ButtonStyle(
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all<Color>(
-                                                                (devices[
-                                                                index]
-                                                                    .lat !=
+                                                        backgroundColor: MaterialStateProperty.all<
+                                                            Color>((devices[index]
+                                                                        .lat !=
                                                                     500 &&
-                                                                    devices[
-                                                                    index]
+                                                                devices[index]
                                                                         .lon !=
-                                                                        500 &&
-                                                                    devices[
-                                                                    index]
-                                                                        .deviceName
-                                                                        .isNotEmpty)
-                                                                    ? PrimaryColor
-                                                                    : Colors.grey),
+                                                                    500 &&
+                                                                devices[index]
+                                                                    .deviceName
+                                                                    .isNotEmpty)
+                                                            ? PrimaryColor
+                                                            : Colors.grey),
                                                         shape: MaterialStateProperty
                                                             .all<
                                                                 RoundedRectangleBorder>(
@@ -519,20 +537,15 @@ class _ManageDevice extends State<ManageDevice> {
                                                               Text(
                                                                 "Show on google maps",
                                                                 style: TextStyle(
-                                                                  color: (devices[
-                                                                  index]
-                                                                      .lat !=
-                                                                      500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .lon !=
-                                                                          500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .deviceName
-                                                                          .isNotEmpty)
-                                                                      ? null
-                                                                      : Colors.black54,
+                                                                    color: (devices[index].lat != 500 &&
+                                                                            devices[index].lon !=
+                                                                                500 &&
+                                                                            devices[index]
+                                                                                .deviceName
+                                                                                .isNotEmpty)
+                                                                        ? null
+                                                                        : Colors
+                                                                            .black54,
                                                                     fontSize:
                                                                         15,
                                                                     fontWeight:
@@ -544,20 +557,15 @@ class _ManageDevice extends State<ManageDevice> {
                                                                     EdgeInsets
                                                                         .all(5),
                                                                 child: Image(
-                                                                  color: (devices[
-                                                                  index]
-                                                                      .lat !=
-                                                                      500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .lon !=
-                                                                          500 &&
-                                                                      devices[
-                                                                      index]
-                                                                          .deviceName
-                                                                          .isNotEmpty)
+                                                                  color: (devices[index].lat != 500 &&
+                                                                          devices[index].lon !=
+                                                                              500 &&
+                                                                          devices[index]
+                                                                              .deviceName
+                                                                              .isNotEmpty)
                                                                       ? null
-                                                                      : Colors.black54,
+                                                                      : Colors
+                                                                          .black54,
                                                                   image: AssetImage(
                                                                       'assets/image/google_maps.png'),
                                                                 ),
@@ -707,9 +715,7 @@ class _ManageDevice extends State<ManageDevice> {
                                       caption: 'Edit',
                                       color: Color(0xff62D0F1),
                                       icon: Icons.edit,
-                                      onTap: () {
-                                        toast("Edit Device");
-                                      },
+                                      onTap: () => editDevice(devices[index]),
                                     ),
                                     new IconSlideAction(
                                       caption: 'Delete',
@@ -751,6 +757,24 @@ class _ManageDevice extends State<ManageDevice> {
         ),
       ),
     );
+  }
+
+  void editDevice(DeviceJason deviceJason) {
+    Navigator.push(
+      context,
+      SizeRoute(
+        page: AddDevice("Edit Device", deviceJason),
+      ),
+    ).then((value) => getLocations());
+  }
+
+  void addDevice() {
+    Navigator.push(
+      context,
+      SizeRoute(
+        page: AddDevice("Add Device", null),
+      ),
+    ).then((value) => getLocations());
   }
 
   void getLocations() {
@@ -825,8 +849,23 @@ class _ManageDevice extends State<ManageDevice> {
 
   void showDevices(List<DeviceJason> clients) {
     setState(() {
+      this.duplicateDevices.clear();
+      this.devices.clear();
       this.duplicateDevices.addAll(clients);
       this.devices.addAll(clients);
+      if (sortState == 0) {
+        devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+      } else if (sortState == 1) {
+        devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+      } else if (sortState == 2) {
+        devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+      } else if (sortState == 3) {
+        devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+      } else if (sortState == 4) {
+        devices.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+      } else if (sortState == 5) {
+        devices.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      }
       loading = false;
     });
   }

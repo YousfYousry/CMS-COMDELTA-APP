@@ -1,6 +1,13 @@
 class DeviceJason {
   String _id = "";
+  String _client = "";
   String _deviceName = "";
+  String _siteRegion = "";
+  String _simProvider = "";
+  String _batteryStatus = "";
+  String _rssiStatus = "";
+  String _batchNum = "";
+  String _serialNum = "";
   String _deviceLocation = "";
   String _highLight = "";
   String _deviceDetails = "";
@@ -22,7 +29,14 @@ class DeviceJason {
 
   DeviceJason(
       this._id,
+      this._client,
       this._deviceName,
+      this._siteRegion,
+      this._simProvider,
+      this._batteryStatus,
+      this._rssiStatus,
+      this._batchNum,
+      this._serialNum,
       this._deviceLocation,
       this._deviceDetails,
       this._deviceHeight,
@@ -46,15 +60,29 @@ class DeviceJason {
         return 500;
       }
     }
+
+    String getStr(Object str) {
+      return (str != null && !str.toString().contains("null")) ? str.toString() : "";
+    }
+
     return DeviceJason(
-      json['device_id'].toString(),
-      json['device_name'].toString(),
+      getStr(json['device_id']),
+      getStr(json['client_id']),
+      getStr(json['device_name']),
+      getStr(json['site_region']),
+      getStr(json['sim_provider']),
+      getStr(json['battery_status']),
+      getStr(json['rssi_status']),
+      getStr(json['client_batch_number']),
+      getStr(json['sim_serial_number']),
       deviceLocation,
-      json['device_detail'].toString(),
-      ((json['device_height'].toString().contains("0")) ? "Below" : "Above") +
+      getStr(json['device_detail']),
+      ((getStr(json['device_height']).contains("0"))
+              ? "Below"
+              : "Above") +
           " 45m",
-      json['device_activation'].toString(),
-      json['LatestUpdateDate'].toString(),
+      getStr(json['device_activation']),
+      getStr(json['LatestUpdateDate']),
       false,
       false,
       false,
@@ -62,15 +90,23 @@ class DeviceJason {
       "",
       // json['device_name'].toString(),
       // json['device_name'].toString(),
-      (json['status'].toString().contains("1")),
-      getDouble(json['device_longitud'].toString()),
-      getDouble(json['device_latitud'].toString()),
+      (getStr(json['status']).contains("1")),
+      getDouble(getStr(json['device_longitud'])),
+      getDouble(getStr(json['device_latitud'])),
     );
   }
 
   String get id => _id;
 
+  String get client => _client;
+
   String get deviceName => _deviceName;
+
+  String get siteRegion => _siteRegion;
+
+  String get simProvider => _simProvider;
+
+  String get batteryStatus => _batteryStatus;
 
   String get deviceLocation => _deviceLocation;
 
@@ -79,6 +115,8 @@ class DeviceJason {
   String get rssi => _rssi;
 
   String get battery => _battery;
+
+  String get batchNum => _batchNum;
 
   bool get l3 => _l3;
 
@@ -99,4 +137,8 @@ class DeviceJason {
   double get lon => _lon;
 
   double get lat => _lat;
+
+  String get rssiStatus => _rssiStatus;
+
+  String get serialNum => _serialNum;
 }
