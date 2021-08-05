@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class ManageDevicesAppBar extends StatelessWidget {
   final title;
   final context;
-  final func1;
+  final func1, func2, func3;
 
-  ManageDevicesAppBar(this.context, this.title,this.func1);
+  ManageDevicesAppBar(this.context, this.title, this.func1,this.func2, this.func3);
 
   @override
   Widget build(BuildContext context) {
@@ -41,18 +41,18 @@ class ManageDevicesAppBar extends StatelessWidget {
                   ],
                 ),
               ),
+              // PopupMenuItem<int>(
+              //   value: 1,
+              //   child: Row(
+              //     children: [
+              //       Icon(Icons.add_to_photos),
+              //       const SizedBox(width: 8),
+              //       Text('Add Multiple Device'),
+              //     ],
+              //   ),
+              // ),
               PopupMenuItem<int>(
                 value: 1,
-                child: Row(
-                  children: [
-                    Icon(Icons.add_to_photos),
-                    const SizedBox(width: 8),
-                    Text('Add Multiple Device'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 2,
                 child: Row(
                   children: [
                     Icon(Icons.download),
@@ -63,7 +63,7 @@ class ManageDevicesAppBar extends StatelessWidget {
               ),
               PopupMenuDivider(),
               PopupMenuItem<int>(
-                value: 3,
+                value: 2,
                 child: Row(
                   children: [
                     Icon(Icons.search),
@@ -85,15 +85,10 @@ class ManageDevicesAppBar extends StatelessWidget {
         func1();
         break;
       case 1:
-        // Navigator.of(context).push(
-        //   MaterialPageRoute(builder: (context) => SharePage()),
-        // );
+        func2();
         break;
       case 2:
-      // Navigator.of(context).pushAndRemoveUntil(
-      //   MaterialPageRoute(builder: (context) => LoginPage()),
-      //       (route) => false,
-      // );
+        func3();
     }
   }
 }

@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Choices.dart';
 import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
 import 'package:http/http.dart' as http;
-// import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/Others/smartSelect.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
-// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
 class AddClient extends StatefulWidget {
   final String title;
@@ -32,7 +31,7 @@ class _AddClient extends State<AddClient> {
   TextEditingController contactNum = TextEditingController();
   TextEditingController email = TextEditingController();
   String title;
-  String oldClientName="";
+  String oldClientName = "";
   final ClientJason client;
 
   _AddClient(this.title, this.client) {
@@ -49,7 +48,6 @@ class _AddClient extends State<AddClient> {
     }
   }
 
-  // bool loading = !title.contains("Add");
   bool loading = false;
 
   @override
@@ -99,10 +97,7 @@ class _AddClient extends State<AddClient> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: clientName,
                       onChanged: (text) {
                         if (validate && text.isNotEmpty) {
@@ -111,18 +106,8 @@ class _AddClient extends State<AddClient> {
                           });
                         }
                       },
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        errorText: validate ? validateText : null,
-                        hintText: 'Client Name',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      errorText: validate ? validateText : null,
+                      hintText: 'Client Name',
                     ),
                     SizedBox(height: 20),
 
@@ -133,22 +118,9 @@ class _AddClient extends State<AddClient> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: address,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Address',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Address',
                     ),
                     SizedBox(height: 20),
 
@@ -159,22 +131,10 @@ class _AddClient extends State<AddClient> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: contactNum,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Contact No',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Contact No',
+                      keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 20),
 
@@ -185,22 +145,9 @@ class _AddClient extends State<AddClient> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: email,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Email',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Email',
                     ),
                     SizedBox(height: 20),
 
@@ -212,42 +159,7 @@ class _AddClient extends State<AddClient> {
                     ),
                     SizedBox(height: 5),
                     ModalFilter(statTwo, "Active Device", clientStatus,
-                        (val) => statTwo = val,'',false),
-                    // Container(
-                    //   padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    //   decoration: ShapeDecoration(
-                    //     color: Colors.white,
-                    //     shape: RoundedRectangleBorder(
-                    //       side:
-                    //           BorderSide(width: 1.0, style: BorderStyle.solid),
-                    //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    //     ),
-                    //   ),
-                    //   child: DropdownButton<String>(
-                    //     value: dropdownValue2,
-                    //     isExpanded: true,
-                    //     icon: Icon(Icons.arrow_drop_down),
-                    //     iconSize: 24,
-                    //     elevation: 16,
-                    //     style: TextStyle(color: Colors.black, fontSize: 14),
-                    //     underline: Container(
-                    //       height: 0,
-                    //       color: Colors.transparent,
-                    //     ),
-                    //     onChanged: (String data) {
-                    //       setState(() {
-                    //         dropdownValue2 = data;
-                    //       });
-                    //     },
-                    //     items: spinnerItems
-                    //         .map<DropdownMenuItem<String>>((String value) {
-                    //       return DropdownMenuItem<String>(
-                    //         value: value,
-                    //         child: Text(value),
-                    //       );
-                    //     }).toList(),
-                    //   ),
-                    // ),
+                        (val) => statTwo = val, '', false),
                     SizedBox(height: 20),
 
                     RichText(
@@ -258,42 +170,7 @@ class _AddClient extends State<AddClient> {
                     ),
                     SizedBox(height: 5),
                     ModalFilter(statThree, "Inactive Device", clientStatus,
-                        (val) => statThree = val,'',false),
-                    // Container(
-                    //   padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    //   decoration: ShapeDecoration(
-                    //     color: Colors.white,
-                    //     shape: RoundedRectangleBorder(
-                    //       side:
-                    //           BorderSide(width: 1.0, style: BorderStyle.solid),
-                    //       borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                    //     ),
-                    //   ),
-                    //   child: DropdownButton<String>(
-                    //     value: dropdownValue,
-                    //     isExpanded: true,
-                    //     icon: Icon(Icons.arrow_drop_down),
-                    //     iconSize: 24,
-                    //     elevation: 16,
-                    //     style: TextStyle(color: Colors.black, fontSize: 14),
-                    //     underline: Container(
-                    //       height: 0,
-                    //       color: Colors.transparent,
-                    //     ),
-                    //     onChanged: (String data) {
-                    //       setState(() {
-                    //         dropdownValue = data;
-                    //       });
-                    //     },
-                    //     items: spinnerItems
-                    //         .map<DropdownMenuItem<String>>((String value) {
-                    //       return DropdownMenuItem<String>(
-                    //         value: value,
-                    //         child: Text(value),
-                    //       );
-                    //     }).toList(),
-                    //   ),
-                    // ),
+                        (val) => statThree = val, '', false),
                     SizedBox(height: 100),
                   ],
                 ),

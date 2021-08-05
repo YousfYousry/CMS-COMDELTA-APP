@@ -17,8 +17,8 @@ class DeviceJason {
   bool _l1 = false;
   bool _l2 = false;
   bool _l3 = false;
-  String _battery = "";
-  String _rssi = "";
+  String _battery = "4";
+  String _rssi = "4";
   bool _status = false;
   double _lat = 500;
   double _lon = 500;
@@ -62,7 +62,39 @@ class DeviceJason {
     }
 
     String getStr(Object str) {
-      return (str != null && !str.toString().contains("null")) ? str.toString() : "";
+      return (str != null && !str.toString().contains("null"))
+          ? str.toString()
+          : "";
+    }
+
+    String getBattery(String battery) {
+      double batteryDouble = getDouble(battery);
+      if (500 > batteryDouble && batteryDouble >= 3.23) {
+        return "0";
+      } else if (3.23 > batteryDouble && batteryDouble >= 3.02) {
+        return "1";
+      } else if (3.02 > batteryDouble && batteryDouble >= 2.81) {
+        return "2";
+      } else if (2.81 > batteryDouble && batteryDouble >= 2.60) {
+        return "3";
+      } else {
+        return "4";
+      }
+    }
+
+    String getRssi(String rssi) {
+      double rssiDouble = getDouble(rssi);
+      if (500 > rssiDouble && rssiDouble >= 20) {
+        return "0";
+      } else if (20 > rssiDouble && rssiDouble >= 15) {
+        return "1";
+      } else if (15 > rssiDouble && rssiDouble >= 10) {
+        return "2";
+      } else if (10 > rssiDouble && rssiDouble >= 2) {
+        return "3";
+      } else {
+        return "4";
+      }
     }
 
     return DeviceJason(
@@ -77,17 +109,18 @@ class DeviceJason {
       getStr(json['sim_serial_number']),
       deviceLocation,
       getStr(json['device_detail']),
-      ((getStr(json['device_height']).contains("0"))
-              ? "Below"
-              : "Above") +
+      ((getStr(json['device_height']).contains("0")) ? "Below" : "Above") +
           " 45m",
       getStr(json['device_activation']),
       getStr(json['LatestUpdateDate']),
-      false,
-      false,
-      false,
-      "",
-      "",
+      getStr(json['LS1']).contains("1"),
+      getStr(json['LS2']).contains("1"),
+      getStr(json['LS3']).contains("1"),
+      // false,
+      // false,
+      // false,
+      getBattery(json['battery_value']),
+      getRssi(json['rssi_value']),
       // json['device_name'].toString(),
       // json['device_name'].toString(),
       (getStr(json['status']).contains("1")),

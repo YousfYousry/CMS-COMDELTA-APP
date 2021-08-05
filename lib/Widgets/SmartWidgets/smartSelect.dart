@@ -28,22 +28,14 @@ class _ModalFilter extends State<ModalFilter> {
           color: Colors.white,
           shape: RoundedRectangleBorder(
             side: BorderSide(
-                width: 1.0, style: BorderStyle.solid, color: widget.error ?Colors.red:Colors.grey),
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                width: 1.0, style: BorderStyle.solid, color: widget.error ?Colors.red:Colors.black),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           child: InkWell(
             customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
-            //
             child: Container(
-              decoration: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      width: 1.0, style: BorderStyle.solid, color: widget.error ?Colors.red:Colors.grey),
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-              ),
               child: SmartSelect<String>.single(
                 title: value.isEmpty?"Select option":value,
                 value: value,

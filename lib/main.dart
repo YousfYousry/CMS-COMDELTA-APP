@@ -5,11 +5,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
-import '../Widgets/ProgressBars/ProgressBar.dart';
-import '../Widgets/Others/TextFieldShadow.dart';
+import 'Widgets/ProgressBars/ProgressBar.dart';
+import 'Widgets/Others/TextFieldShadow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Client/DashBoard.dart';
+import 'Pages/Client/DashBoard.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();

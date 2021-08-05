@@ -8,13 +8,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 
-// import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
+// import 'package:login_cms_comdelta/Pages/Admin/ManageDevicesSearch.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'dart:math' as math;
@@ -60,6 +59,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
   int sortState = 1;
+  Snack deleteSnack;
 
   var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
   var devices = [];
@@ -113,6 +113,66 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
               Icons.lightbulb,
               color: value ? Colors.green : Colors.red,
               size: 20.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget battery(String title, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 5),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                left: 2.5,
+              ),
+              child: ImageIcon(
+                AssetImage("assets/battery/battery" + value + ".png"),
+                color: Colors.black,
+                size: 15.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget rssi(String title, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 5),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 110,
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                left: 2.5,
+              ),
+              child: ImageIcon(
+                AssetImage("assets/rssi/rssi" + value + ".png"),
+                color: Colors.black,
+                size: 15.0,
+              ),
             ),
           ],
         ),
@@ -243,6 +303,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    deleteSnack = new Snack(this.context, "Deleting...", 100);
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -254,7 +315,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: ManageDevicesAppBar(context, "Manage Device", addDevice),
+          child: ManageDevicesAppBar(
+              context, "Manage Device", addDevice, exportPdf, advancedSearch),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -466,9 +528,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                                         devices[index].l2),
                                                     l123('L3#',
                                                         devices[index].l3),
-                                                    details('Battery',
+                                                    battery('Battery',
                                                         devices[index].battery),
-                                                    details('Rssi',
+                                                    rssi('Rssi',
                                                         devices[index].rssi),
                                                     status('Status',
                                                         devices[index].status),
@@ -731,7 +793,10 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                               'Do you really want to delete ' +
                                                   devices[index].deviceName,
                                           btnCancelOnPress: () {},
-                                          btnOkOnPress: () {},
+                                          btnOkOnPress: () {
+                                            deleteSnack.show();
+                                            sendDeleteReq(devices[index].id);
+                                          },
                                         )..show();
                                       },
                                     ),
@@ -777,7 +842,87 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     ).then((value) => getLocations());
   }
 
+  void exportPdf() {
+    toast("Exporting...");
+  }
+
+  void advancedSearch() {
+    Navigator.of(context).push(new MaterialPageRoute<String>(
+        builder: (BuildContext context) {
+          return new Scaffold(
+            backgroundColor: Color(0xfafafafa),
+            appBar: new AppBar(
+              centerTitle: true,
+              backgroundColor: Color(0xff0065a3),
+              title: const Text('Advanced Search'),
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    Icons.restart_alt,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    // do something
+                  },
+                )
+              ],
+            ),
+            body: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.all(20),
+              color: Color(0xfafafafa),
+              child: Column(
+                children: [
+                  TextField(),
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                // Navigator.push(context, SizeRoute(page: AddClient())).then((value) => getClients());
+              },
+              child: const Icon(Icons.search),
+              backgroundColor: Color(0xff0065a3),
+            ),
+          );
+        },
+        fullscreenDialog: true),);
+  }
+
+  void sendDeleteReq(String deviceId) {
+    http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/deleteDevice.php'),
+        body: {
+          'device_id': deviceId,
+        }).then((response) {
+      if (response.statusCode == 200) {
+        String body = json.decode(response.body);
+        if (body == '0') {
+          toast("Device has been deleted successfully");
+          getLocations();
+        } else {
+          toast("Something wrong with the server");
+          print(body);
+        }
+      } else {
+        toast("Something wrong with the server");
+        print(response.body);
+      }
+      deleteSnack.hide();
+      getLocations();
+    }).onError((error, stackTrace) {
+      deleteSnack.hide();
+      getLocations();
+      toast('Error: ' + error.message);
+    });
+  }
+
   void getLocations() {
+    setState(() {
+      loading = true;
+    });
     http
         .get(Uri.parse(
             'http://103.18.247.174:8080/AmitProject/getLocations.php'))
@@ -814,7 +959,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   void getDevices(List<String> id, List<String> locationName) {
     http
         .get(Uri.parse(
-            'http://103.18.247.174:8080/AmitProject/admin/getDevices.php')) //device_id  device_code	device_name	device_detail	device_longitud	device_latitud	location_id	client_id	status	CreatedBy	CreatedDate	ModifiedBy	ModifiedDate	LS1	LID1	LS2	LID2	LS3	LID3	LatestUpdateDate	LastUpdateDate	device_height	device_activation	site_region	client_batch_number	sim_serial_number	sim_provider	battery_status	rssi_status	LatestClient1Date	LatestClient2Date	LatestClient3Date	battery_value	rssi_value
+            'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'))
         .then((value) {
       if (value.statusCode == 200) {
         List<DeviceJason> devices = [];

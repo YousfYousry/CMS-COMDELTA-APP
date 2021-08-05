@@ -8,7 +8,7 @@ import '../../Pages/ForgotPasswordPage.dart';
 import '../../Pages/UserProfilePage.dart';
 import '../Others/SizeTransition.dart';
 import '../../Pages/FeedBackPage.dart';
-import '../../Pages/main.dart';
+import '../../main.dart';
 
 class SideDrawer extends StatefulWidget {
   @override

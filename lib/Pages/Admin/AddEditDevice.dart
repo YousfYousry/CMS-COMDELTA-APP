@@ -7,11 +7,13 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/Others/smartSelect.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:smart_select/smart_select.dart';
@@ -38,7 +40,7 @@ class _AddDevice extends State<AddDevice> {
   String simProvider = "";
   String batteryStatus = "Inactive";
   String rssiStatus = "Inactive";
-  DateTime initialDate = DateTime.now();
+  // DateTime initialDate = DateTime.now();
 
   TextEditingController quantity = TextEditingController()..text = "1",
       deviceName = new TextEditingController(),
@@ -63,10 +65,10 @@ class _AddDevice extends State<AddDevice> {
         batteryStatus = status[getInt(widget.editDevice.batteryStatus)].title;
         rssiStatus = status[getInt(widget.editDevice.rssiStatus)].title;
         activationDate.text = widget.editDevice.activationDate;
-        if(widget.editDevice.activationDate.isNotEmpty) {
-          initialDate =
-              DateFormat('dd-MM-yyyy').parse(widget.editDevice.activationDate);
-        }
+        // if(widget.editDevice.activationDate.isNotEmpty) {
+        //   initialDate =
+        //       DateFormat('dd-MM-yyyy').parse(widget.editDevice.activationDate);
+        // }
         deviceName.text = widget.editDevice.deviceName;
         deviceDetail.text =widget.editDevice.deviceDetails;
         latitude.text = widget.editDevice.lat==500?"":widget.editDevice.lat.toString();
@@ -137,7 +139,7 @@ class _AddDevice extends State<AddDevice> {
                                 side: BorderSide(
                                     width: 1.0,
                                     style: BorderStyle.solid,
-                                    color: Colors.grey),
+                                    color: Colors.black),
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                               ),
                               child: Row(
@@ -147,10 +149,18 @@ class _AddDevice extends State<AddDevice> {
                                     child: TextFormField(
                                       textAlign: TextAlign.left,
                                       decoration: InputDecoration(
+
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(width: 1, color: Colors.black),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+
                                         contentPadding: EdgeInsets.only(
-                                            left: 15, top: 19, bottom: 19, right: 15),
+                                            left: 15, top: 18, bottom: 18, right: 15),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10.0),
+                                          borderSide:  BorderSide(
+                                            color: Colors.black),
                                         ),
                                       ),
                                       controller: quantity,
@@ -280,24 +290,9 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: deviceName,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        // errorText:
-                        //     nameError ? "Device Name already exist!" : null,
-                        hintText: 'Device Name',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Device Name',
                     ),
                     SizedBox(height: 20),
 
@@ -308,22 +303,9 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: deviceDetail,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Device Detail',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Device Detail',
                     ),
                     SizedBox(height: 20),
 
@@ -334,22 +316,10 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: latitude,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Latitude',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Latitude',
+                      keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 20),
 
@@ -360,22 +330,10 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: longitude,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Longitude',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Longitude',
+                      keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 20),
 
@@ -403,30 +361,37 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Material(
-                      color: Colors.white,
-                      child: InkWell(
-                        customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        onTap: () => _selectDate(context),
-                        child: TextField(
-                          controller: activationDate,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            disabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            hintText: 'Activation Date',
-                            hintStyle:
-                                TextStyle(color: Colors.black54, fontSize: 16),
-                            contentPadding: EdgeInsets.only(
-                                left: 15, top: 19, bottom: 19, right: 15),
-                          ),
-                        ),
-                      ),
+                    SmartDate(
+                      controller: activationDate,
+                      hintText: 'Activation Date',
                     ),
+                    // Material(
+                    //   color: Colors.white,
+                    //   shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.circular(10.0),
+                    //   ),
+                    //   child: InkWell(
+                    //     customBorder:  RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(10.0),
+                    //     ),
+                    //     onTap: () => _selectDate(context),
+                    //     child: TextField(
+                    //       controller: activationDate,
+                    //       enabled: false,
+                    //       decoration: InputDecoration(
+                    //         disabledBorder: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(10.0),
+                    //           borderSide: BorderSide(color: Colors.black),
+                    //         ),
+                    //         hintText: 'Activation Date',
+                    //         hintStyle:
+                    //             TextStyle(color: Colors.black54, fontSize: 16),
+                    //         contentPadding: EdgeInsets.only(
+                    //             left: 15, top: 18, bottom: 18, right: 15),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(height: 20),
 
                     RichText(
@@ -447,22 +412,9 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: batchNum,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Client Batch Number',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Client Batch Number',
                     ),
                     SizedBox(height: 20),
 
@@ -473,22 +425,9 @@ class _AddDevice extends State<AddDevice> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    TextField(
-                      // The validator receives the text that the user has entered.
-                      autofillHints: [AutofillHints.name],
-                      keyboardType: TextInputType.text,
+                    SmartField(
                       controller: serialNum,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'Sim serial Number',
-                        contentPadding: EdgeInsets.only(
-                            left: 15, top: 19, bottom: 19, right: 15),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                      hintText: 'Sim serial Number',
                     ),
                     SizedBox(height: 20),
 
@@ -523,58 +462,7 @@ class _AddDevice extends State<AddDevice> {
                     SizedBox(height: 5),
                     ModalFilter(rssiStatus, "RSSI Status", status,
                         (val) => rssiStatus = val, '', false),
-                    SizedBox(height: 20),
-
-                    // Material(
-                    //   color: Colors.white,
-                    //   child: InkWell(
-                    //     customBorder: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(10.0),
-                    //     ),
-                    //     //
-                    //     child: Container(
-                    //       // padding: EdgeInsets.symmetric(vertical: 10.0),
-                    //       decoration: ShapeDecoration(
-                    //         shape: RoundedRectangleBorder(
-                    //           side: BorderSide(
-                    //               width: 1.0,
-                    //               style: BorderStyle.solid,
-                    //               color: Colors.grey),
-                    //           borderRadius:
-                    //               BorderRadius.all(Radius.circular(10.0)),
-                    //         ),
-                    //       ),
-                    //       child: SmartSelect<String>.single(
-                    //         title: value,
-                    //         value: value,
-                    //         onChange: (state) =>
-                    //             setState(() => value = state.value),
-                    //         choiceItems: options,
-                    //         modalTitle: "Site Region",
-                    //         modalConfirm: false,
-                    //         modalType: S2ModalType.popupDialog,
-                    //         modalConfig: S2ModalConfig(
-                    //           style: S2ModalStyle(
-                    //             shape: RoundedRectangleBorder(
-                    //               borderRadius:
-                    //                   BorderRadius.all(Radius.circular(10.0)),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         choiceGrouped: false,
-                    //         modalFilter: true,
-                    //         modalFilterAuto: true,
-                    //         tileBuilder: (context, state) {
-                    //           return S2Tile.fromState(
-                    //             state,
-                    //             hideValue: true,
-                    //           );
-                    //         },
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    SizedBox(height: 100),
+                    SizedBox(height: 70),
                   ],
                 ),
               ),
@@ -591,41 +479,41 @@ class _AddDevice extends State<AddDevice> {
     );
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2050),
-      builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-              colorScheme: ColorScheme.fromSwatch(
-                primarySwatch: MaterialColor(0xff0065a3, customColors),
-                primaryColorDark: Color(0xff0065a3),
-                accentColor: Color(0xff0065a3),
-              ),
-              dialogBackgroundColor: Colors.white,
-              dialogTheme: DialogTheme(
-                  shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              ))),
-          child: child,
-        );
-      },
-    );
-
-    if (pickedDate != null && pickedDate != initialDate)
-      setState(() {
-        initialDate = pickedDate;
-        activationDate.text = formatDate(pickedDate);
-        // toast(formatDate(pickedDate));
-      });
-  }
-
-  String formatDate(DateTime date) {
-    return DateFormat('dd-MM-yyyy').format(date);
-  }
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: initialDate,
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2050),
+  //     builder: (BuildContext context, Widget child) {
+  //       return Theme(
+  //         data: ThemeData.light().copyWith(
+  //             colorScheme: ColorScheme.fromSwatch(
+  //               primarySwatch: MaterialColor(0xff0065a3, customColors),
+  //               primaryColorDark: Color(0xff0065a3),
+  //               accentColor: Color(0xff0065a3),
+  //             ),
+  //             dialogBackgroundColor: Colors.white,
+  //             dialogTheme: DialogTheme(
+  //                 shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.all(Radius.circular(10.0)),
+  //             ))),
+  //         child: child,
+  //       );
+  //     },
+  //   );
+  //
+  //   if (pickedDate != null && pickedDate != initialDate)
+  //     setState(() {
+  //       initialDate = pickedDate;
+  //       activationDate.text = formatDate(pickedDate);
+  //       // toast(formatDate(pickedDate));
+  //     });
+  // }
+  //
+  // String formatDate(DateTime date) {
+  //   return DateFormat('dd-MM-yyyy').format(date);
+  // }
 
   void save() {
     if (getInt(quantity.text) < 1) {
@@ -633,20 +521,21 @@ class _AddDevice extends State<AddDevice> {
       return;
     }
 
-    if (clientValue.contains("Select option")) {
+    if (clientValue.isEmpty) {
       setState(() {
         errorClient = true;
       });
     }
 
-    if (locationValue.contains("Select option")) {
+    if (locationValue.isEmpty) {
       setState(() {
         errorLocation = true;
       });
     }
 
-    if (clientValue.contains("Select option") ||
-        locationValue.contains("Select option")) {
+    if (clientValue.isEmpty ||
+        locationValue.isEmpty) {
+      toast("Please fill in all the required fields.");
       return;
     }
 

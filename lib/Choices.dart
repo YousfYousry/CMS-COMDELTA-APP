@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_select/smart_select.dart';
 
+// const PrimaryColor = const Color(0xff0065a3);
+
 List<S2Choice<String>> clientStatus = [
   S2Choice<String>(value: 'Hidden', title: 'Hidden'),
   S2Choice<String>(value: 'Shown', title: 'Shown'),
