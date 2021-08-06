@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class ManageDevicesAppBar extends StatelessWidget {
   final title;
   final context;
-  final func1, func2, func3;
+  final func1, func2, func3, func4;
 
-  ManageDevicesAppBar(this.context, this.title, this.func1,this.func2, this.func3);
+  ManageDevicesAppBar(
+      this.context, this.title, this.func1, this.func2, this.func3, this.func4);
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +73,16 @@ class ManageDevicesAppBar extends StatelessWidget {
                   ],
                 ),
               ),
+              PopupMenuItem<int>(
+                value: 3,
+                child: Row(
+                  children: [
+                    Icon(Icons.clear),
+                    const SizedBox(width: 8),
+                    Text('Clear Search'),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -89,6 +100,9 @@ class ManageDevicesAppBar extends StatelessWidget {
         break;
       case 2:
         func3();
+        break;
+      case 3:
+        func4();
     }
   }
 }

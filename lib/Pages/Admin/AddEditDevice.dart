@@ -3,11 +3,9 @@
 // import 'dart:convert';
 
 import 'dart:convert';
-
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
@@ -40,6 +38,7 @@ class _AddDevice extends State<AddDevice> {
   String simProvider = "";
   String batteryStatus = "Inactive";
   String rssiStatus = "Inactive";
+
   // DateTime initialDate = DateTime.now();
 
   TextEditingController quantity = TextEditingController()..text = "1",
@@ -65,14 +64,14 @@ class _AddDevice extends State<AddDevice> {
         batteryStatus = status[getInt(widget.editDevice.batteryStatus)].title;
         rssiStatus = status[getInt(widget.editDevice.rssiStatus)].title;
         activationDate.text = widget.editDevice.activationDate;
-        // if(widget.editDevice.activationDate.isNotEmpty) {
-        //   initialDate =
-        //       DateFormat('dd-MM-yyyy').parse(widget.editDevice.activationDate);
-        // }
         deviceName.text = widget.editDevice.deviceName;
-        deviceDetail.text =widget.editDevice.deviceDetails;
-        latitude.text = widget.editDevice.lat==500?"":widget.editDevice.lat.toString();
-        longitude.text = widget.editDevice.lon==500?"":widget.editDevice.lon.toString();
+        deviceDetail.text = widget.editDevice.deviceDetails;
+        latitude.text = widget.editDevice.lat == 500
+            ? ""
+            : widget.editDevice.lat.toString();
+        longitude.text = widget.editDevice.lon == 500
+            ? ""
+            : widget.editDevice.lon.toString();
         batchNum.text = widget.editDevice.batchNum;
         serialNum.text = widget.editDevice.serialNum;
       });
@@ -112,10 +111,8 @@ class _AddDevice extends State<AddDevice> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Visibility(
-                      child:
-                      Align(
+                      child: Align(
                         alignment: Alignment.centerLeft,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,11 +120,13 @@ class _AddDevice extends State<AddDevice> {
                             RichText(
                               text: TextSpan(
                                 text: 'Quantity',
-                                style: TextStyle(fontSize: 16.0, color: Colors.black),
+                                style: TextStyle(
+                                    fontSize: 16.0, color: Colors.black),
                                 children: [
                                   TextSpan(
                                     text: ' *',
-                                    style: TextStyle(color: Colors.red, fontSize: 16.0),
+                                    style: TextStyle(
+                                        color: Colors.red, fontSize: 16.0),
                                   ),
                                 ],
                               ),
@@ -140,7 +139,8 @@ class _AddDevice extends State<AddDevice> {
                                     width: 1.0,
                                     style: BorderStyle.solid,
                                     color: Colors.black),
-                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
                               ),
                               child: Row(
                                 children: <Widget>[
@@ -149,22 +149,27 @@ class _AddDevice extends State<AddDevice> {
                                     child: TextFormField(
                                       textAlign: TextAlign.left,
                                       decoration: InputDecoration(
-
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(width: 1, color: Colors.black),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              width: 1, color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
                                         contentPadding: EdgeInsets.only(
-                                            left: 15, top: 18, bottom: 18, right: 15),
+                                            left: 15,
+                                            top: 18,
+                                            bottom: 18,
+                                            right: 15),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10.0),
-                                          borderSide:  BorderSide(
-                                            color: Colors.black),
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
                                         ),
                                       ),
                                       controller: quantity,
-                                      keyboardType: TextInputType.numberWithOptions(
+                                      keyboardType:
+                                          TextInputType.numberWithOptions(
                                         decimal: true,
                                         signed: false,
                                       ),
@@ -174,8 +179,10 @@ class _AddDevice extends State<AddDevice> {
                                   Container(
                                     height: 55.0,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: <Widget>[
                                         Container(
                                           decoration: BoxDecoration(
@@ -194,7 +201,7 @@ class _AddDevice extends State<AddDevice> {
                                               ),
                                               onTap: () {
                                                 int currentValue =
-                                                int.parse(quantity.text);
+                                                    int.parse(quantity.text);
                                                 setState(() {
                                                   currentValue++;
                                                   quantity.text = (currentValue)
@@ -213,13 +220,14 @@ class _AddDevice extends State<AddDevice> {
                                             ),
                                             onTap: () {
                                               int currentValue =
-                                              int.parse(quantity.text);
+                                                  int.parse(quantity.text);
                                               setState(() {
                                                 print("Setting state");
                                                 currentValue--;
-                                                quantity.text = (currentValue > 0
-                                                    ? currentValue
-                                                    : 1)
+                                                quantity.text = (currentValue >
+                                                            0
+                                                        ? currentValue
+                                                        : 1)
                                                     .toString(); // decrementing value
                                               });
                                             },
@@ -237,8 +245,6 @@ class _AddDevice extends State<AddDevice> {
                       ),
                       visible: widget.title.contains("Add"),
                     ),
-
-
                     RichText(
                       text: TextSpan(
                         text: 'Client',
@@ -257,7 +263,6 @@ class _AddDevice extends State<AddDevice> {
                       setState(() => errorClient = false);
                     }, 'Please enter Client', errorClient),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Location',
@@ -276,7 +281,6 @@ class _AddDevice extends State<AddDevice> {
                       setState(() => errorLocation = false);
                     }, 'Please enter Location', errorLocation),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Device Name',
@@ -295,7 +299,6 @@ class _AddDevice extends State<AddDevice> {
                       hintText: 'Device Name',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Device Detail',
@@ -308,7 +311,6 @@ class _AddDevice extends State<AddDevice> {
                       hintText: 'Device Detail',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Latitude',
@@ -322,7 +324,6 @@ class _AddDevice extends State<AddDevice> {
                       keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Longitude',
@@ -336,7 +337,6 @@ class _AddDevice extends State<AddDevice> {
                       keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Height',
@@ -353,7 +353,6 @@ class _AddDevice extends State<AddDevice> {
                     ModalFilter(heightValue, "Height", height,
                         (val) => heightValue = val, '', false),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Activation Date',
@@ -365,35 +364,7 @@ class _AddDevice extends State<AddDevice> {
                       controller: activationDate,
                       hintText: 'Activation Date',
                     ),
-                    // Material(
-                    //   color: Colors.white,
-                    //   shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.circular(10.0),
-                    //   ),
-                    //   child: InkWell(
-                    //     customBorder:  RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(10.0),
-                    //     ),
-                    //     onTap: () => _selectDate(context),
-                    //     child: TextField(
-                    //       controller: activationDate,
-                    //       enabled: false,
-                    //       decoration: InputDecoration(
-                    //         disabledBorder: OutlineInputBorder(
-                    //           borderRadius: BorderRadius.circular(10.0),
-                    //           borderSide: BorderSide(color: Colors.black),
-                    //         ),
-                    //         hintText: 'Activation Date',
-                    //         hintStyle:
-                    //             TextStyle(color: Colors.black54, fontSize: 16),
-                    //         contentPadding: EdgeInsets.only(
-                    //             left: 15, top: 18, bottom: 18, right: 15),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Site Region',
@@ -404,7 +375,6 @@ class _AddDevice extends State<AddDevice> {
                     ModalFilter(siteRegionValue, "Site Region", siteRegion,
                         (val) => siteRegionValue = val, '', false),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Client Batch Number',
@@ -417,7 +387,6 @@ class _AddDevice extends State<AddDevice> {
                       hintText: 'Client Batch Number',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Sim serial Number',
@@ -430,7 +399,6 @@ class _AddDevice extends State<AddDevice> {
                       hintText: 'Sim serial Number',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Sim Provider',
@@ -441,7 +409,6 @@ class _AddDevice extends State<AddDevice> {
                     ModalFilter(simProvider, "Sim Provider", simCardProvider,
                         (val) => simProvider = val, '', false),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Battery Status',
@@ -452,7 +419,6 @@ class _AddDevice extends State<AddDevice> {
                     ModalFilter(batteryStatus, "Battery Status", status,
                         (val) => batteryStatus = val, '', false),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'RSSI Status',
@@ -479,42 +445,6 @@ class _AddDevice extends State<AddDevice> {
     );
   }
 
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime pickedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: initialDate,
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2050),
-  //     builder: (BuildContext context, Widget child) {
-  //       return Theme(
-  //         data: ThemeData.light().copyWith(
-  //             colorScheme: ColorScheme.fromSwatch(
-  //               primarySwatch: MaterialColor(0xff0065a3, customColors),
-  //               primaryColorDark: Color(0xff0065a3),
-  //               accentColor: Color(0xff0065a3),
-  //             ),
-  //             dialogBackgroundColor: Colors.white,
-  //             dialogTheme: DialogTheme(
-  //                 shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.all(Radius.circular(10.0)),
-  //             ))),
-  //         child: child,
-  //       );
-  //     },
-  //   );
-  //
-  //   if (pickedDate != null && pickedDate != initialDate)
-  //     setState(() {
-  //       initialDate = pickedDate;
-  //       activationDate.text = formatDate(pickedDate);
-  //       // toast(formatDate(pickedDate));
-  //     });
-  // }
-  //
-  // String formatDate(DateTime date) {
-  //   return DateFormat('dd-MM-yyyy').format(date);
-  // }
-
   void save() {
     if (getInt(quantity.text) < 1) {
       toast("Please enter a valid Quantity");
@@ -533,8 +463,7 @@ class _AddDevice extends State<AddDevice> {
       });
     }
 
-    if (clientValue.isEmpty ||
-        locationValue.isEmpty) {
+    if (clientValue.isEmpty || locationValue.isEmpty) {
       toast("Please fill in all the required fields.");
       return;
     }
@@ -552,7 +481,9 @@ class _AddDevice extends State<AddDevice> {
           'add_edit':
               widget.title.toLowerCase().contains("add") ? "add" : "edit",
           'quantity': quantity.text,
-          'device_id': widget.title.toLowerCase().contains("add") ? "" : widget.editDevice.id ,
+          'device_id': widget.title.toLowerCase().contains("add")
+              ? ""
+              : widget.editDevice.id,
           'client': (client.indexOf(S2Choice<String>(
                       value: clientValue, title: clientValue)) +
                   1)

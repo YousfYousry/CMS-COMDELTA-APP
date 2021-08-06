@@ -6,9 +6,7 @@ class SmartDate extends StatefulWidget {
   final TextEditingController controller;
   final hintText;
 
-  SmartDate(
-      {this.controller,
-        this.hintText});
+  SmartDate({this.controller, this.hintText});
 
   @override
   _SmartDate createState() => _SmartDate();
@@ -23,7 +21,7 @@ class _SmartDate extends State<SmartDate> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: InkWell(
-        customBorder:  RoundedRectangleBorder(
+        customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
         onTap: () => _selectDate(context),
@@ -36,10 +34,9 @@ class _SmartDate extends State<SmartDate> {
               borderSide: BorderSide(color: Colors.black),
             ),
             hintText: widget.hintText,
-            hintStyle:
-            TextStyle(color: Colors.black54, fontSize: 16),
-            contentPadding: EdgeInsets.only(
-                left: 15, top: 18, bottom: 18, right: 15),
+            hintStyle: TextStyle(color: Colors.black54, fontSize: 16),
+            contentPadding:
+                EdgeInsets.only(left: 15, top: 18, bottom: 18, right: 15),
           ),
         ),
       ),
@@ -49,7 +46,9 @@ class _SmartDate extends State<SmartDate> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: widget.controller.text.isEmpty?DateTime.now():DateFormat('dd-MM-yyyy').parse(widget.controller.text),
+      initialDate: widget.controller.text.isEmpty
+          ? DateTime.now()
+          : DateFormat('dd-MM-yyyy').parse(widget.controller.text),
       firstDate: DateTime(2000),
       lastDate: DateTime(2050),
       builder: (BuildContext context, Widget child) {
@@ -63,8 +62,8 @@ class _SmartDate extends State<SmartDate> {
               dialogBackgroundColor: Colors.white,
               dialogTheme: DialogTheme(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  ))),
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ))),
           child: child,
         );
       },

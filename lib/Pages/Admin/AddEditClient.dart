@@ -171,7 +171,7 @@ class _AddClient extends State<AddClient> {
                     SizedBox(height: 5),
                     ModalFilter(statThree, "Inactive Device", clientStatus,
                         (val) => statThree = val, '', false),
-                    SizedBox(height: 100),
+                    SizedBox(height: 70),
                   ],
                 ),
               ),
@@ -201,6 +201,7 @@ class _AddClient extends State<AddClient> {
         validateText = "Client Name is required";
         validate = true;
       });
+      toast("Please fill in the required field.");
     }
   }
 

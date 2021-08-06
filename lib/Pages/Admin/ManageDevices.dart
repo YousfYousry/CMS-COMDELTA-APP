@@ -4,19 +4,22 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
-
-// import 'package:login_cms_comdelta/Pages/Admin/ManageDevicesSearch.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'dart:math' as math;
+import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -57,9 +60,15 @@ var spanUp = WidgetSpan(
 
 class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   TextEditingController searchController = new TextEditingController();
-  bool loading = true, validate = false;
+  bool loading = true, validate = false, advancedSearchBool = false;
   int sortState = 1;
   Snack deleteSnack;
+
+  String clientAd = "", simProviderAd = "";
+  TextEditingController batchNumAd = new TextEditingController(),
+      activationFromAd = new TextEditingController(),
+      activationToAd = new TextEditingController(),
+      lastSignalAd = new TextEditingController();
 
   var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
   var devices = [];
@@ -271,7 +280,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     } else {
       setState(() {
         validate = false;
-        span1 = spanDown;
+        span1 = spanUp;
         span2 = spanDefault;
         span3 = spanDefault;
         devices.clear();
@@ -315,8 +324,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: ManageDevicesAppBar(
-              context, "Manage Device", addDevice, exportPdf, advancedSearch),
+          child: ManageDevicesAppBar(context, "Manage Device", addDevice,
+              exportPdf, advancedSearch, reset),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -847,47 +856,163 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   }
 
   void advancedSearch() {
-    Navigator.of(context).push(new MaterialPageRoute<String>(
-        builder: (BuildContext context) {
-          return new Scaffold(
-            backgroundColor: Color(0xfafafafa),
-            appBar: new AppBar(
-              centerTitle: true,
-              backgroundColor: Color(0xff0065a3),
-              title: const Text('Advanced Search'),
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    Icons.restart_alt,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    // do something
-                  },
-                )
-              ],
-            ),
-            body: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.all(20),
-              color: Color(0xfafafafa),
-              child: Column(
-                children: [
-                  TextField(),
+    Navigator.of(context).push(
+      new MaterialPageRoute<String>(
+          builder: (BuildContext context) {
+            return new Scaffold(
+              backgroundColor: Color(0xfafafafa),
+              appBar: new AppBar(
+                centerTitle: true,
+                backgroundColor: Color(0xff0065a3),
+                title: const Text('Advanced Search'),
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.restart_alt,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      clientAd = "";
+                      simProviderAd = "";
+                      batchNumAd.text = "";
+                      activationFromAd.text = "";
+                      activationToAd.text = "";
+                      lastSignalAd.text = "";
+                      Navigator.pop(this.context);
+                      getLocations();
+                    },
+                  )
                 ],
               ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                // Navigator.push(context, SizeRoute(page: AddClient())).then((value) => getClients());
-              },
-              child: const Icon(Icons.search),
-              backgroundColor: Color(0xff0065a3),
-            ),
-          );
-        },
-        fullscreenDialog: true),);
+              body: GestureDetector(
+                onTap: () {
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  if (!currentFocus.hasPrimaryFocus &&
+                      currentFocus.focusedChild != null) {
+                    FocusManager.instance.primaryFocus.unfocus();
+                  }
+                },
+                child: SingleChildScrollView(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    padding: EdgeInsets.all(15),
+                    color: Color(0xfafafafa),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Client',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        ModalFilter(clientAd, "Client", client,
+                            (val) => clientAd = val, "", false),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Client Batch Number',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartField(
+                          controller: batchNumAd,
+                          hintText: "Client Batch Number",
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Activation Date From',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartDate(
+                          controller: activationFromAd,
+                          hintText: "Activation Date From",
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Activation Date To',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartDate(
+                          controller: activationToAd,
+                          hintText: "Activation Date To",
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Sim Provider',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        ModalFilter(
+                            simProviderAd,
+                            "Sim Provider",
+                            simCardProvider,
+                            (val) => simProviderAd = val,
+                            "",
+                            false),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Last Signal From',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartDate(
+                          controller: lastSignalAd,
+                          hintText: "Last Signal From",
+                        ),
+                        SizedBox(
+                          height: 70,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  if (clientAd == "" &&
+                      simProviderAd == "" &&
+                      batchNumAd.text == "" &&
+                      activationFromAd.text == "" &&
+                      activationToAd.text == "" &&
+                      lastSignalAd.text == "") {
+                    toast("Please fill in any field to search");
+                    return;
+                  }
+                  advancedSearchBool = true;
+                  Navigator.pop(this.context);
+                  getLocations();
+                },
+                child: const Icon(Icons.search),
+                backgroundColor: Color(0xff0065a3),
+              ),
+            );
+          },
+          fullscreenDialog: true),
+    );
   }
 
   void sendDeleteReq(String deviceId) {
@@ -992,42 +1117,106 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     });
   }
 
-  void showDevices(List<DeviceJason> clients) {
+  void showDevices(List<DeviceJason> devices) {
     setState(() {
       this.duplicateDevices.clear();
       this.devices.clear();
-      this.duplicateDevices.addAll(clients);
-      this.devices.addAll(clients);
-      if (sortState == 0) {
-        devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
-      } else if (sortState == 1) {
-        devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
-      } else if (sortState == 2) {
-        devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
-      } else if (sortState == 3) {
-        devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
-      } else if (sortState == 4) {
-        devices.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
-      } else if (sortState == 5) {
-        devices.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      if (!advancedSearchBool) {
+        // this.duplicateDevices.addAll(devices);
+        this.devices.addAll(devices);
+      } else {
+        addFilteredClients(devices);
+        advancedSearchBool = false;
       }
+      if (sortState == 0) {
+        this.devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+      } else if (sortState == 1) {
+        this.devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+      } else if (sortState == 2) {
+        this.devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+      } else if (sortState == 3) {
+        this.devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+      } else if (sortState == 4) {
+        this
+            .devices
+            .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+      } else if (sortState == 5) {
+        this
+            .devices
+            .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      }
+      this.duplicateDevices.addAll(this.devices);
       loading = false;
     });
   }
 
-  double getDouble(String str) {
-    try {
-      return double.parse(str);
-    } catch (e) {
-      return 0;
-    }
+  void addFilteredClients(List<DeviceJason> devices) {
+    devices.forEach((device) {
+      bool clientBool = (clientAd.isEmpty ||
+          client[getInt(device.client) - 1].contains(clientAd));
+      bool batchBool = (batchNumAd.text.isEmpty ||
+          device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
+      bool activationFromBool;
+      try {
+        activationFromBool = (activationFromAd.text.isEmpty ||
+            DateFormat('dd-MM-yyyy').parse(device.activationDate).isAfter(
+                DateFormat('dd-MM-yyyy').parse(activationFromAd.text))||DateFormat('dd-MM-yyyy').parse(device.activationDate).isAtSameMomentAs(
+            DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
+      } catch (Exception) {
+        activationFromBool = false;
+      }
+      bool activationToBool;
+      try {
+
+        activationToBool = (activationToAd.text.isEmpty ||
+          DateFormat('dd-MM-yyyy').parse(device.activationDate).isBefore(DateFormat('dd-MM-yyyy').parse(activationToAd.text))||  DateFormat('dd-MM-yyyy').parse(device.activationDate).isAtSameMomentAs(DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
+
+      } catch (Exception) {
+        activationToBool = false;
+      }
+      bool simBool =
+          (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
+
+      bool lastSignalBool;
+      try {
+
+        lastSignalBool = (lastSignalAd.text.isEmpty ||
+            DateFormat('yyyy-MM-dd HH:mm:ss').parse(device.lastSignal).isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text))||  DateFormat('yyyy-MM-dd HH:mm:ss').parse(device.lastSignal).isAtSameMomentAs(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
+
+      } catch (Exception) {
+        lastSignalBool = false;
+      }
+
+      if (clientBool &&
+              batchBool &&
+              activationFromBool &&
+              activationToBool &&
+              simBool&&
+          lastSignalBool
+          ) {
+        this.devices.add(device);
+      }
+    });
   }
 
-  void toast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1);
+  void reset() {
+    clientAd = "";
+    simProviderAd = "";
+    batchNumAd.text = "";
+    activationFromAd.text = "";
+    activationToAd.text = "";
+    lastSignalAd.text = "";
+    getLocations();
+  }
+
+  int getInt(String s) {
+    try {
+      if (s == null || int.parse(s) == null) {
+        return 0;
+      }
+      return int.parse(s);
+    } catch (Exception) {
+      return 0;
+    }
   }
 }

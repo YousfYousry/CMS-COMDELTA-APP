@@ -10,6 +10,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 //   });
 // }
 
+double getDouble(String str) {
+  try {
+    return double.parse(str);
+  } catch (e) {
+    return 0;
+  }
+}
 
 void toast(String msg) {
   Fluttertoast.showToast(
