@@ -7,6 +7,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
@@ -772,7 +773,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                       caption: 'Logs',
                                       color: Color(0xffFFB61E),
                                       icon: Icons.signal_cellular_alt,
-                                      onTap: () => toast('Logs'),
+                                      onTap: () => deviceLogs(),
                                     ),
                                     new IconSlideAction(
                                       caption: 'Download',
@@ -847,6 +848,15 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       context,
       SizeRoute(
         page: AddDevice("Add Device", null),
+      ),
+    ).then((value) => getLocations());
+  }
+
+  void deviceLogs(){
+    Navigator.push(
+      context,
+      SizeRoute(
+        page: DeviceLogs(),
       ),
     ).then((value) => getLocations());
   }
