@@ -8,7 +8,7 @@
         android:requestLegacyExternalStorage="true"
         tools:targetApi="n"
         android:icon="@mipmap/ic_launcher"
-        android:label="CMS Comdelta"
+        android:label="SSAOL COMDELTA"
         android:usesCleartextTraffic="true">
 
         <activity

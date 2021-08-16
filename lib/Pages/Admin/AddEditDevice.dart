@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
@@ -434,9 +435,8 @@ class _AddDevice extends State<AddDevice> {
               ),
             ),
             Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
+              child: Loading(
+                loading: loading,
               ),
             ),
           ],

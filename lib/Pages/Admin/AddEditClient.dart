@@ -5,6 +5,7 @@ import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
@@ -110,7 +111,6 @@ class _AddClient extends State<AddClient> {
                       hintText: 'Client Name',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Address',
@@ -123,7 +123,6 @@ class _AddClient extends State<AddClient> {
                       hintText: 'Address',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Contact No',
@@ -137,7 +136,6 @@ class _AddClient extends State<AddClient> {
                       keyboardType: TextInputType.number,
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Email',
@@ -150,7 +148,6 @@ class _AddClient extends State<AddClient> {
                       hintText: 'Email',
                     ),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Active Device Last 72 Hours\n(Dashboard)',
@@ -161,7 +158,6 @@ class _AddClient extends State<AddClient> {
                     ModalFilter(statTwo, "Active Device", clientStatus,
                         (val) => statTwo = val, '', false),
                     SizedBox(height: 20),
-
                     RichText(
                       text: TextSpan(
                         text: 'Inactive Device Last 72 Hours\n(Dashboard)',
@@ -177,9 +173,8 @@ class _AddClient extends State<AddClient> {
               ),
             ),
             Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
+              child: Loading(
+                loading: loading,
               ),
             ),
           ],

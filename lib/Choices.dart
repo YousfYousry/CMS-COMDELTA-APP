@@ -65,6 +65,7 @@ List<S2Choice<String>> siteRegion = [
 List<S2Choice<String>> simCardProvider = [
   S2Choice<String>(value: 'Celcom', title: 'Celcom'),
   S2Choice<String>(value: 'Maxis', title: 'Maxis'),
+  S2Choice<String>(value: 'Things Mobile', title: 'Things Mobile'),
 ];
 
 List<S2Choice<String>> status = [

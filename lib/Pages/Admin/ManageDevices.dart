@@ -10,14 +10,14 @@ import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
-import 'package:maps_launcher/maps_launcher.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'dart:math' as math;
 import '../../Choices.dart';
@@ -74,146 +74,6 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
   var devices = [];
   var duplicateDevices = [];
-
-  Widget details(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Flexible(
-              child: Text(
-                value,
-                style: TextStyle(
-                    fontSize: 13, color: Colors.black.withOpacity(0.6)),
-                maxLines: 2,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget l123(String title, bool value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Icon(
-              Icons.lightbulb,
-              color: value ? Colors.green : Colors.red,
-              size: 20.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget battery(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 2.5,
-              ),
-              child: ImageIcon(
-                AssetImage("assets/battery/battery" + value + ".png"),
-                color: Colors.black,
-                size: 15.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget rssi(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 2.5,
-              ),
-              child: ImageIcon(
-                AssetImage("assets/rssi/rssi" + value + ".png"),
-                color: Colors.black,
-                size: 15.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget status(String title, bool value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Icon(
-              value ? Icons.check : Icons.close,
-              color: value ? Colors.green : Colors.red,
-              size: 20.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   void _sort1() {
     if (span1 != spanDown) {
@@ -336,7 +196,6 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         //   child: const Icon(Icons.add),
         //   backgroundColor: Color(0xff0065a3),
         // ),
-
         // drawer: SideDrawerAdmin(),
         body: Stack(
           children: [
@@ -368,11 +227,11 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                 Expanded(
                   child: Container(
                     width: double.infinity,
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, bottom: 20.0),
                     decoration: BoxDecoration(
                       border: Border.all(width: 1, color: Colors.grey),
                     ),
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, bottom: 20.0),
                     child: Column(
                       children: [
                         Container(
@@ -476,6 +335,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                         ),
                         Expanded(
                           child: Container(
+                            clipBehavior: Clip.hardEdge,
                             decoration: new BoxDecoration(color: Colors.white),
                             child: ListView.builder(
                               itemCount: devices.length,
@@ -491,169 +351,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                             : Color(0xf1f1f1f1),
                                         child: InkWell(
                                           onTap: () {
-                                            AwesomeDialog(
-                                              dialogBackgroundColor:
-                                                  Color(0xfafafafa),
-                                              context: context,
-                                              animType: AnimType.SCALE,
-                                              dialogType: DialogType.NO_HEADER,
-                                              body: Padding(
-                                                padding: EdgeInsets.only(
-                                                    left: 15, right: 15),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    details('ID',
-                                                        devices[index].id),
-                                                    details(
-                                                        'Device Name',
-                                                        devices[index]
-                                                            .deviceName),
-                                                    details(
-                                                        'Device Detail',
-                                                        devices[index]
-                                                            .deviceDetails),
-                                                    details(
-                                                        'Height',
-                                                        devices[index]
-                                                            .deviceHeight),
-                                                    details(
-                                                        'Activation Date',
-                                                        devices[index]
-                                                            .activationDate),
-                                                    details(
-                                                        'Location',
-                                                        devices[index]
-                                                            .deviceLocation),
-                                                    details(
-                                                        'Last Signal',
-                                                        devices[index]
-                                                            .lastSignal),
-                                                    l123('L1#',
-                                                        devices[index].l1),
-                                                    l123('L2#',
-                                                        devices[index].l2),
-                                                    l123('L3#',
-                                                        devices[index].l3),
-                                                    battery('Battery',
-                                                        devices[index].battery),
-                                                    rssi('Rssi',
-                                                        devices[index].rssi),
-                                                    status('Status',
-                                                        devices[index].status),
-                                                    ElevatedButton(
-                                                      style: ButtonStyle(
-                                                        backgroundColor: MaterialStateProperty.all<
-                                                            Color>((devices[index]
-                                                                        .lat !=
-                                                                    500 &&
-                                                                devices[index]
-                                                                        .lon !=
-                                                                    500 &&
-                                                                devices[index]
-                                                                    .deviceName
-                                                                    .isNotEmpty)
-                                                            ? PrimaryColor
-                                                            : Colors.grey),
-                                                        shape: MaterialStateProperty
-                                                            .all<
-                                                                RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                            side: BorderSide(
-                                                                color: Colors
-                                                                    .black12),
-                                                          ),
-                                                        ),
-                                                      ),
-
-                                                      onPressed: () => (devices[
-                                                                          index]
-                                                                      .lat !=
-                                                                  500 &&
-                                                              devices[
-                                                                          index]
-                                                                      .lon !=
-                                                                  500 &&
-                                                              devices[
-                                                                      index]
-                                                                  .deviceName
-                                                                  .isNotEmpty)
-                                                          ? MapsLauncher
-                                                              .launchCoordinates(
-                                                                  devices[index]
-                                                                      .lat,
-                                                                  devices[index]
-                                                                      .lon,
-                                                                  devices[index]
-                                                                      .deviceName)
-                                                          : toast(
-                                                              "Location is unavailable")
-                                                      // if (lat != 500 && lon != 500 && title.isNotEmpty) {
-                                                      //   MapsLauncher.launchCoordinates(lat, lon, title);
-                                                      // }
-                                                      ,
-                                                      // tooltip: 'Google maps',
-                                                      child: Center(
-                                                        child: Container(
-                                                          height: 30,
-                                                          child: Row(
-                                                            children: [
-                                                              Spacer(),
-                                                              Text(
-                                                                "Show on google maps",
-                                                                style: TextStyle(
-                                                                    color: (devices[index].lat != 500 &&
-                                                                            devices[index].lon !=
-                                                                                500 &&
-                                                                            devices[index]
-                                                                                .deviceName
-                                                                                .isNotEmpty)
-                                                                        ? null
-                                                                        : Colors
-                                                                            .black54,
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              ),
-                                                              Padding(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(5),
-                                                                child: Image(
-                                                                  color: (devices[index].lat != 500 &&
-                                                                          devices[index].lon !=
-                                                                              500 &&
-                                                                          devices[index]
-                                                                              .deviceName
-                                                                              .isNotEmpty)
-                                                                      ? null
-                                                                      : Colors
-                                                                          .black54,
-                                                                  image: AssetImage(
-                                                                      'assets/image/google_maps.png'),
-                                                                ),
-                                                              ),
-                                                              Spacer(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              title: 'This is Ignored',
-                                              desc: 'This is also Ignored',
-                                            )..show();
+                                            ShowDevice(context, devices[index]);
                                           },
                                           child: Container(
                                             height: 40,
@@ -773,7 +471,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                       caption: 'Logs',
                                       color: Color(0xffFFB61E),
                                       icon: Icons.signal_cellular_alt,
-                                      onTap: () => deviceLogs(),
+                                      onTap: () => deviceLogs(devices[index]),
                                     ),
                                     new IconSlideAction(
                                       caption: 'Download',
@@ -823,9 +521,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
               ],
             ),
             Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
+              child: Loading(
+                loading: loading,
               ),
             ),
           ],
@@ -852,13 +549,13 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     ).then((value) => getLocations());
   }
 
-  void deviceLogs(){
+  void deviceLogs(DeviceJason device) {
     Navigator.push(
       context,
       SizeRoute(
-        page: DeviceLogs(),
+        page: DeviceLogs(device),
       ),
-    ).then((value) => getLocations());
+    );
   }
 
   void exportPdf() {
@@ -1056,7 +753,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   void getLocations() {
     setState(() {
+      searchController.text = "";
       loading = true;
+      validate = false;
     });
     http
         .get(Uri.parse(
@@ -1170,17 +869,23 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       try {
         activationFromBool = (activationFromAd.text.isEmpty ||
             DateFormat('dd-MM-yyyy').parse(device.activationDate).isAfter(
-                DateFormat('dd-MM-yyyy').parse(activationFromAd.text))||DateFormat('dd-MM-yyyy').parse(device.activationDate).isAtSameMomentAs(
-            DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
+                DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
+            DateFormat('dd-MM-yyyy')
+                .parse(device.activationDate)
+                .isAtSameMomentAs(
+                    DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
       } catch (Exception) {
         activationFromBool = false;
       }
       bool activationToBool;
       try {
-
         activationToBool = (activationToAd.text.isEmpty ||
-          DateFormat('dd-MM-yyyy').parse(device.activationDate).isBefore(DateFormat('dd-MM-yyyy').parse(activationToAd.text))||  DateFormat('dd-MM-yyyy').parse(device.activationDate).isAtSameMomentAs(DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
-
+            DateFormat('dd-MM-yyyy').parse(device.activationDate).isBefore(
+                DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
+            DateFormat('dd-MM-yyyy')
+                .parse(device.activationDate)
+                .isAtSameMomentAs(
+                    DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
       } catch (Exception) {
         activationToBool = false;
       }
@@ -1189,21 +894,24 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
       bool lastSignalBool;
       try {
-
         lastSignalBool = (lastSignalAd.text.isEmpty ||
-            DateFormat('yyyy-MM-dd HH:mm:ss').parse(device.lastSignal).isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text))||  DateFormat('yyyy-MM-dd HH:mm:ss').parse(device.lastSignal).isAtSameMomentAs(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
-
+            DateFormat('yyyy-MM-dd HH:mm:ss')
+                .parse(device.lastSignal)
+                .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
+            DateFormat('yyyy-MM-dd HH:mm:ss')
+                .parse(device.lastSignal)
+                .isAtSameMomentAs(
+                    DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
       } catch (Exception) {
         lastSignalBool = false;
       }
 
       if (clientBool &&
-              batchBool &&
-              activationFromBool &&
-              activationToBool &&
-              simBool&&
-          lastSignalBool
-          ) {
+          batchBool &&
+          activationFromBool &&
+          activationToBool &&
+          simBool &&
+          lastSignalBool) {
         this.devices.add(device);
       }
     });

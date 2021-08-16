@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class DeviceJason {
   String _id = "";
   String _client = "";
@@ -22,6 +24,7 @@ class DeviceJason {
   bool _status = false;
   double _lat = 500;
   double _lon = 500;
+  int _icon = 2;
 
   void setHighLight(String value) {
     _highLight = value;
@@ -49,7 +52,8 @@ class DeviceJason {
       this._rssi,
       this._status,
       this._lat,
-      this._lon);
+      this._lon,
+      this._icon);
 
   factory DeviceJason.fromJson(
       Map<String, dynamic> json, String deviceLocation) {
@@ -97,6 +101,23 @@ class DeviceJason {
       }
     }
 
+    int getIcon(String str, bool allOn) {
+      DateTime date = DateTime.now();
+      if (DateFormat('yyyy-MM-dd HH:mm:ss').parse(str).isBefore(DateTime(
+          date.year,
+          date.month,
+          date.day - 3,
+          date.hour,
+          date.minute,
+          date.second))) {
+        return 2;
+      }
+      if (!allOn) {
+        return 1;
+      }
+      return 0;
+    }
+
     return DeviceJason(
       getStr(json['device_id']),
       getStr(json['client_id']),
@@ -121,7 +142,57 @@ class DeviceJason {
       (getStr(json['status']).contains("1")),
       getDouble(getStr(json['device_longitud'])),
       getDouble(getStr(json['device_latitud'])),
+      getIcon(
+          getStr(json['LatestUpdateDate']),
+          (getStr(json['LS1']).contains("1") &&
+              getStr(json['LS2']).contains("1") &&
+              getStr(json['LS3']).contains("1"))),
     );
+  }
+
+  bool inActiveSince(int since) {
+    DateTime date = DateTime.now();
+    return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(DateTime(
+        date.year,
+        date.month,
+        date.day,
+        date.hour-since,
+        date.minute,
+        date.second));
+  }
+
+  //
+  // bool activeLastHour() {
+  //   DateTime date = DateTime.now();
+  //   return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isAfter(DateTime(
+  //       date.year,
+  //       date.month,
+  //       date.day,
+  //       date.hour-1,
+  //       date.minute,
+  //       date.second));
+  // }
+  //
+  // bool inActiveLast14() {
+  //   DateTime date = DateTime.now();
+  //   return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(DateTime(
+  //       date.year,
+  //       date.month,
+  //       date.day,
+  //       date.hour-14,
+  //       date.minute,
+  //       date.second));
+  // }
+
+  bool inActiveLast72() {
+    DateTime date = DateTime.now();
+    return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(DateTime(
+        date.year,
+        date.month,
+        date.day,
+        date.hour-72,
+        date.minute,
+        date.second));
   }
 
   String get id => _id;
@@ -169,4 +240,6 @@ class DeviceJason {
   String get rssiStatus => _rssiStatus;
 
   String get serialNum => _serialNum;
+
+  int get icon => _icon;
 }

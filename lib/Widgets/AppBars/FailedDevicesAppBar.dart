@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
-// ignore: must_be_immutable
 class FailedDevicesAppBar extends StatelessWidget {
-  String title = '';
-  BuildContext context;
-  FailedDevicesAppBar(this.context,this.title);
+  final title;
+  final context;
+  final func1;
+
+  FailedDevicesAppBar(this.context,this.title,this.func1);
 
   @override
   Widget build(BuildContext context) {
@@ -51,23 +52,7 @@ class FailedDevicesAppBar extends StatelessWidget {
   void onSelected(BuildContext context, int item) {
     switch (item) {
       case 0:
-        // Navigator.push(
-        //   context,
-        //   SizeRoute(
-        //     page: AddDevice(),
-        //   ),
-        // );
-      //   break;
-      // case 1:
-      //   // Navigator.of(context).push(
-      //   //   MaterialPageRoute(builder: (context) => SharePage()),
-      //   // );
-      //   break;
-      // case 2:
-      //   // Navigator.of(context).pushAndRemoveUntil(
-      //   //   MaterialPageRoute(builder: (context) => LoginPage()),
-      //   //       (route) => false,
-      //   // );
+        func1();
     }
   }
 }

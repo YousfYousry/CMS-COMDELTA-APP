@@ -7,7 +7,7 @@ import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
 import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
-import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Pages/ForgotPasswordPage.dart';
@@ -110,47 +110,8 @@ class _SideDrawer extends State<SideDrawerAdmin> {
           ListTile(
             leading: Icon(Icons.home),
             title: Text('Dashoard'),
-            onTap: () => {
-              Navigator.push(
-                context,
-                SizeRoute(
-                  page: DashBoard(),
-                ),
-              ),
-            },
+            onTap: () => Navigator.pop(context),
           ),
-          // ExpansionPanelList(
-          //   elevation: 0,
-          //   expandedHeaderPadding: EdgeInsets.all(0),
-          //   dividerColor: Color(0xfffafafa),
-          //   expansionCallback: (int index, bool isExpanded) {
-          //     setState(() {
-          //       _data[index].isExpanded = !isExpanded;
-          //     });
-          //   },
-          //   children: _data.map<ExpansionPanel>((Item item) {
-          //     return ExpansionPanel(
-          //       backgroundColor: Color(0xfffafafa),
-          //       headerBuilder: (BuildContext context, bool isExpanded) {
-          //         return ListTile(
-          //           title: Text(item.headerValue),
-          //         );
-          //       },
-          //       body: ListTile(
-          //           title: Text(item.expandedValue),
-          //           subtitle:
-          //           const Text('To delete this panel, tap the trash can icon'),
-          //           trailing: const Icon(Icons.delete),
-          //           onTap: () {
-          //             setState(() {
-          //               _data.removeWhere((Item currentItem) => item == currentItem);
-          //             });
-          //           }),
-          //       isExpanded: item.isExpanded,
-          //     );
-          //   }).toList(),
-          // ),
-
           ExpansionPanelList(
             elevation: 0,
             expandedHeaderPadding: EdgeInsets.all(0),
@@ -181,22 +142,6 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   children: [
                     itemChild("Manage Client", ManageClient()),
                     itemChild("Add Client", AddClient()),
-                    // Container(
-                    //   height: 20,
-                    //   child: Center(
-                    //     child: Text(
-                    //       'Add Client',
-                    //       style: TextStyle(fontSize: 14, color: Colors.black87),
-                    //     ),
-                    //   ),
-                    // ),
-                    // ListTile(
-                    //   title: Text('                Add Client'),
-                    //   // subtitle: Text('Details goes here'),
-                    //   onTap: () {
-                    //     toast("tapped 2");
-                    //   },
-                    // ),
                   ],
                 ),
                 isExpanded: button1,
@@ -235,25 +180,6 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                     itemChild("Manage Device", ManageDevice()),
                     itemChild("Add Device", AddDevice("Add Device", null)),
                     itemChild("Failed Device", FailedDevice()),
-                    //
-                    // ListTile(
-                    //   title: Text('                Manage Device'),
-                    //   onTap: () {
-                    //     toast("tapped 1");
-                    //   },
-                    // ),
-                    // ListTile(
-                    //   title: Text('                Add Device'),
-                    //   onTap: () {
-                    //     toast("tapped 2");
-                    //   },
-                    // ),
-                    // ListTile(
-                    //   title: Text('                Failed Device'),
-                    //   onTap: () {
-                    //     toast("tapped 3");
-                    //   },
-                    // ),
                   ],
                 ),
                 isExpanded: button2,
@@ -373,28 +299,5 @@ class _SideDrawer extends State<SideDrawerAdmin> {
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 1,
     );
-  }
-
-  void logOut(BuildContext context) {
-    load('token').then((value) {
-      http.post(
-          Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
-          body: {
-            'token': value,
-          }).then((response) {
-        String res = json.decode(response.body);
-        if (res == "200") {
-          save('token', '-1');
-          save('profile_pic', '-1');
-          save('client_id', '-1');
-          save('user_id', '-1');
-          Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
-        } else {
-          toast("Error logging out!");
-        }
-      }).onError((error, stackTrace) {
-        toast('Error: ' + error.message);
-      });
-    });
   }
 }

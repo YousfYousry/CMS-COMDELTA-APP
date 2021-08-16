@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../../Pages/DeviceStatus.dart';
+import '../../Pages/Client/DeviceStatus.dart';
 import 'SizeTransition.dart';
 
 class FloatingButton extends StatelessWidget {

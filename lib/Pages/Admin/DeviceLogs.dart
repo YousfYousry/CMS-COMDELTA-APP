@@ -3,15 +3,21 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
+import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'dart:math' as math;
-
 import 'package:substring_highlight/substring_highlight.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
 class DeviceLogs extends StatefulWidget {
+  final device;
+
+  DeviceLogs(this.device);
+
   @override
   _DeviceLogs createState() => _DeviceLogs();
 }
@@ -38,20 +44,31 @@ var spanUp = WidgetSpan(
     ),
     spanDefault = WidgetSpan(
       child: Transform.rotate(
-          angle: 90 * math.pi / 180,
-          child: Icon(
-            Icons.sync_alt,
-            size: 15,
-            color: Colors.grey,
-          )),
+        angle: 90 * math.pi / 180,
+        child: Icon(
+          Icons.sync_alt,
+          size: 15,
+          color: Colors.grey,
+        ),
+      ),
     );
 
-class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
+class _DeviceLogs extends State<DeviceLogs> {
   TextEditingController searchController = new TextEditingController();
-  bool loading = false, validate = false;
-  int sortState = 1;
+  bool loading = true, validate = false;
 
-  var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
+  var spans = [
+    spanUp,
+    spanDefault,
+    spanDefault,
+    spanDefault,
+    spanDefault,
+    spanDefault,
+    spanDefault,
+    spanDefault,
+    spanDefault
+  ];
+
   var logs = [];
   var duplicateLogs = [];
 
@@ -59,153 +76,18 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
   ScrollController _letters;
   ScrollController _numbers;
 
-  Widget details(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Flexible(
-              child: Text(
-                value,
-                style: TextStyle(
-                    fontSize: 13, color: Colors.black.withOpacity(0.6)),
-                maxLines: 2,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget l123(String title, bool value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Icon(
-              Icons.lightbulb,
-              color: value ? Colors.green : Colors.red,
-              size: 20.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget battery(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 2.5,
-              ),
-              child: ImageIcon(
-                AssetImage("assets/battery/battery" + value + ".png"),
-                color: Colors.black,
-                size: 15.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget rssi(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 2.5,
-              ),
-              child: ImageIcon(
-                AssetImage("assets/rssi/rssi" + value + ".png"),
-                color: Colors.black,
-                size: 15.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget status(String title, bool value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Icon(
-              value ? Icons.check : Icons.close,
-              color: value ? Colors.green : Colors.red,
-              size: 20.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget titleElement(
-      double width, double height, String title, var span, var onTap) {
+  Widget titleElement(double width, double height, String title, int index) {
     return Container(
       width: width,
       height: height,
       child: InkWell(
-        onTap: () => setState(() => onTap()),
+        onTap: () {
+          setState(() {
+            bool isUp = (spans[index] != spanDown);
+            resetSpans(isUp, index);
+            spans[index] = isUp ? spanDown : spanUp;
+          });
+        },
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(
@@ -218,7 +100,7 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                 ),
                 children: [
                   TextSpan(text: title),
-                  span,
+                  spans[index],
                 ],
               ),
             ),
@@ -240,123 +122,89 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
         ),
       ),
       child: Align(
-          alignment: Alignment.centerLeft,
-          child: SubstringHighlight(
-            text: title,
-            term: high,
-            textStyleHighlight: TextStyle(
-              fontSize: 13,
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-            textStyle: TextStyle(
-              fontSize: 12,
-              color: Colors.black,
-            ),
+        alignment: Alignment.centerLeft,
+        child: SubstringHighlight(
+          text: title,
+          term: high,
+          textStyleHighlight: TextStyle(
+            fontSize: 13,
+            color: Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+          textStyle: TextStyle(
+            fontSize: 12,
+            color: Colors.black,
           ),
         ),
+      ),
     );
   }
 
-  // void _sort1() {
-  // if (span1 != spanDown) {
-  //   sortState = 0;
-  //   devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
-  //   span1 = spanDown;
-  // } else {
-  //   sortState = 1;
-  //   devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
-  //   span1 = spanUp;
-  // }
-  // span2 = spanDefault;
-  // span3 = spanDefault;
-  // }
-  //
-  // void _sort2() {
-  //   if (span2 != spanDown) {
-  //     sortState = 2;
-  //     devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
-  //     span2 = spanDown;
-  //   } else {
-  //     sortState = 3;
-  //     devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
-  //     span2 = spanUp;
-  //   }
-  //   span1 = spanDefault;
-  //   span3 = spanDefault;
-  // }
-  //
-  // void _sort3() {
-  //   if (span3 != spanDown) {
-  //     sortState = 4;
-  //     devices.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
-  //     span3 = spanDown;
-  //   } else {
-  //     sortState = 5;
-  //     devices.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
-  //     span3 = spanUp;
-  //   }
-  //   span2 = spanDefault;
-  //   span1 = spanDefault;
-  // }
-  //
-  // void filterSearchResults(String query) {
-  //   bool resultFound = false;
-  //   var dummySearchList = [];
-  //   dummySearchList.addAll(duplicateDevices);
-  //   if (query.isNotEmpty) {
-  //     var dummyListData = [];
-  //     dummySearchList.forEach((item) {
-  //       if (item.id.toLowerCase().contains(query.toLowerCase()) ||
-  //           item.deviceName.toLowerCase().contains(query.toLowerCase()) ||
-  //           item.deviceLocation.toLowerCase().contains(query.toLowerCase())) {
-  //         resultFound = true;
-  //         item.setHighLight(query);
-  //         dummyListData.add(item);
-  //       }
-  //     });
-  //     setState(() {
-  //       validate = !resultFound;
-  //       devices.clear();
-  //       devices.addAll(dummyListData);
-  //     });
-  //     return;
-  //   } else {
-  //     setState(() {
-  //       validate = false;
-  //       span1 = spanUp;
-  //       span2 = spanDefault;
-  //       span3 = spanDefault;
-  //       devices.clear();
-  //       devices.addAll(duplicateDevices);
-  //       devices.forEach((item) => item.setHighLight(''));
-  //     });
-  //   }
-  // }
+  Widget valueBulb(double height, double width, String title, bool border) {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(width: border ? 1.0 : 0, color: Colors.grey),
+        ),
+      ),
+      child: Align(
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.lightbulb_outline,
+          color: title.contains("1") ? Colors.green : Colors.red,
+          size: 20.0,
+        ),
+      ),
+    );
+  }
+
+  void resetSpans(bool isUp, int index) {
+    this.logs.sort((a, b) => isUp
+        ? a.getE(index).compareTo(b.getE(index))
+        : b.getE(index).compareTo(a.getE(index)));
+    for (int i = 0; i < spans.length; i++) {
+      spans[i] = spanDefault;
+    }
+  }
+
+  void filterSearchResults(String query) {
+    bool resultFound = false;
+    var dummySearchList = [];
+    dummySearchList.addAll(duplicateLogs);
+    if (query.isNotEmpty) {
+      var dummyListData = [];
+      dummySearchList.forEach((item) {
+        if (item.isFound(query)) {
+          resultFound = true;
+          item.setHighLight(query);
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        validate = !resultFound;
+        logs.clear();
+        logs.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        validate = false;
+        logs.clear();
+        logs.addAll(duplicateLogs);
+        logs.forEach((item) => item.setHighLight(''));
+      });
+    }
+  }
 
   @override
   void initState() {
     getLogs();
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
     _controllers = LinkedScrollControllerGroup();
     _letters = _controllers.addAndGet();
     _numbers = _controllers.addAndGet();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _letters.dispose();
-    _numbers.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      getLogs();
-    }
   }
 
   @override
@@ -382,7 +230,7 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: TextField(
-                    // onChanged: (text) => filterSearchResults(text),
+                    onChanged: (text) => filterSearchResults(text),
                     controller: searchController,
                     decoration: InputDecoration(
                       fillColor: Colors.white,
@@ -416,7 +264,7 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              titleElement(130, 30, "Detail", span1, null),
+                              titleElement(130, 30, "Detail", 0),
                               Container(
                                 height: 30,
                                 width: 1,
@@ -430,50 +278,49 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      titleElement(70, 30, "L1#", span2, null),
+                                      titleElement(70, 30, "L1#", 1),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(70, 30, "L1@", span2, null),
+                                      titleElement(70, 30, "L1@", 2),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(70, 30, "L2#", span2, null),
+                                      titleElement(70, 30, "L2#", 3),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(70, 30, "L2@", span2, null),
+                                      titleElement(70, 30, "L2@", 4),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(70, 30, "L3#", span2, null),
+                                      titleElement(70, 30, "L3#", 5),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(70, 30, "L3@", span2, null),
+                                      titleElement(70, 30, "L3@", 6),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(
-                                          80, 30, "Battery", span2, null),
+                                      titleElement(80, 30, "Battery", 7),
                                       Container(
                                         height: 30,
                                         width: 1,
                                         color: Colors.grey,
                                       ),
-                                      titleElement(70, 30, "Rssi", span2, null),
+                                      titleElement(70, 30, "Rssi", 8),
                                     ],
                                   ),
                                 ),
@@ -499,7 +346,7 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                                     child: ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
-                                      itemCount: 30,
+                                      itemCount: logs.length,
                                       itemBuilder: (context, index) {
                                         return Container(
                                           decoration: BoxDecoration(
@@ -508,8 +355,7 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                                                   width: 1.0,
                                                   color: Colors.grey),
                                               bottom: BorderSide(
-                                                  width:
-                                                      (index != 29) ? 1.0 : 0,
+                                                  width: 1.0,
                                                   color: Colors.grey),
                                             ),
                                             color: (index % 2 == 0)
@@ -518,21 +364,21 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                                           ),
                                           height: 30,
                                           child: Align(
-                                              alignment: Alignment.center,
-                                              child: SubstringHighlight(
-                                                text: "2021-08-06 17:35:36",
-                                                term: "",
-                                                textStyleHighlight: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.red,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textStyle: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.black,
-                                                ),
+                                            alignment: Alignment.center,
+                                            child: SubstringHighlight(
+                                              text: logs[index].createDate,
+                                              term: logs[index].highLight,
+                                              textStyleHighlight: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textStyle: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black,
                                               ),
                                             ),
+                                          ),
                                         );
                                       },
                                     ),
@@ -548,15 +394,13 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                                           physics:
                                               NeverScrollableScrollPhysics(),
                                           shrinkWrap: true,
-                                          itemCount: 30,
+                                          itemCount: logs.length,
                                           itemBuilder: (context, index) {
                                             return Container(
                                               decoration: BoxDecoration(
                                                 border: Border(
                                                   bottom: BorderSide(
-                                                      width: (index != 29)
-                                                          ? 1.0
-                                                          : 0,
+                                                      width: 1.0,
                                                       color: Colors.grey),
                                                 ),
                                                 color: (index % 2 == 0)
@@ -566,21 +410,41 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                                               height: 30,
                                               child: Row(
                                                 children: [
-                                                  value(30, 71, "title", "",
+                                                  value(
+                                                      30,
+                                                      71,
+                                                      logs[index].lid1,
+                                                      logs[index].highLight,
                                                       true),
-                                                  value(30, 71, "title", "",
+                                                  valueBulb(30, 71,
+                                                      logs[index].ls1, true),
+                                                  value(
+                                                      30,
+                                                      71,
+                                                      logs[index].lid2,
+                                                      logs[index].highLight,
                                                       true),
-                                                  value(30, 71, "title", "",
+                                                  valueBulb(30, 71,
+                                                      logs[index].ls2, true),
+                                                  value(
+                                                      30,
+                                                      71,
+                                                      logs[index].lid3,
+                                                      logs[index].highLight,
                                                       true),
-                                                  value(30, 71, "title", "",
+                                                  valueBulb(30, 71,
+                                                      logs[index].ls3, true),
+                                                  value(
+                                                      30,
+                                                      81,
+                                                      logs[index].batteryValue,
+                                                      logs[index].highLight,
                                                       true),
-                                                  value(30, 71, "title", "",
-                                                      true),
-                                                  value(30, 71, "title", "",
-                                                      true),
-                                                  value(30, 81, "title", "",
-                                                      true),
-                                                  value(30, 70, "title", "",
+                                                  value(
+                                                      30,
+                                                      70,
+                                                      logs[index].rssiValue,
+                                                      logs[index].highLight,
                                                       false),
                                                 ],
                                               ),
@@ -597,460 +461,13 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
                         ),
                       ],
                     ),
-
-                    // Column(
-                    //   children: [
-                    //     Container(
-                    //       height: 30,
-                    //       color: Colors.black12,
-                    //       child: Row(
-                    //         crossAxisAlignment: CrossAxisAlignment.stretch,
-                    //         children: [
-                    //           Expanded(
-                    //             flex: 1,
-                    //             child: InkWell(
-                    //               onTap: () {
-                    //                 setState(() {
-                    //                   // _sort1();
-                    //                 });
-                    //               },
-                    //               child: MiddleLeft(Padding(
-                    //                 padding: EdgeInsets.only(left: 10),
-                    //                 child: RichText(
-                    //                   text: TextSpan(
-                    //                     style: TextStyle(
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Colors.black,
-                    //                     ),
-                    //                     children: [
-                    //                       TextSpan(text: 'ID'),
-                    //                       span1,
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //               )),
-                    //             ),
-                    //           ),
-                    //           Container(
-                    //             height: 30,
-                    //             width: 1,
-                    //             color: Colors.grey,
-                    //           ),
-                    //           Expanded(
-                    //             flex: 4,
-                    //             child: InkWell(
-                    //               onTap: () {
-                    //                 setState(() {
-                    //                   // _sort2();
-                    //                 });
-                    //               },
-                    //               child: MiddleLeft(Padding(
-                    //                 padding: EdgeInsets.only(left: 10),
-                    //                 child: RichText(
-                    //                   text: TextSpan(
-                    //                     style: TextStyle(
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Colors.black,
-                    //                     ),
-                    //                     children: [
-                    //                       TextSpan(text: 'Device Name'),
-                    //                       span2,
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //               )),
-                    //             ),
-                    //           ),
-                    //           Container(
-                    //             height: 30,
-                    //             width: 1,
-                    //             color: Colors.grey,
-                    //           ),
-                    //           Expanded(
-                    //             flex: 2,
-                    //             child: InkWell(
-                    //               onTap: () {
-                    //                 setState(() {
-                    //                   // _sort3();
-                    //                 });
-                    //               },
-                    //               child: MiddleLeft(Padding(
-                    //                 padding: EdgeInsets.only(left: 10),
-                    //                 child: RichText(
-                    //                   text: TextSpan(
-                    //                     style: TextStyle(
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: Colors.black,
-                    //                     ),
-                    //                     children: [
-                    //                       TextSpan(text: 'Location'),
-                    //                       span3,
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //               )),
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //     Container(
-                    //       height: 1,
-                    //       width: double.infinity,
-                    //       color: Colors.grey,
-                    //     ),
-                    //     // Expanded(
-                    //     //   child: Container(
-                    //     //     decoration: new BoxDecoration(color: Colors.white),
-                    //     //     child: ListView.builder(
-                    //     //       itemCount: devices.length,
-                    //     //       itemBuilder: (context, index) {
-                    //     //         return Slidable(
-                    //     //           actionPane: SlidableDrawerActionPane(),
-                    //     //           actionExtentRatio: 0.20,
-                    //     //           child: new Column(
-                    //     //             children: [
-                    //     //               Material(
-                    //     //                 color: (index % 2 == 0)
-                    //     //                     ? Colors.white
-                    //     //                     : Color(0xf1f1f1f1),
-                    //     //                 child: InkWell(
-                    //     //                   onTap: () {
-                    //     //                     AwesomeDialog(
-                    //     //                       dialogBackgroundColor:
-                    //     //                           Color(0xfafafafa),
-                    //     //                       context: context,
-                    //     //                       animType: AnimType.SCALE,
-                    //     //                       dialogType: DialogType.NO_HEADER,
-                    //     //                       body: Padding(
-                    //     //                         padding: EdgeInsets.only(
-                    //     //                             left: 15, right: 15),
-                    //     //                         child: Column(
-                    //     //                           mainAxisAlignment:
-                    //     //                               MainAxisAlignment.center,
-                    //     //                           crossAxisAlignment:
-                    //     //                               CrossAxisAlignment.center,
-                    //     //                           children: [
-                    //     //                             details('ID',
-                    //     //                                 devices[index].id),
-                    //     //                             details(
-                    //     //                                 'Device Name',
-                    //     //                                 devices[index]
-                    //     //                                     .deviceName),
-                    //     //                             details(
-                    //     //                                 'Device Detail',
-                    //     //                                 devices[index]
-                    //     //                                     .deviceDetails),
-                    //     //                             details(
-                    //     //                                 'Height',
-                    //     //                                 devices[index]
-                    //     //                                     .deviceHeight),
-                    //     //                             details(
-                    //     //                                 'Activation Date',
-                    //     //                                 devices[index]
-                    //     //                                     .activationDate),
-                    //     //                             details(
-                    //     //                                 'Location',
-                    //     //                                 devices[index]
-                    //     //                                     .deviceLocation),
-                    //     //                             details(
-                    //     //                                 'Last Signal',
-                    //     //                                 devices[index]
-                    //     //                                     .lastSignal),
-                    //     //                             l123('L1#',
-                    //     //                                 devices[index].l1),
-                    //     //                             l123('L2#',
-                    //     //                                 devices[index].l2),
-                    //     //                             l123('L3#',
-                    //     //                                 devices[index].l3),
-                    //     //                             battery('Battery',
-                    //     //                                 devices[index].battery),
-                    //     //                             rssi('Rssi',
-                    //     //                                 devices[index].rssi),
-                    //     //                             status('Status',
-                    //     //                                 devices[index].status),
-                    //     //                             ElevatedButton(
-                    //     //                               style: ButtonStyle(
-                    //     //                                 backgroundColor: MaterialStateProperty.all<
-                    //     //                                     Color>((devices[index]
-                    //     //                                                 .lat !=
-                    //     //                                             500 &&
-                    //     //                                         devices[index]
-                    //     //                                                 .lon !=
-                    //     //                                             500 &&
-                    //     //                                         devices[index]
-                    //     //                                             .deviceName
-                    //     //                                             .isNotEmpty)
-                    //     //                                     ? PrimaryColor
-                    //     //                                     : Colors.grey),
-                    //     //                                 shape: MaterialStateProperty
-                    //     //                                     .all<
-                    //     //                                         RoundedRectangleBorder>(
-                    //     //                                   RoundedRectangleBorder(
-                    //     //                                     borderRadius:
-                    //     //                                         BorderRadius
-                    //     //                                             .circular(
-                    //     //                                                 10),
-                    //     //                                     side: BorderSide(
-                    //     //                                         color: Colors
-                    //     //                                             .black12),
-                    //     //                                   ),
-                    //     //                                 ),
-                    //     //                               ),
-                    //     //
-                    //     //                               onPressed: () => (devices[
-                    //     //                                                   index]
-                    //     //                                               .lat !=
-                    //     //                                           500 &&
-                    //     //                                       devices[
-                    //     //                                                   index]
-                    //     //                                               .lon !=
-                    //     //                                           500 &&
-                    //     //                                       devices[
-                    //     //                                               index]
-                    //     //                                           .deviceName
-                    //     //                                           .isNotEmpty)
-                    //     //                                   ? MapsLauncher
-                    //     //                                       .launchCoordinates(
-                    //     //                                           devices[index]
-                    //     //                                               .lat,
-                    //     //                                           devices[index]
-                    //     //                                               .lon,
-                    //     //                                           devices[index]
-                    //     //                                               .deviceName)
-                    //     //                                   : toast(
-                    //     //                                       "Location is unavailable")
-                    //     //                               // if (lat != 500 && lon != 500 && title.isNotEmpty) {
-                    //     //                               //   MapsLauncher.launchCoordinates(lat, lon, title);
-                    //     //                               // }
-                    //     //                               ,
-                    //     //                               // tooltip: 'Google maps',
-                    //     //                               child: Center(
-                    //     //                                 child: Container(
-                    //     //                                   height: 30,
-                    //     //                                   child: Row(
-                    //     //                                     children: [
-                    //     //                                       Spacer(),
-                    //     //                                       Text(
-                    //     //                                         "Show on google maps",
-                    //     //                                         style: TextStyle(
-                    //     //                                             color: (devices[index].lat != 500 &&
-                    //     //                                                     devices[index].lon !=
-                    //     //                                                         500 &&
-                    //     //                                                     devices[index]
-                    //     //                                                         .deviceName
-                    //     //                                                         .isNotEmpty)
-                    //     //                                                 ? null
-                    //     //                                                 : Colors
-                    //     //                                                     .black54,
-                    //     //                                             fontSize:
-                    //     //                                                 15,
-                    //     //                                             fontWeight:
-                    //     //                                                 FontWeight
-                    //     //                                                     .bold),
-                    //     //                                       ),
-                    //     //                                       Padding(
-                    //     //                                         padding:
-                    //     //                                             EdgeInsets
-                    //     //                                                 .all(5),
-                    //     //                                         child: Image(
-                    //     //                                           color: (devices[index].lat != 500 &&
-                    //     //                                                   devices[index].lon !=
-                    //     //                                                       500 &&
-                    //     //                                                   devices[index]
-                    //     //                                                       .deviceName
-                    //     //                                                       .isNotEmpty)
-                    //     //                                               ? null
-                    //     //                                               : Colors
-                    //     //                                                   .black54,
-                    //     //                                           image: AssetImage(
-                    //     //                                               'assets/image/google_maps.png'),
-                    //     //                                         ),
-                    //     //                                       ),
-                    //     //                                       Spacer(),
-                    //     //                                     ],
-                    //     //                                   ),
-                    //     //                                 ),
-                    //     //                               ),
-                    //     //                             ),
-                    //     //                           ],
-                    //     //                         ),
-                    //     //                       ),
-                    //     //                       title: 'This is Ignored',
-                    //     //                       desc: 'This is also Ignored',
-                    //     //                     )..show();
-                    //     //                   },
-                    //     //                   child: Container(
-                    //     //                     height: 40,
-                    //     //                     child: Row(
-                    //     //                       children: [
-                    //     //                         Expanded(
-                    //     //                           flex: 1,
-                    //     //                           child: Padding(
-                    //     //                             padding: EdgeInsets.only(
-                    //     //                                 left: 10),
-                    //     //                             child: SubstringHighlight(
-                    //     //                               text: devices[index].id,
-                    //     //                               term: devices[index]
-                    //     //                                   .highLight,
-                    //     //                               textStyleHighlight:
-                    //     //                                   TextStyle(
-                    //     //                                 fontSize: 13,
-                    //     //                                 color: Colors.red,
-                    //     //                                 fontWeight:
-                    //     //                                     FontWeight.bold,
-                    //     //                               ),
-                    //     //                               textStyle: TextStyle(
-                    //     //                                 fontSize: 12,
-                    //     //                                 color: Colors.black,
-                    //     //                               ),
-                    //     //                             ),
-                    //     //
-                    //     //                             // Text(
-                    //     //                             //   ID,
-                    //     //                             //   textAlign: TextAlign.left,
-                    //     //                             //   style: TextStyle(fontSize: 12),
-                    //     //                             // ),
-                    //     //                           ),
-                    //     //                         ),
-                    //     //                         Container(
-                    //     //                           height: 40,
-                    //     //                           width: 1,
-                    //     //                           color: Colors.grey,
-                    //     //                         ),
-                    //     //                         Expanded(
-                    //     //                           flex: 4,
-                    //     //                           child: Padding(
-                    //     //                             padding: EdgeInsets.only(
-                    //     //                                 left: 10),
-                    //     //                             child: SubstringHighlight(
-                    //     //                               text: devices[index]
-                    //     //                                   .deviceName,
-                    //     //                               term: devices[index]
-                    //     //                                   .highLight,
-                    //     //                               textStyleHighlight:
-                    //     //                                   TextStyle(
-                    //     //                                 fontSize: 13,
-                    //     //                                 color: Colors.red,
-                    //     //                                 fontWeight:
-                    //     //                                     FontWeight.bold,
-                    //     //                               ),
-                    //     //                               textStyle: TextStyle(
-                    //     //                                 fontSize: 12,
-                    //     //                                 color: Colors.black,
-                    //     //                               ),
-                    //     //                             ),
-                    //     //                             // Text(
-                    //     //                             //   Details,
-                    //     //                             //   textAlign: TextAlign.left,
-                    //     //                             //   style: TextStyle(fontSize: 12),
-                    //     //                             // ),
-                    //     //                           ),
-                    //     //                         ),
-                    //     //                         Container(
-                    //     //                           height: 40,
-                    //     //                           width: 1,
-                    //     //                           color: Colors.grey,
-                    //     //                         ),
-                    //     //                         Expanded(
-                    //     //                           flex: 2,
-                    //     //                           child: Padding(
-                    //     //                             padding: EdgeInsets.only(
-                    //     //                                 left: 10),
-                    //     //                             child: SubstringHighlight(
-                    //     //                               text: devices[index]
-                    //     //                                   .deviceLocation,
-                    //     //                               term: devices[index]
-                    //     //                                   .highLight,
-                    //     //                               textStyleHighlight:
-                    //     //                                   TextStyle(
-                    //     //                                 fontSize: 13,
-                    //     //                                 color: Colors.red,
-                    //     //                                 fontWeight:
-                    //     //                                     FontWeight.bold,
-                    //     //                               ),
-                    //     //                               textStyle: TextStyle(
-                    //     //                                 fontSize: 12,
-                    //     //                                 color: Colors.black,
-                    //     //                               ),
-                    //     //                             ),
-                    //     //                             // Text(
-                    //     //                             //   Location,
-                    //     //                             //   textAlign: TextAlign.left,
-                    //     //                             //   style: TextStyle(fontSize: 12),
-                    //     //                             // ),
-                    //     //                           ),
-                    //     //                         ),
-                    //     //                       ],
-                    //     //                     ),
-                    //     //                   ),
-                    //     //                 ),
-                    //     //               ),
-                    //     //               Container(
-                    //     //                 height: 1,
-                    //     //                 width: double.infinity,
-                    //     //                 color: Colors.grey,
-                    //     //               ),
-                    //     //             ],
-                    //     //           ),
-                    //     //           actions: [
-                    //     //             new IconSlideAction(
-                    //     //               caption: 'Logs',
-                    //     //               color: Color(0xffFFB61E),
-                    //     //               icon: Icons.signal_cellular_alt,
-                    //     //               onTap: () => toast('Logs'),
-                    //     //             ),
-                    //     //             new IconSlideAction(
-                    //     //               caption: 'Download',
-                    //     //               color: Colors.green,
-                    //     //               icon: Icons.download,
-                    //     //               onTap: () => toast('Downloading'),
-                    //     //             ),
-                    //     //           ],
-                    //     //           secondaryActions: <Widget>[
-                    //     //             new IconSlideAction(
-                    //     //               caption: 'Edit',
-                    //     //               color: Color(0xff62D0F1),
-                    //     //               icon: Icons.edit,
-                    //     //               onTap: () => editDevice(devices[index]),
-                    //     //             ),
-                    //     //             new IconSlideAction(
-                    //     //               caption: 'Delete',
-                    //     //               color: Color(0xffE5343D),
-                    //     //               icon: Icons.delete,
-                    //     //               onTap: () {
-                    //     //                 AwesomeDialog(
-                    //     //                   context: context,
-                    //     //                   dialogType: DialogType.WARNING,
-                    //     //                   animType: AnimType.BOTTOMSLIDE,
-                    //     //                   title: 'Delete Device',
-                    //     //                   desc:
-                    //     //                       'Do you really want to delete ' +
-                    //     //                           devices[index].deviceName,
-                    //     //                   btnCancelOnPress: () {},
-                    //     //                   btnOkOnPress: () {
-                    //     //                     deleteSnack.show();
-                    //     //                     sendDeleteReq(devices[index].id);
-                    //     //                   },
-                    //     //                 )..show();
-                    //     //               },
-                    //     //             ),
-                    //     //           ],
-                    //     //         );
-                    //     //       },
-                    //     //     ),
-                    //     //   ),
-                    //     // ),
-                    //   ],
-                    // ),
                   ),
                 ),
               ],
             ),
             Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
+              child: Loading(
+                loading: loading,
               ),
             ),
           ],
@@ -1060,110 +477,54 @@ class _DeviceLogs extends State<DeviceLogs> with WidgetsBindingObserver {
   }
 
   void getLogs() {
-    // setState(() {
-    //   loading = true;
-    // });
-    // http
-    //     .get(Uri.parse(
-    //         'http://103.18.247.174:8080/AmitProject/getLocations.php'))
-    //     .then((value) {
-    //   List<String> id = [];
-    //   List<String> locationName = [];
-    //   if (value.statusCode == 200) {
-    //     List<dynamic> values = [];
-    //     values = json.decode(value.body);
-    //     if (values.length > 0) {
-    //       for (int i = 0; i < values.length; i++) {
-    //         if (values[i] != null) {
-    //           Map<String, dynamic> map = values[i];
-    //           id.add(map['location_id'].toString());
-    //           locationName.add(map['location_name'].toString());
-    //         }
-    //       }
-    //     }
-    //     getDevices(id, locationName);
-    //   } else {
-    //     setState(() {
-    //       loading = false;
-    //     });
-    //     throw Exception("Unable to get locations");
-    //   }
-    // }).onError((error, stackTrace) {
-    //   setState(() {
-    //     loading = false;
-    //   });
-    //   toast('Error: ' + error.message);
-    // });
+    setState(() {
+      loading = true;
+    });
+    http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+        body: {
+          'device_id': widget.device.id,
+        }).then((value) {
+      if (value.statusCode == 200) {
+        List<LogJason> logs = [];
+        List<dynamic> values = [];
+        values = json.decode(value.body);
+
+        if (values.length > 0) {
+          for (int i = 0; i < values.length; i++) {
+            if (values[i] != null) {
+              Map<String, dynamic> map = values[i];
+              logs.add(LogJason.fromJson(map));
+            }
+          }
+        }
+        showLogs(logs);
+      } else {
+        setState(() {
+          loading = false;
+        });
+        throw Exception("Unable to get Log list");
+      }
+    }).onError((error, stackTrace) {
+      setState(() {
+        loading = false;
+      });
+      toast('Error: ' + error.message);
+    });
   }
 
-  void showDeviceDetails() {}
+  void showLogs(List<LogJason> logs) {
+    logs.sort((a, b) => b.createDate.compareTo(a.createDate));
+    setState(() {
+      this.duplicateLogs.clear();
+      this.logs.clear();
+      this.logs.addAll(logs);
+      this.duplicateLogs.addAll(logs);
+      loading = false;
+    });
+  }
 
-// void getDevices(List<String> id, List<String> locationName) {
-//   http
-//       .get(Uri.parse(
-//           'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'))
-//       .then((value) {
-//     if (value.statusCode == 200) {
-//       List<DeviceJason> devices = [];
-//       List<dynamic> values = [];
-//       values = json.decode(value.body);
-//
-//       if (values.length > 0) {
-//         for (int i = 0; i < values.length; i++) {
-//           if (values[i] != null) {
-//             Map<String, dynamic> map = values[i];
-//             devices.add(DeviceJason.fromJson(
-//                 map,
-//                 locationName
-//                     .elementAt(id.indexOf(map['location_id'].toString()))));
-//           }
-//         }
-//       }
-//       showDevices(devices);
-//     } else {
-//       setState(() {
-//         loading = false;
-//       });
-//       throw Exception("Unable to get device list");
-//     }
-//   }).onError((error, stackTrace) {
-//     setState(() {
-//       loading = false;
-//     });
-//     toast('Error: ' + error.message);
-//   });
-// }
-//
-// void showLogs(List<DeviceJason> devices) {
-//   setState(() {
-//     this.duplicateDevices.clear();
-//     this.devices.clear();
-//     if (!advancedSearchBool) {
-//       // this.duplicateDevices.addAll(devices);
-//       this.devices.addAll(devices);
-//     } else {
-//       addFilteredClients(devices);
-//       advancedSearchBool = false;
-//     }
-//     if (sortState == 0) {
-//       this.devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
-//     } else if (sortState == 1) {
-//       this.devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
-//     } else if (sortState == 2) {
-//       this.devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
-//     } else if (sortState == 3) {
-//       this.devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
-//     } else if (sortState == 4) {
-//       this
-//           .devices
-//           .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
-//     } else if (sortState == 5) {
-//       this
-//           .devices
-//           .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
-//     }
-//     this.duplicateDevices.addAll(this.devices);
-//     loading = false;
-//   });
-// }
+  void showDeviceDetails() {
+    ShowDevice(context, widget.device);
+  }
 }

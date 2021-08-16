@@ -18,6 +18,14 @@ double getDouble(String str) {
   }
 }
 
+int getInt(String str) {
+  try {
+    return int.parse(str);
+  } catch (e) {
+    return 0;
+  }
+}
+
 void toast(String msg) {
   Fluttertoast.showToast(
       msg: msg,
@@ -30,5 +38,7 @@ Future<String> load(String key) async {
   return prefs.getString(key) ?? '-1';
 }
 
-
-
+void save(String key, String data) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString(key, data);
+}

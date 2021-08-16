@@ -1,76 +1,98 @@
 import 'dart:convert';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+// import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Pages/Test/DashBoardTest1.dart';
+import 'Pages/Client/DashBoard.dart';
+import 'Widgets/Functions/random.dart';
+import 'Widgets/Others/SizeTransition.dart';
 import 'Widgets/ProgressBars/ProgressBar.dart';
 import 'Widgets/Others/TextFieldShadow.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'Pages/Client/DashBoard.dart';
 
-import 'Pages/Client/DashBoard.dart';
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel', // id
-  'High Importance Notifications', // title
-  'This channel is used for important notifications.', // description
-  importance: Importance.high,
-);
-
-Future<void> _messageHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  notification(message);
-}
-
-void notification(RemoteMessage message) {
-  RemoteNotification notification = message.notification;
-  AndroidNotification android = message.notification?.android;
-  if (notification != null && android != null) {
-    flutterLocalNotificationsPlugin.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channel.id,
-            channel.name,
-            channel.description,
-            // TODO add a proper drawable resource to android, for now using
-            //      one that already exists in example app.
-            // icon: 'launch_background',
-          ),
-        ));
-  }
-}
+// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
+//
+// const AndroidNotificationChannel channel = AndroidNotificationChannel(
+//   'high_importance_channel', // id
+//   'High Importance Notifications', // title
+//   'This channel is used for important notifications.', // description
+//   importance: Importance.high,
+// );
+//
+// Future<void> _messageHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+//   notification(message);
+// }
+//
+// void notification(RemoteMessage message) {
+//   RemoteNotification notification = message.notification;
+//   AndroidNotification android = message.notification?.android;
+//   if (notification != null && android != null) {
+//     flutterLocalNotificationsPlugin.show(
+//         notification.hashCode,
+//         notification.title,
+//         notification.body,
+//         NotificationDetails(
+//           android: AndroidNotificationDetails(
+//             channel.id,
+//             channel.name,
+//             channel.description,
+//             // TODO add a proper drawable resource to android, for now using
+//             //      one that already exists in example app.
+//             // icon: 'launch_background',
+//           ),
+//         ));
+//   }
+// }
+final routeObserver = RouteObserver<PageRoute>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  // await Firebase.initializeApp();
+  // FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  //
+  // await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //         AndroidFlutterLocalNotificationsPlugin>()
+  //     ?.createNotificationChannel(channel);
+  //
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  load('user_id').then(
+  load('user_type').then(
     (value) => runApp(
-      MaterialApp(home: value == '-1' ? MyApp() : DashBoard()),
+      MaterialApp(
+        // home: MyApp(getRoute(value)),
+        home: getRoute(value),
+        navigatorObservers: [routeObserver],
+      ),
     ),
   );
 }
 
+Widget getRoute(String str) {
+  if (str == "-1") {
+    return MyHomePage();
+  } else if (str.contains("client")) {
+    return DashBoard();
+  } else if (str.contains("admin")) {
+    return DashBoardTest1();
+  }
+  return MyHomePage();
+}
+
 class MyApp extends StatelessWidget {
+  final page;
+
+  MyApp(this.page);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -78,7 +100,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'CMS Login'),
+      home: page,
+      navigatorObservers: [routeObserver],
     );
   }
 }
@@ -139,7 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     // load('client_id').then((value) {
     //   if (value != '-1') {
     //     Navigator.pushReplacement(
@@ -234,9 +256,9 @@ class _MyHomePageState extends State<MyHomePage> {
           body: Stack(
             children: [
               Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SingleChildScrollView(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -306,58 +328,57 @@ class _MyHomePageState extends State<MyHomePage> {
           'password': passFieldController.text
         }).then((response) {
       if (response.statusCode == 200) {
-        String value = json.decode(response.body);
-        if (value != '-1') {
-          List<String> result = value.split(',');
-          if (result.length > 2) {
-            if (result[2].compareTo('3') != 0) {
-              FirebaseMessaging.instance.getToken().then((value) {
-                http.post(
-                    Uri.parse(
-                        'http://103.18.247.174:8080/AmitProject/saveToken.php'),
-                    body: {
-                      'client_id': result[0],
-                      'token': value,
-                    }).then((response) {
-                  String res = json.decode(response.body);
-                  if (res.contains("200")) {
-                    save('token', value);
-                    save('profile_pic', '-1');
-                    save('client_id', result[0]);
-                    save('user_id', result[1]);
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashBoard()));
-                    // print(">>>:"+value+":<<<");
-                    toast('Logged in successfully');
-                    setState(() => loading = false);
-                  } else {
-                    toast(res);
-                    setState(() => loading = false);
-                  }
-                }).onError((error, stackTrace) {
-                  toast('Error: ' + error.message);
-                  setState(() => loading = false);
-                });
-              }).onError((error, stackTrace) {
-                toast('Error getting notification token');
-                setState(() => loading = false);
-              });
-            } else {
-              save('profile_pic', '-1');
-              save('client_id', result[0]);
-              save('user_id', result[1]);
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => DashBoard()));
-              // print(">>>:"+value+":<<<");
-              toast('Logged in successfully');
-              setState(() => loading = false);
-            }
+        Map<String, dynamic> map = json.decode(response.body);
+        if (map["res"] == "0") {
+          String userType;
+          var route;
+          // toast(map["type"].toString());
+          if (map["type"].toString().compareTo('3') != 0) {
+            // FirebaseMessaging.instance.getToken().then((value) {
+            //   http.post(
+            //       Uri.parse(
+            //           'http://103.18.247.174:8080/AmitProject/saveToken.php'),
+            //       body: {
+            //         'client_id': result[0],
+            //         'token': value,
+            //       }).then((response) {
+            //     String res = json.decode(response.body);
+            //     if (res.contains("200")) {
+            //       save('token', value);
+            userType = "admin";
+            route = DashBoardTest1();
+
+            // Navigator.pushReplacement(context,
+            //     MaterialPageRoute(builder: (context) => DashBoardTest1()));
+            // print(">>>:"+value+":<<<");
+            // toast('Logged in successfully');
+            // setState(() => loading = false);
+            //     } else {
+            //       toast(res);
+            //       setState(() => loading = false);
+            //     }
+            //   }).onError((error, stackTrace) {
+            //     toast('Error: ' + error.message);
+            //     setState(() => loading = false);
+            //   });
+            // }).onError((error, stackTrace) {
+            //   toast('Error getting notification token');
+            //   setState(() => loading = false);
+            // });
           } else {
-            toast('Something wrong with the server!');
-            setState(() => loading = false);
+            userType = "client";
+            route = DashBoard();
+            // print(">>>:"+value+":<<<");
           }
+
+          save('user_type', userType);
+          save('profile_pic', '-1');
+          save('client_id', map["clientId"].toString());
+          save('user_id', map["userId"].toString());
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => route));
+          toast('Logged in successfully');
+          setState(() => loading = false);
         } else {
           toast('Email or password is incorrect');
           setState(() => loading = false);
@@ -368,16 +389,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }).onError((error, stackTrace) {
       toast('Error: ' + error.message);
+      print(error);
       setState(() => loading = false);
     });
-  }
-
-  void toast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1);
   }
 
   String getResponseError(http.Response response) {
@@ -398,12 +412,26 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<String> load(String key) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(key) ?? '-1';
-}
-
-void save(String key, String data) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setString(key, data);
+void logOut(BuildContext context) {
+  // load('token').then((value) {
+  //   http.post(
+  //       Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
+  //       body: {
+  //         'token': value,
+  //       }).then((response) {
+  //     String res = json.decode(response.body);
+  //     if (res == "200") {
+  //       save('token', '-1');
+  save('user_type', '-1');
+  save('profile_pic', '-1');
+  save('client_id', '-1');
+  save('user_id', '-1');
+  Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
+  // } else {
+  //   toast("Error logging out!");
+  // }
+  //   }).onError((error, stackTrace) {
+  //     toast('Error: ' + error.message);
+  //   });
+  // });
 }

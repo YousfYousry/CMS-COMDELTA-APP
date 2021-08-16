@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import '../Widgets/Others/ForgotPasswordform.dart';
 import '../Widgets/AppBars/CustomeAppBar.dart';
 import '../Widgets/SideDrawers/SideDrawer.dart';
@@ -22,7 +23,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       child: Scaffold(
         backgroundColor: Colors.blue[50],
         appBar: PreferredSize(
-          child: CustomeAppBar('Change Password'),
+          child: CustomAppBarBack(context,'Change Password'),
           preferredSize: const Size.fromHeight(50),
         ),
         drawer: SideDrawer(),

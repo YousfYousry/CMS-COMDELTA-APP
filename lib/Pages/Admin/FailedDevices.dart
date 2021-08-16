@@ -2,15 +2,20 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-// import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/FailedDevicesAppBar.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'dart:math' as math;
+
+import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -52,89 +57,17 @@ var spanUp = WidgetSpan(
 class _FailedDevice extends State<FailedDevice> {
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
+  String clientAd = "", simProviderAd = "";
+  TextEditingController batchNumAd = new TextEditingController(),
+      activationFromAd = new TextEditingController(),
+      activationToAd = new TextEditingController(),
+      lastSignalAd = new TextEditingController();
+  bool advancedSearchBool = false;
 
-  var span1 = spanDown, span2 = spanDefault, span3 = spanDefault;
+  var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
   var devices = [];
   var duplicateDevices = [];
-
-  Widget details(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(
-                title,
-                style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Flexible(
-              child: Text(
-                value,
-                style: TextStyle(
-                    fontSize: 13, color: Colors.black.withOpacity(0.6)),
-                maxLines: 2,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget l123(String title, bool value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 5),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(title,
-                style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.bold),),
-            ),
-            Icon(
-              Icons.lightbulb,
-              color: value ? Colors.green : Colors.red,
-              size: 20.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget status(String title, bool value) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: 110,
-              child: Text(title,
-                style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.bold),),
-            ),
-            Icon(
-              value ? Icons.check : Icons.close,
-              color: value ? Colors.green : Colors.red,
-              size: 20.0,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  int sortState = 1;
 
   void _sort1() {
     if (span1 != spanDown) {
@@ -225,18 +158,9 @@ class _FailedDevice extends State<FailedDevice> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: FailedDevicesAppBar(context, "Failed Device"),
+          child: FailedDevicesAppBar(context, "Failed Device", advancedSearch),
           preferredSize: const Size.fromHeight(50),
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     Navigator.push(context, SizeRoute(page: AddClient()));
-        //   },
-        //   child: const Icon(Icons.add),
-        //   backgroundColor: Color(0xff0065a3),
-        // ),
-
-        // drawer: SideDrawerAdmin(),
         body: Stack(
           children: [
             Column(
@@ -379,284 +303,124 @@ class _FailedDevice extends State<FailedDevice> {
                             child: ListView.builder(
                               itemCount: devices.length,
                               itemBuilder: (context, index) {
-                                return
-
-                                  // Slidable(
-                                  // actionPane: SlidableDrawerActionPane(),
-                                  // actionExtentRatio: 0.20,
-                                  // child: new
-
-                                  Column(
-                                    children: [
-                                      Material(
-                                        color: (index % 2 == 0)
-                                            ? Colors.white
-                                            : Color(0xf1f1f1f1),
-                                        child: InkWell(
-                                          onTap: () {
-                                            AwesomeDialog(
-                                              dialogBackgroundColor:
-                                                  Color(0xfafafafa),
-                                              context: context,
-                                              animType: AnimType.SCALE,
-                                              dialogType: DialogType.NO_HEADER,
-                                              body: Padding(
-                                                padding: EdgeInsets.only(
-                                                    left: 15, right: 15),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    details('ID',
-                                                        devices[index].id),
-                                                    details(
-                                                        'Device Name',
-                                                        devices[index]
-                                                            .deviceName),
-                                                    details(
-                                                        'Device Detail',
-                                                        devices[index]
-                                                            .deviceDetails),
-                                                    details(
-                                                        'Height',
-                                                        devices[index]
-                                                            .deviceHeight),
-                                                    details(
-                                                        'Activation Date',
-                                                        devices[index]
-                                                            .activationDate),
-                                                    details(
-                                                        'Location',
-                                                        devices[index]
-                                                            .deviceLocation),
-                                                    details(
-                                                        'Last Signal',
-                                                        devices[index]
-                                                            .lastSignal),
-                                                    l123('L1#',
-                                                        devices[index].l1),
-                                                    l123('L2#',
-                                                        devices[index].l2),
-                                                    l123('L3#',
-                                                        devices[index].l3),
-                                                    details('Battery',
-                                                        devices[index].battery),
-                                                    details('Rssi',
-                                                        devices[index].rssi),
-                                                    status('Status',
-                                                        devices[index].status),
-                                                    ElevatedButton(
-                                                      style: ButtonStyle(
-                                                        backgroundColor:
-                                                        MaterialStateProperty.all<
-                                                            Color>(PrimaryColor),
-                                                        shape:
-                                                        MaterialStateProperty.all<
-                                                            RoundedRectangleBorder>(
-                                                          RoundedRectangleBorder(
-                                                            borderRadius:
-                                                            BorderRadius.circular(
-                                                                30),
-                                                            side: BorderSide(
-                                                                color:
-                                                                Colors.black12),
-                                                          ),
-                                                        ),
-                                                      ),
-
-                                                      onPressed: () {},
-                                                      // tooltip: 'Google maps',
-                                                      child: Center(
-                                                        child: Container(
-                                                          height: 30,
-                                                          child: Row(
-                                                            children: [
-                                                              Spacer(),
-                                                              Text(
-                                                                "Show on google maps",
-                                                                style: TextStyle(
-                                                                    fontSize: 15,
-                                                                    fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                              ),
-                                                              Padding(
-                                                                padding:
-                                                                EdgeInsets.all(5),
-                                                                child: Image(
-                                                                  image: AssetImage(
-                                                                      'assets/image/google_maps.png'),
-                                                                ),
-                                                              ),
-                                                              Spacer(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
+                                return Column(
+                                  children: [
+                                    Material(
+                                      color: (index % 2 == 0)
+                                          ? Colors.white
+                                          : Color(0xf1f1f1f1),
+                                      child: InkWell(
+                                        onTap: () {
+                                          ShowDevice(context, devices[index]);
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 1,
+                                                child: Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: SubstringHighlight(
+                                                    text: devices[index].id,
+                                                    term: devices[index]
+                                                        .highLight,
+                                                    textStyleHighlight:
+                                                        TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.red,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                  ],
+                                                    textStyle: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+
+                                                  // Text(
+                                                  //   ID,
+                                                  //   textAlign: TextAlign.left,
+                                                  //   style: TextStyle(fontSize: 12),
+                                                  // ),
                                                 ),
                                               ),
-                                              title: 'This is Ignored',
-                                              desc: 'This is also Ignored',
-                                            )..show();
-                                          },
-                                          child: Container(
-                                            height: 40,
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: SubstringHighlight(
-                                                      text: devices[index].id,
-                                                      term: devices[index]
-                                                          .highLight,
-                                                      textStyleHighlight:
-                                                          TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      textStyle: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
+                                              Container(
+                                                height: 40,
+                                                width: 1,
+                                                color: Colors.grey,
+                                              ),
+                                              Expanded(
+                                                flex: 4,
+                                                child: Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: SubstringHighlight(
+                                                    text: devices[index]
+                                                        .deviceName,
+                                                    term: devices[index]
+                                                        .highLight,
+                                                    textStyleHighlight:
+                                                        TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.red,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-
-                                                    // Text(
-                                                    //   ID,
-                                                    //   textAlign: TextAlign.left,
-                                                    //   style: TextStyle(fontSize: 12),
-                                                    // ),
+                                                    textStyle: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  // Text(
+                                                  //   Details,
+                                                  //   textAlign: TextAlign.left,
+                                                  //   style: TextStyle(fontSize: 12),
+                                                  // ),
+                                                ),
+                                              ),
+                                              Container(
+                                                height: 40,
+                                                width: 1,
+                                                color: Colors.grey,
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: SubstringHighlight(
+                                                    text: devices[index]
+                                                        .deviceLocation,
+                                                    term: devices[index]
+                                                        .highLight,
+                                                    textStyleHighlight:
+                                                        TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.red,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    textStyle: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ),
-                                                Container(
-                                                  height: 40,
-                                                  width: 1,
-                                                  color: Colors.grey,
-                                                ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: SubstringHighlight(
-                                                      text: devices[index]
-                                                          .deviceName,
-                                                      term: devices[index]
-                                                          .highLight,
-                                                      textStyleHighlight:
-                                                          TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      textStyle: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    // Text(
-                                                    //   Details,
-                                                    //   textAlign: TextAlign.left,
-                                                    //   style: TextStyle(fontSize: 12),
-                                                    // ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  height: 40,
-                                                  width: 1,
-                                                  color: Colors.grey,
-                                                ),
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: SubstringHighlight(
-                                                      text: devices[index]
-                                                          .deviceLocation,
-                                                      term: devices[index]
-                                                          .highLight,
-                                                      textStyleHighlight:
-                                                          TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      textStyle: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    // Text(
-                                                    //   Location,
-                                                    //   textAlign: TextAlign.left,
-                                                    //   style: TextStyle(fontSize: 12),
-                                                    // ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        height: 1,
-                                        width: double.infinity,
-                                        color: Colors.grey,
-                                      ),
-                                    ],
-                                  );
-                                //   actions: [
-                                //     new IconSlideAction(
-                                //       caption: 'Logs',
-                                //       color: Color(0xffFFB61E),
-                                //       icon: Icons.signal_cellular_alt,
-                                //       onTap: () => toast('Logs'),
-                                //     ),
-                                //     new IconSlideAction(
-                                //       caption: 'Download',
-                                //       color: Colors.green,
-                                //       icon: Icons.download,
-                                //       onTap: () => toast('Downloading'),
-                                //     ),
-                                //   ],
-                                //   secondaryActions: <Widget>[
-                                //     new IconSlideAction(
-                                //       caption: 'Edit',
-                                //       color: Color(0xff62D0F1),
-                                //       icon: Icons.edit,
-                                //       onTap: () => toast('Edit'),
-                                //     ),
-                                //     new IconSlideAction(
-                                //       caption: 'Delete',
-                                //       color: Color(0xffE5343D),
-                                //       icon: Icons.delete,
-                                //       onTap: () {
-                                //         AwesomeDialog(
-                                //           context: context,
-                                //           dialogType: DialogType.WARNING,
-                                //           animType: AnimType.BOTTOMSLIDE,
-                                //           title: 'Delete Device',
-                                //           desc:
-                                //               'Do you really want to delete ' +
-                                //                   devices[index].deviceName,
-                                //           btnCancelOnPress: () {},
-                                //           btnOkOnPress: () {},
-                                //         )..show();
-                                //       },
-                                //     ),
-                                //   ],
-                                // );
+                                    ),
+                                    Container(
+                                      height: 1,
+                                      width: double.infinity,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                );
                               },
                             ),
                           ),
@@ -668,9 +432,8 @@ class _FailedDevice extends State<FailedDevice> {
               ],
             ),
             Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
+              child: Loading(
+                loading: loading,
               ),
             ),
           ],
@@ -727,10 +490,13 @@ class _FailedDevice extends State<FailedDevice> {
           for (int i = 0; i < values.length; i++) {
             if (values[i] != null) {
               Map<String, dynamic> map = values[i];
-              devices.add(DeviceJason.fromJson(
+              DeviceJason device = DeviceJason.fromJson(
                   map,
                   locationName
-                      .elementAt(id.indexOf(map['location_id'].toString()))));
+                      .elementAt(id.indexOf(map['location_id'].toString())));
+              if (device.inActiveLast72()) {
+                devices.add(device);
+              }
             }
           }
         }
@@ -749,11 +515,253 @@ class _FailedDevice extends State<FailedDevice> {
     });
   }
 
-  void showDevices(List<DeviceJason> clients) {
+  void showDevices(List<DeviceJason> devices) {
     setState(() {
-      this.duplicateDevices.addAll(clients);
-      this.devices.addAll(clients);
+      this.duplicateDevices.clear();
+      this.devices.clear();
+      if (!advancedSearchBool) {
+        this.devices.addAll(devices);
+      } else {
+        addFilteredClients(devices);
+        advancedSearchBool = false;
+      }
+      if (sortState == 0) {
+        this.devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+      } else if (sortState == 1) {
+        this.devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+      } else if (sortState == 2) {
+        this.devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+      } else if (sortState == 3) {
+        this.devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+      } else if (sortState == 4) {
+        this
+            .devices
+            .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+      } else if (sortState == 5) {
+        this
+            .devices
+            .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      }
+      this.duplicateDevices.addAll(this.devices);
       loading = false;
+    });
+  }
+
+  void advancedSearch() {
+    Navigator.of(context).push(
+      new MaterialPageRoute<String>(
+          builder: (BuildContext context) {
+            return new Scaffold(
+              backgroundColor: Color(0xfafafafa),
+              appBar: new AppBar(
+                centerTitle: true,
+                backgroundColor: Color(0xff0065a3),
+                title: const Text('Advanced Search'),
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.restart_alt,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      clientAd = "";
+                      simProviderAd = "";
+                      batchNumAd.text = "";
+                      activationFromAd.text = "";
+                      activationToAd.text = "";
+                      lastSignalAd.text = "";
+                      Navigator.pop(this.context);
+                      getLocations();
+                    },
+                  )
+                ],
+              ),
+              body: GestureDetector(
+                onTap: () {
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  if (!currentFocus.hasPrimaryFocus &&
+                      currentFocus.focusedChild != null) {
+                    FocusManager.instance.primaryFocus.unfocus();
+                  }
+                },
+                child: SingleChildScrollView(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    padding: EdgeInsets.all(15),
+                    color: Color(0xfafafafa),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Client',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        ModalFilter(clientAd, "Client", client,
+                                (val) => clientAd = val, "", false),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Client Batch Number',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartField(
+                          controller: batchNumAd,
+                          hintText: "Client Batch Number",
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Activation Date From',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartDate(
+                          controller: activationFromAd,
+                          hintText: "Activation Date From",
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Activation Date To',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartDate(
+                          controller: activationToAd,
+                          hintText: "Activation Date To",
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Sim Provider',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        ModalFilter(
+                            simProviderAd,
+                            "Sim Provider",
+                            simCardProvider,
+                                (val) => simProviderAd = val,
+                            "",
+                            false),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          'Last Signal From',
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SmartDate(
+                          controller: lastSignalAd,
+                          hintText: "Last Signal From",
+                        ),
+                        SizedBox(
+                          height: 70,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  if (clientAd == "" &&
+                      simProviderAd == "" &&
+                      batchNumAd.text == "" &&
+                      activationFromAd.text == "" &&
+                      activationToAd.text == "" &&
+                      lastSignalAd.text == "") {
+                    toast("Please fill in any field to search");
+                    return;
+                  }
+                  advancedSearchBool = true;
+                  Navigator.pop(this.context);
+                  getLocations();
+                },
+                child: const Icon(Icons.search),
+                backgroundColor: Color(0xff0065a3),
+              ),
+            );
+          },
+          fullscreenDialog: true),
+    );
+  }
+
+  void addFilteredClients(List<DeviceJason> devices) {
+    devices.forEach((device) {
+      bool clientBool = (clientAd.isEmpty ||
+          client[getInt(device.client) - 1].contains(clientAd));
+      bool batchBool = (batchNumAd.text.isEmpty ||
+          device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
+      bool activationFromBool;
+      try {
+        activationFromBool = (activationFromAd.text.isEmpty ||
+            DateFormat('dd-MM-yyyy').parse(device.activationDate).isAfter(
+                DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
+            DateFormat('dd-MM-yyyy')
+                .parse(device.activationDate)
+                .isAtSameMomentAs(
+                    DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
+      } catch (Exception) {
+        activationFromBool = false;
+      }
+      bool activationToBool;
+      try {
+        activationToBool = (activationToAd.text.isEmpty ||
+            DateFormat('dd-MM-yyyy').parse(device.activationDate).isBefore(
+                DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
+            DateFormat('dd-MM-yyyy')
+                .parse(device.activationDate)
+                .isAtSameMomentAs(
+                    DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
+      } catch (Exception) {
+        activationToBool = false;
+      }
+      bool simBool =
+          (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
+
+      bool lastSignalBool;
+      try {
+        lastSignalBool = (lastSignalAd.text.isEmpty ||
+            DateFormat('yyyy-MM-dd HH:mm:ss')
+                .parse(device.lastSignal)
+                .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
+            DateFormat('yyyy-MM-dd HH:mm:ss')
+                .parse(device.lastSignal)
+                .isAtSameMomentAs(
+                    DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
+      } catch (Exception) {
+        lastSignalBool = false;
+      }
+
+      if (clientBool &&
+          batchBool &&
+          activationFromBool &&
+          activationToBool &&
+          simBool &&
+          lastSignalBool) {
+        this.devices.add(device);
+      }
     });
   }
 
@@ -761,6 +769,17 @@ class _FailedDevice extends State<FailedDevice> {
     try {
       return double.parse(str);
     } catch (e) {
+      return 0;
+    }
+  }
+
+  int getInt(String s) {
+    try {
+      if (s == null || int.parse(s) == null) {
+        return 0;
+      }
+      return int.parse(s);
+    } catch (Exception) {
       return 0;
     }
   }

@@ -26,7 +26,7 @@ class DeviceLogsAppBar extends StatelessWidget {
             Icons.info,
             color: Colors.white,
           ),
-          onPressed: () => func1,
+          onPressed: func1,
         ),
       ],
     );

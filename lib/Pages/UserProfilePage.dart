@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Position/BottomRight.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomeAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawer.dart';
@@ -76,7 +77,7 @@ class _UserProfileState extends State<UserProfile> {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          child: CustomeAppBar('User Profile'),
+          child: CustomAppBarBack(context,'User Profile'),
           preferredSize: const Size.fromHeight(50),
         ),
         drawer: SideDrawer(),

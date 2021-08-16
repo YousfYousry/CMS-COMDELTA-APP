@@ -3,12 +3,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Pages/ForgotPasswordPage.dart';
 import '../../Pages/UserProfilePage.dart';
-import '../Others/SizeTransition.dart';
-import '../../Pages/FeedBackPage.dart';
 import '../../main.dart';
+import '../Others/SizeTransition.dart';
+import '../../Pages/Client/FeedBackPage.dart';
 
 class SideDrawer extends StatefulWidget {
   @override
@@ -215,28 +216,5 @@ class _SideDrawer extends State<SideDrawer> {
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 1,
     );
-  }
-
-  void logOut(BuildContext context) {
-    load('token').then((value) {
-      http.post(
-          Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
-          body: {
-            'token': value,
-          }).then((response) {
-        String res = json.decode(response.body);
-        if (res=="200") {
-          save('token', '-1');
-          save('profile_pic', '-1');
-          save('client_id', '-1');
-          save('user_id', '-1');
-          Navigator.pushReplacement(context, SizeRoute(page: MyHomePage()));
-        }else{
-          toast("Error logging out!");
-        }
-      }).onError((error, stackTrace) {
-        toast('Error: ' + error.message);
-      });
-    });
   }
 }

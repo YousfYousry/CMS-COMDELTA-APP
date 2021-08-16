@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -6,11 +7,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:substring_highlight/substring_highlight.dart';
+import '../../main.dart';
 import 'AddEditClient.dart';
 
 class ManageClient extends StatefulWidget {
@@ -18,9 +20,10 @@ class ManageClient extends StatefulWidget {
   _ManageClient createState() => _ManageClient();
 }
 
-class _ManageClient extends State<ManageClient> with WidgetsBindingObserver {
+class _ManageClient extends State<ManageClient> with WidgetsBindingObserver , RouteAware{
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
+  final pageAnimationDuration = const Duration(milliseconds: 300);
 
   var clients = [];
   var duplicateClients = [];
@@ -152,17 +155,121 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver {
     );
   }
 
+  GlobalKey _fabKey = GlobalKey();
+  bool _fabVisible = true;
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+    routeObserver.unsubscribe(this);
+  }
+
+  @override
+  didPopNext() {
+    // Show back the FAB on transition back ended
+    Timer(pageAnimationDuration, () {
+      setState(() => _fabVisible = true);
+    });
+  }
+
+  Widget _buildFAB(context, {key}) => FloatingActionButton(
+    elevation: 10,
+    backgroundColor: Color(0xff0065a3),
+    key: key,
+    onPressed: () => _onFabTap(context),
+    child: Icon(Icons.add),
+  );
+
+  _onFabTap(BuildContext context) {
+
+    // Hide the FAB on transition start
+    setState(() => _fabVisible = false);
+
+    final RenderBox fabRenderBox = _fabKey.currentContext.findRenderObject();
+    final fabSize = fabRenderBox.size;
+    final fabOffset = fabRenderBox.localToGlobal(Offset.zero);
+
+    Navigator.of(context).push(PageRouteBuilder(
+      transitionDuration: pageAnimationDuration,
+      pageBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation) =>
+          AddClient(),
+      transitionsBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation, Widget child) =>
+          _buildTransition(child, animation, fabSize, fabOffset),
+    )).then((value) => getClients());
+  }
+
+  Widget _buildTransition(
+      Widget page,
+      Animation<double> animation,
+      Size fabSize,
+      Offset fabOffset,
+      ) {
+    if (animation.value == 1) return page;
+
+    final borderTween = BorderRadiusTween(
+      begin: BorderRadius.circular(fabSize.width / 2),
+      end: BorderRadius.circular(0.0),
+    );
+    final sizeTween = SizeTween(
+      begin: fabSize,
+      end: MediaQuery.of(context).size,
+    );
+    final offsetTween = Tween<Offset>(
+      begin: fabOffset,
+      end: Offset.zero,
+    );
+
+    final easeInAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeIn,
+    );
+    final easeAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOut,
+    );
+
+    final radius = borderTween.evaluate(easeInAnimation);
+    final offset = offsetTween.evaluate(animation);
+    final size = sizeTween.evaluate(easeInAnimation);
+
+    final transitionFab = Opacity(
+      opacity: 1 - easeAnimation.value,
+      child: _buildFAB(context),
+    );
+
+    Widget positionedClippedChild(Widget child) => Positioned(
+        width: size.width,
+        height: size.height,
+        left: offset.dx,
+        top: offset.dy,
+        child: ClipRRect(
+          borderRadius: radius,
+          child: child,
+        ));
+
+    return Stack(
+      children: [
+        positionedClippedChild(page),
+        positionedClippedChild(transitionFab),
+      ],
+    );
+  }
+
+
   @override
   void initState() {
     getClients();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   @override
@@ -189,16 +296,18 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver {
           child: CustomAppBarBack(context, "Manage Client"),
           preferredSize: const Size.fromHeight(50),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(context, SizeRoute(page: AddClient()))
-                .then((value) => getClients());
-          },
-          child: const Icon(Icons.add),
-          backgroundColor: Color(0xff0065a3),
+        floatingActionButton: Visibility(
+          visible: _fabVisible,
+          child: _buildFAB(context, key: _fabKey),
         ),
-
-        // drawer: SideDrawerAdmin(),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     Navigator.push(context, SizeRoute(page: AddClient()))
+        //         .then((value) => getClients());
+        //   },
+        //   child: const Icon(Icons.add),
+        //   backgroundColor: Color(0xff0065a3),
+        // ),
         body: Stack(
           children: [
             Column(
@@ -471,9 +580,8 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver {
               ],
             ),
             Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
+              child: Loading(
+                loading: loading,
               ),
             ),
           ],
