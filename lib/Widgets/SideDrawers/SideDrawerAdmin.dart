@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
@@ -9,13 +8,16 @@ import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
 import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../Pages/ForgotPasswordPage.dart';
 import '../../Pages/UserProfilePage.dart';
 import '../Others/SizeTransition.dart';
 import '../../main.dart';
 
 class SideDrawerAdmin extends StatefulWidget {
+  final setOpen;
+
+  SideDrawerAdmin({this.setOpen=isOpen});
+
   @override
   _SideDrawer createState() => _SideDrawer();
 }
@@ -51,8 +53,15 @@ class _SideDrawer extends State<SideDrawerAdmin> {
 
   @override
   void initState() {
+    widget.setOpen(true);
     getInfo();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.setOpen(false);
+    super.dispose();
   }
 
   @override
@@ -286,18 +295,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
       toast('Error: ' + error.message);
     });
   }
-
-  Future<String> load(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key) ?? '-1';
-  }
-
-  void toast(String msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-    );
-  }
 }
+
+void isOpen(bool isOpen){}
+

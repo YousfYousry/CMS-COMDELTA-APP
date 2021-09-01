@@ -1,12 +1,19 @@
 import 'dart:convert';
 
+//
+// import 'package:pdf/pdf.dart';
+// import 'dart:io';
+//
+// import 'package:pdf/widgets.dart' as pw;
 // import 'dart:io';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
+import 'Choices.dart';
 import 'Pages/Client/DashBoard.dart';
 import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
@@ -70,6 +77,9 @@ Future<void> main() async {
   load('user_type').then(
     (value) => runApp(
       MaterialApp(
+        theme: ThemeData(
+          primarySwatch: MaterialColor(0xff0065a3, customColors),
+        ),
         // home: MyApp(getRoute(value)),
         home: getRoute(value),
         navigatorObservers: [routeObserver],
@@ -172,7 +182,6 @@ class _LoginPage extends State<LoginPage> {
     double statusBarHeight = MediaQuery.of(context).padding.top;
 
     final emailField = Container(
-      height: 50.0,
       child: TextField(
         controller: emailFieldController,
         obscureText: false,
@@ -183,10 +192,11 @@ class _LoginPage extends State<LoginPage> {
           });
         },
         decoration: InputDecoration(
+          prefixIcon: Icon(Icons.person),
           fillColor: Colors.white,
           filled: true,
           errorText: validateEmail ? 'Username is required' : null,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 10.0, 5.0),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
           hintText: "Username",
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
@@ -195,7 +205,6 @@ class _LoginPage extends State<LoginPage> {
       ),
     );
     final passwordField = Container(
-      height: 50.0,
       child: TextField(
         controller: passFieldController,
         obscureText: true,
@@ -206,10 +215,11 @@ class _LoginPage extends State<LoginPage> {
           });
         },
         decoration: InputDecoration(
+          prefixIcon: Icon(Icons.vpn_key),
           fillColor: Colors.white,
           filled: true,
           errorText: validatePassword ? 'Password is required' : null,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 5.0, 10.0, 5.0),
+          contentPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
           hintText: "Password",
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
         ),
@@ -252,74 +262,204 @@ class _LoginPage extends State<LoginPage> {
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("assets/image/backgroundlogin3.png"),
-              fit: BoxFit.cover),
+              image: AssetImage("assets/image/gmbar4.png"), fit: BoxFit.cover),
         ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Padding(
-            padding: EdgeInsets.only(top: statusBarHeight),
-            child: Stack(
-              children: [
-                Center(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black26.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 2,
-                                    offset: Offset(0, 2))
-                              ],
-                              color: Color(0xff0065a3).withOpacity(0.77),
-                            ),
+        child: Stack(
+          children: [
+            Align(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              // children: [
+              //   Expanded(child: Container(
+              //     // decoration: BoxDecoration(
+              //     //   image: DecorationImage(
+              //     //       image: AssetImage("assets/image/gmbar4.png"),
+              //     //       fit: BoxFit.cover),
+              //     // ),
+              //
+              //   )),
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                // color: Colors.white.withOpacity(0.5),
+                // decoration: BoxDecoration(
+                //   image: DecorationImage(
+                //       image: AssetImage("assets/image/bottom.png"),
+                //       fit: BoxFit.cover),
+                // ),
+                // child: Column(children: [
 
-                            width: width - 100,
-                            child: Image.asset(
-                              "assets/image/logonoback.png",
-                              fit: BoxFit.contain,
-                            ), // Image setting
-                          ),
-                          SizedBox(height: 5.0),
-                          Text(
-                            'Login Account',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white),
-                          ),
-                          // SizedBox(height: 20.0),
-                          // Text('Welcome to Comdelta Tracking System',
-                          //     style:
-                          //         TextStyle(fontSize: 16, color: Colors.white)),
-                          SizedBox(height: 30.0),
-                          emailField,
-                          SizedBox(height: 15.0),
-                          passwordField,
-                          SizedBox(height: 30.0),
-                          loginButton,
-                        ],
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Image.asset(
+                          "assets/image/1.png",
+                          fit: BoxFit.contain,
+                        ),
+                      ), // Image setting
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Image.asset(
+                          "assets/image/2.png",
+                          fit: BoxFit.contain,
+                        ), // Image setting
                       ),
-                    ), // Setting for Text Field, Password Field and Login Button
-                  ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Image.asset(
+                          "assets/image/3.png",
+                          fit: BoxFit.contain,
+                        ), // Image setting
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Image.asset(
+                          "assets/image/4.png",
+                          fit: BoxFit.contain,
+                        ), // Image setting
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Image.asset(
+                          "assets/image/5.png",
+                          fit: BoxFit.contain,
+                        ), // Image setting
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Image.asset(
+                          "assets/image/6.png",
+                          fit: BoxFit.contain,
+                        ), // Image setting
+                      ),
+                    ),
+                  ],
                 ),
-                Center(
-                  child: Visibility(
-                    child: CircularProgressIndicatorApp(),
-                    visible: loading,
-                  ),
-                ),
-              ],
+                // ),
+                // Container(
+                //   height: 50,
+                //   child: Row(
+                //     children: [
+                //       Expanded(
+                //         flex: 1,
+                //         child: Container(), // Image setting
+                //       ),
+                //       Expanded(
+                //         flex: 1,
+                //         child: Image.asset(
+                //           "assets/image/5.png",
+                //           fit: BoxFit.contain,
+                //         ), // Image setting
+                //       ),
+                //       Expanded(
+                //         flex: 1,
+                //         child: Image.asset(
+                //           "assets/image/6.png",
+                //           fit: BoxFit.contain,
+                //         ), // Image setting
+                //       ),
+                //       Expanded(
+                //         flex: 1,
+                //         child: Container(), // Image setting
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // ],),
+              ),
+              // ],
             ),
-          ),
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Padding(
+                padding: EdgeInsets.only(top: statusBarHeight),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20.0,right: 20.0,bottom: 80),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black26.withOpacity(0.3),
+                                        spreadRadius: 2,
+                                        blurRadius: 2,
+                                        offset: Offset(0, 2))
+                                  ],
+                                  color: Color(0xff0065a3).withOpacity(0.77),
+                                ),
+                                width: width - 100,
+                                child: Image.asset(
+                                  "assets/image/logonoback.png",
+                                  fit: BoxFit.contain,
+                                ), // Image setting
+                              ),
+                              SizedBox(height: 5.0),
+                              SizedBox(
+                                width: width - 100,
+                                child: AutoSizeText(
+                                  'Smart Solar Aviation Obstruction Light',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 1000),
+                                  maxLines: 1,
+                                ),
+                              ),
+                              SizedBox(height: 5.0),
+                              SizedBox(
+                                width: width - 140,
+                                child: AutoSizeText(
+                                  'Centralized Management System',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white,fontSize: 1000),
+                                  maxLines: 1,
+                                ),
+                              ),
+                              SizedBox(height: 15.0),
+                              emailField,
+                              SizedBox(height: 15.0),
+                              passwordField,
+                              SizedBox(height: 30.0),
+                              loginButton,
+                            ],
+                          ),
+                        ), // Setting for Text Field, Password Field and Login Button
+                      ),
+                    ),
+                    Center(
+                      child: Visibility(
+                        child: CircularProgressIndicatorApp(),
+                        visible: loading,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

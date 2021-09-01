@@ -1,6 +1,16 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
+// import 'package:pdf/pdf.dart';
+import 'dart:io';
+import 'package:open_file/open_file.dart';
+
+// import 'package:pdf/widgets.dart' as pw;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -18,7 +28,11 @@ import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:math' as math;
 import '../../Choices.dart';
 
@@ -186,7 +200,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
           child: ManageDevicesAppBar(context, "Manage Device", addDevice,
-              exportPdf, advancedSearch, reset),
+              exportPDF, advancedSearch, reset),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -558,8 +572,361 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     );
   }
 
-  void exportPdf() {
-    toast("Exporting...");
+  Future<Uint8List> _readImageData(String name) async {
+    final data = await rootBundle.load('assets/image/$name');
+    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  }
+
+  Future<void> exportPDF() async {
+    await Permission.storage.request().then((value) async {
+      if (value.isGranted) {
+
+        PdfDocument document = PdfDocument();
+        document.pageSettings.margins.all = 0;
+
+        //Add the pages to the document
+        //Add the pages to the document
+        for (int i = 1; i <= 5; i++) {
+          PdfGraphics graphics = document.pages.add().graphics;
+          // graphics.drawString(
+          //     'page$i', PdfStandardFont(PdfFontFamily.timesRoman, 11),
+          //     bounds: Rect.fromLTWH(250, 0, 615, 100));
+
+          PdfGraphicsState state = graphics.save();
+          graphics.setTransparency(0.25);
+
+          graphics.drawImage(
+              PdfBitmap(await _readImageData('water.png')),
+              Rect.fromLTWH(
+                  0, 0, graphics.clientSize.width, graphics.clientSize.height));
+          graphics.restore(state);
+
+        }
+
+        // //Create the header with specific bounds
+        // PdfPageTemplateElement header = PdfPageTemplateElement(
+        //     Rect.fromLTWH(0, 0, document.pages[0].getClientSize().width, 300));
+        //
+        // //Create the date and time field
+        // PdfDateTimeField dateAndTimeField = PdfDateTimeField(
+        //     font: PdfStandardFont(PdfFontFamily.timesRoman, 19),
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)));
+        // dateAndTimeField.date = DateTime(2020, 2, 10, 13, 13, 13, 13, 13);
+        // dateAndTimeField.dateFormatString = 'E, MM.dd.yyyy';
+        //
+        // //Create the composite field with date field
+        // PdfCompositeField compositefields = PdfCompositeField(
+        //     font: PdfStandardFont(PdfFontFamily.timesRoman, 19),
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+        //     text: '{0}      Header',
+        //     fields: <PdfAutomaticField>[dateAndTimeField]);
+        //
+        // //Add composite field in header
+        // compositefields.draw(header.graphics,
+        //     Offset(0, 50 - PdfStandardFont(PdfFontFamily.timesRoman, 11).height));
+        //
+        // //Add the header at top of the document
+        // document.template.top = header;
+        //
+        //Create the footer with specific bounds
+        PdfPageTemplateElement footer = PdfPageTemplateElement(
+            Rect.fromLTWH(0, 0, document.pages[0].getClientSize().width, 50));
+        //
+        // //Create the page number field
+        // PdfPageNumberField pageNumber = PdfPageNumberField(
+        //     font: PdfStandardFont(PdfFontFamily.timesRoman, 19),
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)));
+        //
+        // //Sets the number style for page number
+        // pageNumber.numberStyle = PdfNumberStyle.upperRoman;
+        //
+        // //Create the page count field
+        // PdfPageCountField count = PdfPageCountField(
+        //     font: PdfStandardFont(PdfFontFamily.timesRoman, 19),
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)));
+        //
+        // //set the number style for page count
+        // count.numberStyle = PdfNumberStyle.upperRoman;
+        //
+        // //Create the date and time field
+        // PdfDateTimeField dateTimeField = PdfDateTimeField(
+        //     font: PdfStandardFont(PdfFontFamily.timesRoman, 19),
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)));
+        //
+        // //Sets the date and time
+        // dateTimeField.date = DateTime(2020, 2, 10, 13, 13, 13, 13, 13);
+        //
+        // //Sets the date and time format
+        // dateTimeField.dateFormatString = 'hh\':\'mm\':\'ss';
+
+        //Create the composite field with page number page count
+        PdfCompositeField compositeField = PdfCompositeField(
+            font: PdfStandardFont(PdfFontFamily.timesRoman, 12),
+            brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+            text: 'This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898',
+            // text: 'Page {0} of {1}, Time:{2}',
+            // fields: <PdfAutomaticField>[pageNumber, count, dateTimeField]
+            );
+
+
+        compositeField.bounds = footer.bounds;
+
+        //Add the composite field in footer
+        compositeField.draw(footer.graphics,
+            Offset(0,  0));
+
+        //Add the footer at the bottom of the document
+        document.template.bottom = footer;
+
+
+        // var page = document.pages.add();
+
+
+        //
+        // page.graphics.drawString('Welcome to PDF Succinctly!',
+        //     PdfStandardFont(PdfFontFamily.helvetica, 30));
+        //
+        // page.graphics.drawImage(
+        //     PdfBitmap(await _readImageData('background.jpg')),
+        //     Rect.fromLTWH(0, 100, 440, 550));
+        //
+        // PdfGrid grid = PdfGrid();
+        // grid.style = PdfGridStyle(
+        //     font: PdfStandardFont(PdfFontFamily.helvetica, 30),
+        //     cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
+        //
+        // grid.columns.add(count: 3);
+        // grid.headers.add(2);
+        //
+        // PdfGridRow header = grid.headers[0];
+        // header.cells[0].value = 'Roll No';
+        // header.cells[1].value = 'Name';
+        // header.cells[2].value = 'Class';
+        //
+        // header = grid.headers[1];
+        // header.cells[0].value = 'Roll No';
+        // header.cells[1].value = 'Name';
+        // header.cells[2].value = 'Class';
+        //
+        // PdfGridRow row;
+        //
+        // row = grid.rows.add();
+        // row.cells[0].value = '1';
+        // row.cells[1].value = 'Arya';
+        // row.cells[2].value = '6';
+        //
+        // row = grid.rows.add();
+        // row.cells[0].value = '2';
+        // row.cells[1].value = 'John';
+        // row.cells[2].value = '9';
+        //
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        // row = grid.rows.add();
+        // row.cells[0].value = '3';
+        // row.cells[1].value = 'Tony';
+        // row.cells[2].value = '8';
+        //
+        // // page =document.pages.add();
+        // // page.graphics.drawImage(
+        // //     PdfBitmap(await _readImageData('background.jpg')),
+        // //     Rect.fromLTWH(0, 100, 440, 550));
+        //
+        // // document.pages.add();
+        // grid.draw(
+        //     page: page,
+        //     bounds: const Rect.fromLTWH(0, 0, 0, 0));
+
+        List<int> bytes = document.save();
+        document.dispose();
+
+        saveAndLaunchFile(bytes, 'Output.pdf');
+      } else if (value.isPermanentlyDenied) {
+        toast("Accept permission to proceed!");
+        await openAppSettings();
+      } else if (value.isDenied) {
+        toast("Permission is denied");
+      } else if (value.isRestricted) {
+        toast("Permission is restricted");
+      } else if (value.isLimited) {
+        toast("Permission is limited");
+      }
+      return true;
+    });
+
+    //     toast("Exporting!...");
+    //
+    //     var pdf = pw.Document(
+    //       // theme: myTheme,
+    //     );
+    //
+    //     pdf.addPage(pw.MultiPage(
+    //         margin: pw.EdgeInsets.all(10),
+    //         pageFormat: PdfPageFormat.a4,
+    //         build: (pw.Context context) {
+    //           return <pw.Widget>[
+    //             pw.Column(
+    //                 crossAxisAlignment: pw.CrossAxisAlignment.center,
+    //                 mainAxisSize: pw.MainAxisSize.min,
+    //                 children: [
+    //                   pw.Text('Create a Simple PDF',
+    //                       textAlign: pw.TextAlign.center,
+    //                       style: pw.TextStyle(fontSize: 26)),
+    //                   pw.Divider(),
+    //                 ]),
+    //           ];
+    //         }));
+    //
+    //     Directory documentDirectory = await getApplicationDocumentsDirectory();
+    //
+    //     String documentPath = documentDirectory.path;
+    //
+    //     String id = DateTime.now().toString();
+    //
+    //     File file = File("$documentPath/$id.pdf");
+    //     toast("$documentPath/$id.pdf");
+    //     file.writeAsBytesSync(await pdf.save().then((value) {
+    //       toast("Done");
+    //       return;
+    //     } ));
+    //     setState(() {
+    //       // pdfFile = file.path;
+    //       pdf = pw.Document();
+    //     });
+    //
+    //     // final pdf = pw.Document();
+    //     //
+    //     // pdf.addPage(
+    //     //   pw.Page(
+    //     //     pageFormat: PdfPageFormat.a4,
+    //     //     build: (pw.Context context) {
+    //     //       return pw.Center(
+    //     //         child: pw.Text("Hello World"),
+    //     //       ); // Center
+    //     //     },
+    //     //   ),
+    //     // ); // Page
+    //     //
+    //     // try {
+    //     //   Directory dir = await getExternalStorageDirectory();
+    //     //   String filePath = dir.path + "/devbybit/";
+    //     //   bool exist = Directory(filePath).exists() == null ? false : true;
+    //     //   if (!exist) {
+    //     //     new Directory(filePath).createSync(recursive: true);
+    //     //     final File file = File(filePath + "sample.pdf");
+    //     //     await file
+    //     //         .writeAsBytes(await pdf.save())
+    //     //         .then((value) => toast("done"));
+    //     //     return true;
+    //     //   } else {
+    //     //     final File file = File(filePath + "sample.pdf");
+    //     //     await file
+    //     //         .writeAsBytes(await pdf.save())
+    //     //         .then((value) => toast("done"));
+    //     //     return true;
+    //     //   }
+    //     // } catch (e) {
+    //     //   return false;
+    //     // }
+  }
+
+  Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
+    final path = (await getExternalStorageDirectory()).path;
+    final file = File('$path/$fileName');
+    await file.writeAsBytes(bytes, flush: true);
+    OpenFile.open('$path/$fileName');
+  }
+
+  Future<String> getDirectoryPath() async {
+    Directory appDocDirectory = await getApplicationDocumentsDirectory();
+
+    Directory directory =
+        await new Directory(appDocDirectory.path + '/' + 'dir')
+            .create(recursive: true);
+
+    return directory.path;
   }
 
   void advancedSearch() {

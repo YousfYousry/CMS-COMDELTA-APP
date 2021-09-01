@@ -26,6 +26,24 @@ int getInt(String str) {
   }
 }
 
+// Future<void> permissionThen(var permission,var then) async { // you can't pass the permission
+//   await permission.request().then((value) async {
+//     if (value.isGranted) {
+//       then();
+//     } else if(value.isPermanentlyDenied) {
+//       toast("Accept permission to proceed!");
+//       await  openAppSettings();
+//     }else if(value.isDenied){
+//       toast("Permission is denied");
+//     }else if(value.isRestricted){
+//       toast("Permission is restricted");
+//     }else if(value.isLimited){
+//       toast("Permission is limited");
+//     }
+//     return true;
+//   });
+// }
+
 void toast(String msg) {
   Fluttertoast.showToast(
       msg: msg,

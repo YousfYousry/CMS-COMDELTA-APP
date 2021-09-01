@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Position/BottomRight.dart';
-import 'package:login_cms_comdelta/Widgets/AppBars/CustomeAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../Widgets/ProgressBars/ProgressBar.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -373,17 +371,4 @@ class _UserProfileState extends State<UserProfile> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
     });
   }
-
-  void toast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1);
-  }
-}
-
-Future<String> load(String key) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString(key) ?? '-1';
 }
