@@ -580,14 +580,30 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   Future<void> exportPDF() async {
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-
         PdfDocument document = PdfDocument();
         document.pageSettings.margins.all = 0;
+
+
+        PdfFont font = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          12,
+        );
+        String text =
+            'This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898';
+        Size size = font.measureString(text);
+        Size size1 = font.measureString('Contact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898');
+        Size size2 = font.measureString('Contact Us: ');
+        Size size3 = font.measureString('Contact Us: info@comdelta.com.my |');
 
         //Add the pages to the document
         //Add the pages to the document
         for (int i = 1; i <= 5; i++) {
-          PdfGraphics graphics = document.pages.add().graphics;
+          PdfPage page=document.pages.add();
+          PdfGraphics graphics = page.graphics;
+          double width = graphics.clientSize.width,
+              height = graphics.clientSize.height;
+          Rect rect= Rect.fromLTWH((width)/2, height-size.height-20, 0, 0);
+
           // graphics.drawString(
           //     'page$i', PdfStandardFont(PdfFontFamily.timesRoman, 11),
           //     bounds: Rect.fromLTWH(250, 0, 615, 100));
@@ -595,11 +611,40 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
           PdfGraphicsState state = graphics.save();
           graphics.setTransparency(0.25);
 
-          graphics.drawImage(
-              PdfBitmap(await _readImageData('water.png')),
-              Rect.fromLTWH(
-                  0, 0, graphics.clientSize.width, graphics.clientSize.height));
+          graphics.drawImage(PdfBitmap(await _readImageData('water.png')),
+              Rect.fromLTWH(0, 0, width, height));
           graphics.restore(state);
+
+          graphics.drawString(text, font,
+              brush: PdfBrushes.black,
+              bounds: rect,
+              format: PdfStringFormat(
+              alignment: PdfTextAlignment.center,));
+
+
+          PdfTextWebLink(
+              url: 'mailto:info@comdelta.com.my',
+              text: ' info@comdelta.com.my',
+              font: PdfStandardFont(PdfFontFamily.timesRoman,
+                      12,
+                      style: PdfFontStyle.underline),
+              brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+              pen: PdfPens.cornflowerBlue,
+              format: PdfStringFormat(
+                  alignment: PdfTextAlignment.left,
+                  lineAlignment: PdfVerticalAlignment.middle)).draw(page, Offset((width-size1.width)/2+size2.width, height-size1.height-20));
+
+          PdfTextWebLink(
+              url: 'www.comdelta.com.my',
+              text: ' www.comdelta.com.my',
+              font: PdfStandardFont(PdfFontFamily.timesRoman,
+                      12,
+                      style: PdfFontStyle.underline),
+              brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+              pen: PdfPens.cornflowerBlue,
+              format: PdfStringFormat(
+                  alignment: PdfTextAlignment.left,
+                  lineAlignment: PdfVerticalAlignment.middle)).draw(page, Offset((width-size1.width)/2+size3.width, height-size1.height-20));
 
         }
 
@@ -629,8 +674,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         // document.template.top = header;
         //
         //Create the footer with specific bounds
-        PdfPageTemplateElement footer = PdfPageTemplateElement(
-            Rect.fromLTWH(0, 0, document.pages[0].getClientSize().width, 50));
+        // PdfPageTemplateElement footer = PdfPageTemplateElement(
+        //     Rect.fromLTWH(0, 0, document.pages[0].getClientSize().width, 50));
         //
         // //Create the page number field
         // PdfPageNumberField pageNumber = PdfPageNumberField(
@@ -659,28 +704,56 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         // //Sets the date and time format
         // dateTimeField.dateFormatString = 'hh\':\'mm\':\'ss';
 
+        // PdfFont font = PdfStandardFont(PdfFontFamily.timesRoman, 12,);
+        // String text='This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898';
+        //
+        //
+        //
+        //
+        //
+        // String htmlText = "<font color='#0000F8'>Essential PDF</font> is a <u><i>.NET</i></u> " +
+        //
+        //     "library with the capability to produce Adobe PDF files ";
+
+        //Render HtmlText.
+
+        // PdfHTML richTextElement = new PdfHTMLTextElement(htmlText, font, PdfBrushes.Black);
+
+        // PdfHTMLTextElement htmlTextElement = new PdfHTMLTextElement(htmlText, font, PdfBrushes.Black);
+
+        // PdfDateTimeField dateTimeField = PdfDateTimeField(
+        //     font: PdfStandardFont(PdfFontFamily.timesRoman, 19),
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)));
+
+//Sets the date and time
+//         dateTimeField.date = DateTime(2020, 2, 10, 13, 13, 13, 13, 13);
+
+//Sets the date and time format
+//         dateTimeField.dateFormatString = 'hh\':\'mm\':\'ss';
+
         //Create the composite field with page number page count
-        PdfCompositeField compositeField = PdfCompositeField(
-            font: PdfStandardFont(PdfFontFamily.timesRoman, 12),
-            brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-            text: 'This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898',
-            // text: 'Page {0} of {1}, Time:{2}',
-            // fields: <PdfAutomaticField>[pageNumber, count, dateTimeField]
-            );
+        // PdfCompositeField compositeField = PdfCompositeField(
+        //     font: font,
+        //     brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+        //     text: '{0}',
+        //   fields: <PdfAutomaticField>[dateTimeField]
+        //
+        //     // text: 'Page {0} of {1}, Time:{2}',
+        //     // fields: <PdfAutomaticField>[pageNumber, count, dateTimeField]
+        //     );
 
-
-        compositeField.bounds = footer.bounds;
-
-        //Add the composite field in footer
-        compositeField.draw(footer.graphics,
-            Offset(0,  0));
-
-        //Add the footer at the bottom of the document
-        document.template.bottom = footer;
-
+        // compositeField.stringFormat.alignment = PdfTextAlignment.center;
+        // toast(dateTimeField.dateFormatString);
+        // Size size = font.measureString(dateTimeField.dateFormatString);
+        // compositeField.bounds = footer.bounds;
+        // //Add the composite field in footer
+        // compositeField.draw(footer.graphics,
+        //     Offset((footer.graphics.clientSize.width-size.width)/2,  0));
+        //
+        // //Add the footer at the bottom of the document
+        // document.template.bottom = footer;
 
         // var page = document.pages.add();
-
 
         //
         // page.graphics.drawString('Welcome to PDF Succinctly!',
