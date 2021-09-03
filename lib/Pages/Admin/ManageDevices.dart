@@ -583,70 +583,224 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         PdfDocument document = PdfDocument();
         document.pageSettings.margins.all = 0;
 
-
         PdfFont font = PdfStandardFont(
           PdfFontFamily.timesRoman,
           12,
         );
+
+        PdfFont fontTitle = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          12,
+          style: PdfFontStyle.bold,
+        );
+
+        PdfFont fontGridTitle = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          10,
+          style: PdfFontStyle.bold,
+        );
+
+        PdfFont fontGrid = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          10,
+          // style: PdfFontStyle.bold,
+        );
+
         String text =
             'This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898';
         Size size = font.measureString(text);
-        Size size1 = font.measureString('Contact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898');
+        Size size1 = font.measureString(
+            'Contact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898');
         Size size2 = font.measureString('Contact Us: ');
         Size size3 = font.measureString('Contact Us: info@comdelta.com.my |');
+        Size size4 =
+            fontTitle.measureString('All DEVICE DETAILS – For company purpose');
+        Size size5 = fontGridTitle.measureString('No.');
+        // Size size6 = fontGridTitle.measureString('Device\nName');
 
         //Add the pages to the document
         //Add the pages to the document
-        for (int i = 1; i <= 5; i++) {
-          PdfPage page=document.pages.add();
-          PdfGraphics graphics = page.graphics;
-          double width = graphics.clientSize.width,
-              height = graphics.clientSize.height;
-          Rect rect= Rect.fromLTWH((width)/2, height-size.height-20, 0, 0);
 
-          // graphics.drawString(
-          //     'page$i', PdfStandardFont(PdfFontFamily.timesRoman, 11),
-          //     bounds: Rect.fromLTWH(250, 0, 615, 100));
+        // for (int i = 1; i <= 5; i++) {
+        PdfPage page = document.pages.add();
+        PdfGraphics graphics = page.graphics;
+        double width = graphics.clientSize.width,
+            height = graphics.clientSize.height;
 
+        PdfGrid grid = PdfGrid();
+        grid.style = PdfGridStyle(
+            font: fontGrid,
+            cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
+
+        grid.columns.add(count: 9);
+        grid.headers.add(1);
+
+        PdfGridRow header = grid.headers[0];
+        header.cells[0].value = 'No.';
+        header.cells[1].value = 'Device Name';
+        header.cells[2].value = 'Site Details';
+        header.cells[3].value = 'Location';
+        header.cells[4].value = 'Height';
+        header.cells[5].value = 'Sim serial no';
+        header.cells[6].value = 'Sim provider';
+        header.cells[7].value = 'Batch no.';
+        header.cells[8].value = 'Activation date';
+
+        for (int i = 0; i < 9; i++) {
+          header.cells[i].style = PdfGridCellStyle(
+              font: fontGridTitle,
+              cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
+          header.cells[i].style.backgroundBrush =
+              PdfSolidBrush(PdfColor(0, 101, 163));
+          // header.cells[i].style. = PdfPen(PdfColor(255, 255, 255));
+          // header.cells[i].style.textPen = PdfPen(PdfColor(255, 255, 255));
+          header.cells[i].style.textBrush =
+              PdfSolidBrush(PdfColor(255, 255, 255));
+          header.cells[i].style.textBrush =
+              PdfSolidBrush(PdfColor(255, 255, 255));
+
+          // header.cells[i].style.borders = PdfBorders(
+          //     left: PdfPen(PdfColor(70, 70, 70), width: 1),
+          //     top: PdfPen(PdfColor(70, 70, 70), width: 1),
+          //     bottom: PdfPen(PdfColor(70, 70, 70), width: 1),
+          //     right: PdfPen(PdfColor(70, 70, 70), width: 1));
+        }
+
+        PdfGridRow row;
+
+        for (int i = 0; i < devices.length; i++) {
+          row = grid.rows.add();
+          row.cells[0].value = devices[i].id;
+          row.cells[1].value = devices[i].deviceName;
+          row.cells[2].value = devices[i].deviceDetails;
+          row.cells[3].value = devices[i].deviceLocation;
+          row.cells[4].value = devices[i].deviceHeight;
+          row.cells[5].value = devices[i].serialNum;
+          row.cells[6].value = devices[i].simProvider;
+          row.cells[7].value = devices[i].batchNum;
+          row.cells[8].value = devices[i].activationDate;
+
+          for (int l = 0; l < 9; l++) {
+            if (i % 2 != 0) {
+              row.cells[l].style = PdfGridCellStyle(
+                  font: fontGrid,
+                  cellPadding:
+                      PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
+              row.cells[l].style.backgroundBrush = PdfBrushes.lightGray;
+            }
+            // row.cells[l].style.borders = PdfBorders(
+            //     left: PdfPen(PdfColor(70, 70, 70), width: 1),
+            //     top: PdfPen(PdfColor(70, 70, 70), width: 1),
+            //     bottom: PdfPen(PdfColor(70, 70, 70), width: 1),
+            //     right: PdfPen(PdfColor(70, 70, 70), width: 1));
+          }
+        }
+
+        // header = grid.headers[5];
+        // header.cells[0].value = 'No.';
+        // header.cells[1].value = 'Device Name';
+        // header.cells[2].value = 'Site Details';
+        // header.cells[3].value = 'Location';
+        // header.cells[4].value = 'Height';
+        // header.cells[5].value = 'Sim serial no';
+        // header.cells[6].value = 'Sim provider';
+        // header.cells[7].value = 'Batch no.';
+        // header.cells[8].value = 'Activation date';
+
+        grid.columns[0].width = size5.width + 10;
+        // grid.columns[1].width = size6.width+10;
+        grid.repeatHeader = true;
+        // toast(document.pages.count.toString());
+        // grid.beginCellLayout=;
+
+        grid.draw(
+            page: page,
+            format: PdfLayoutFormat(
+                paginateBounds: Rect.fromLTWH(
+                    40, 40, width - 40, height - (size.height + 30))),
+            bounds: Rect.fromLTWH(40, 40 + width / 7 + 10 + size4.height + 10,
+                width - 40, height - (size.height + 30)));
+
+        // toast(document.pages.count.toString());
+
+        // for (int num = 0; num < document.pages.count; num++) {
+        //
+        //
+        //   PdfPage pageChild = document.pages.insert(num);
+        //   PdfGraphics graphicsChild = pageChild.graphics;
+
+
+          Rect rect =
+              Rect.fromLTWH((width) / 2, height - size.height - 20, 0, 0);
           PdfGraphicsState state = graphics.save();
-          graphics.setTransparency(0.25);
-
+          graphics.setTransparency(0.20);
           graphics.drawImage(PdfBitmap(await _readImageData('water.png')),
               Rect.fromLTWH(0, 0, width, height));
           graphics.restore(state);
-
           graphics.drawString(text, font,
               brush: PdfBrushes.black,
               bounds: rect,
               format: PdfStringFormat(
-              alignment: PdfTextAlignment.center,));
-
-
+                alignment: PdfTextAlignment.center,
+              ));
           PdfTextWebLink(
-              url: 'mailto:info@comdelta.com.my',
-              text: ' info@comdelta.com.my',
-              font: PdfStandardFont(PdfFontFamily.timesRoman,
-                      12,
+                  url: 'mailto:info@comdelta.com.my',
+                  text: ' info@comdelta.com.my',
+                  font: PdfStandardFont(PdfFontFamily.timesRoman, 12,
                       style: PdfFontStyle.underline),
-              brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-              pen: PdfPens.cornflowerBlue,
-              format: PdfStringFormat(
-                  alignment: PdfTextAlignment.left,
-                  lineAlignment: PdfVerticalAlignment.middle)).draw(page, Offset((width-size1.width)/2+size2.width, height-size1.height-20));
-
+                  brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+                  pen: PdfPens.cornflowerBlue,
+                  format: PdfStringFormat(
+                      alignment: PdfTextAlignment.left,
+                      lineAlignment: PdfVerticalAlignment.middle))
+              .draw(
+              page,
+                  Offset((width - size1.width) / 2 + size2.width,
+                      height - size1.height - 20));
           PdfTextWebLink(
-              url: 'www.comdelta.com.my',
-              text: ' www.comdelta.com.my',
-              font: PdfStandardFont(PdfFontFamily.timesRoman,
-                      12,
+                  url: 'www.comdelta.com.my',
+                  text: ' www.comdelta.com.my',
+                  font: PdfStandardFont(PdfFontFamily.timesRoman, 12,
                       style: PdfFontStyle.underline),
-              brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-              pen: PdfPens.cornflowerBlue,
-              format: PdfStringFormat(
-                  alignment: PdfTextAlignment.left,
-                  lineAlignment: PdfVerticalAlignment.middle)).draw(page, Offset((width-size1.width)/2+size3.width, height-size1.height-20));
+                  brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+                  pen: PdfPens.cornflowerBlue,
+                  format: PdfStringFormat(
+                      alignment: PdfTextAlignment.left,
+                      lineAlignment: PdfVerticalAlignment.middle))
+              .draw(
+              page,
+                  Offset((width - size1.width) / 2 + size3.width,
+                      height - size1.height - 20));
+        // }
 
-        }
+        // if(i==1){
+
+
+        graphics.drawImage(
+            PdfBitmap(await _readImageData('logonew.png')),
+            Rect.fromLTWH(
+                40, 40, (width / 7) * 2.181818181818181818182, width / 7));
+
+        graphics.drawString(
+            'All DEVICE DETAILS – For company purpose', fontTitle,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.left,
+            ));
+
+        graphics.drawString(
+            'Date of generated: ' +
+                DateFormat('dd MMM yyyy').format(DateTime.now()),
+            font,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH(width - 40, 40 + width / 7 + 10, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.right,
+            ));
+
+        //   }
+        // }
 
         // //Create the header with specific bounds
         // PdfPageTemplateElement header = PdfPageTemplateElement(
