@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Icons/pdf_icons.dart';
 
 class ManageDevicesAppBar extends StatelessWidget {
   final title;
   final context;
-  final func1, func2, func3, func4;
+  final func1, func2, func3, func4, func5;
 
   ManageDevicesAppBar(
-      this.context, this.title, this.func1, this.func2, this.func3, this.func4);
+      this.context, this.title, this.func1, this.func2,this.func3,  this.func4, this.func5);
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +57,26 @@ class ManageDevicesAppBar extends StatelessWidget {
                 value: 1,
                 child: Row(
                   children: [
-                    Icon(Icons.download),
+                    Icon(Pdf.file_pdf,size: 20,),
                     const SizedBox(width: 8),
                     Text('Export PDF'),
                   ],
                 ),
               ),
-              PopupMenuDivider(),
+              // PopupMenuDivider(),
               PopupMenuItem<int>(
                 value: 2,
+                child: Row(
+                  children: [
+                    Icon(Pdf.file_excel,size: 20,),
+                    const SizedBox(width: 8),
+                    Text('Export Excel'),
+                  ],
+                ),
+              ),
+              PopupMenuDivider(),
+              PopupMenuItem<int>(
+                value: 3,
                 child: Row(
                   children: [
                     Icon(Icons.search),
@@ -74,7 +86,7 @@ class ManageDevicesAppBar extends StatelessWidget {
                 ),
               ),
               PopupMenuItem<int>(
-                value: 3,
+                value: 4,
                 child: Row(
                   children: [
                     Icon(Icons.clear),
@@ -103,6 +115,9 @@ class ManageDevicesAppBar extends StatelessWidget {
         break;
       case 3:
         func4();
+        break;
+      case 4:
+        func5();
     }
   }
 }

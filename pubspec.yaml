@@ -54,6 +54,7 @@ dependencies:
   path_provider: ^2.0.2
   permission_handler: ^8.1.4+2
   syncfusion_flutter_pdf: ^19.2.57-beta
+  syncfusion_flutter_xlsio: ^19.2.59-beta
   open_file: ^3.2.1
   auto_size_text: ^2.1.0
 
@@ -100,9 +101,15 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-     - family: Montserrat
+     - family: Pdf
        fonts:
-         - asset: fonts/Montserrat-Regular.ttf
+         - asset: fonts/Pdf.ttf
+
+#///   fonts:
+#///    - family:  Pdf
+#///      fonts:
+#///       - asset: fonts/Pdf.ttf
+
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
