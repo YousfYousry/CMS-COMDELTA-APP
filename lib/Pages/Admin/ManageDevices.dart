@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:path_provider/path_provider.dart';
@@ -92,8 +93,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   //     lastSignalAd = new TextEditingController();
 
   var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
-  var devices = [];
-  var duplicateDevices = [];
+  List<DeviceJason> devices = [];
+  List<DeviceJason> duplicateDevices = [];
 
   void _sort1() {
     if (span1 != spanDown) {
@@ -142,7 +143,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     var dummySearchList = [];
     dummySearchList.addAll(duplicateDevices);
     if (query.isNotEmpty) {
-      var dummyListData = [];
+      List<DeviceJason> dummyListData = [];
       dummySearchList.forEach((item) {
         if (item.id.toLowerCase().contains(query.toLowerCase()) ||
             item.deviceName.toLowerCase().contains(query.toLowerCase()) ||
@@ -505,7 +506,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                       caption: 'Download',
                                       color: Colors.green,
                                       icon: Icons.download,
-                                      onTap: () => toast('Downloading'),
+                                      onTap: () => downloadLogs(devices[index].id),
                                     ),
                                   ],
                                   secondaryActions: <Widget>[
@@ -586,11 +587,6 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     );
   }
 
-  Future<Uint8List> _readImageData(String name) async {
-    final data = await rootBundle.load('assets/image/$name');
-    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  }
-
   Future<void> exportPDF() async {
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
@@ -627,7 +623,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         Size size2 = font.measureString('Contact Us: ');
         Size size3 = font.measureString('Contact Us: info@comdelta.com.my |');
         Size size4 =
-            fontTitle.measureString('All DEVICE DETAILS – For company purpose');
+            fontTitle.measureString('DEVICE DETAILS – For company purpose');
         Size size5 = fontGridTitle.measureString('No.');
 
         PdfPage page = document.pages.add();
@@ -756,8 +752,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
             Rect.fromLTWH(
                 40, 40, (width / 7) * 2.181818181818181818182, width / 7));
 
-        graphics.drawString(
-            'All DEVICE DETAILS – For company purpose', fontTitle,
+        graphics.drawString('DEVICE DETAILS – For company purpose', fontTitle,
             brush: PdfBrushes.black,
             bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
             format: PdfStringFormat(
@@ -792,10 +787,38 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> exportExcel() async {
+  Future<void> downloadLogs(String id) async{
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel(devices);
+        toast('Downloading');
+        progressBar(true);
+        http.post(
+            Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+            body: {
+              'device_id': id,
+            }).then((value) {
+          if (value.statusCode == 200) {
+            List<LogJason> logs = [];
+            List<dynamic> values = [];
+            values = json.decode(value.body);
+
+            if (values.length > 0) {
+              for (int i = 0; i < values.length; i++) {
+                if (values[i] != null) {
+                  Map<String, dynamic> map = values[i];
+                  logs.add(LogJason.fromJson(map));
+                }
+              }
+            }
+            ExportExcel(logs,progressBar);
+          } else {
+            progressBar(false);
+            throw Exception("Unable to get Log list");
+          }
+        }).onError((error, stackTrace) {
+          progressBar(false);
+          toast('Error: ' + error.message);
+        });
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -810,6 +833,35 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     });
   }
 
+  Future<void> exportExcel() async {
+    await Permission.storage.request().then((value) async {
+      if (value.isGranted) {
+        ExportExcel(devices, progressBar);
+      } else if (value.isPermanentlyDenied) {
+        toast("Accept permission to proceed!");
+        await openAppSettings();
+      } else if (value.isDenied) {
+        toast("Permission is denied");
+      } else if (value.isRestricted) {
+        toast("Permission is restricted");
+      } else if (value.isLimited) {
+        toast("Permission is limited");
+      }
+      return true;
+    });
+  }
+
+  void progressBar(bool loading) {
+    setState(() {
+      this.loading = loading;
+    });
+  }
+
+  Future<Uint8List> _readImageData(String name) async {
+    final data = await rootBundle.load('assets/image/$name');
+    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  }
+
   Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
     final path = (await getExternalStorageDirectory()).path;
     final file = File('$path/$fileName');
@@ -817,15 +869,15 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     OpenFile.open('$path/$fileName');
   }
 
-  Future<String> getDirectoryPath() async {
-    Directory appDocDirectory = await getApplicationDocumentsDirectory();
-
-    Directory directory =
-        await new Directory(appDocDirectory.path + '/' + 'dir')
-            .create(recursive: true);
-
-    return directory.path;
-  }
+  // Future<String> getDirectoryPath() async {
+  //   Directory appDocDirectory = await getApplicationDocumentsDirectory();
+  //
+  //   Directory directory =
+  //       await new Directory(appDocDirectory.path + '/' + 'dir')
+  //           .create(recursive: true);
+  //
+  //   return directory.path;
+  // }
 
   // void advancedSearch() {
   //   Navigator.of(context).push(
