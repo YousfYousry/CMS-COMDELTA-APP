@@ -769,10 +769,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
               alignment: PdfTextAlignment.right,
             ));
 
-        List<int> bytes = document.save();
-        document.dispose();
 
-        saveAndLaunchFile(bytes, 'Device List.pdf');
+
+        saveAndLaunchFile(document, 'Device List.pdf');
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -862,11 +861,15 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
 
-  Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
-    final path = (await getExternalStorageDirectory()).path;
-    final file = File('$path/$fileName');
+  Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
+    List<int> bytes = document.save();
+    document.dispose();
+    final String path = (await getApplicationSupportDirectory()).path;
+    final String fileName =
+    Platform.isWindows ? '$path\\'+name.toString() : '$path/'+name.toString();
+    final File file = File(fileName);
     await file.writeAsBytes(bytes, flush: true);
-    OpenFile.open('$path/$fileName');
+    OpenFile.open(fileName);
   }
 
   // Future<String> getDirectoryPath() async {

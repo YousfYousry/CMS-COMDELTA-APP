@@ -793,10 +793,7 @@ class _DeviceLogs extends State<DeviceLogs> {
               alignment: PdfTextAlignment.left,
             ));
 
-        List<int> bytes = document.save();
-        document.dispose();
-
-        saveAndLaunchFile(bytes, widget.device.id.toString()+'.pdf');
+        saveAndLaunchFile(document, widget.device.id.toString()+'.pdf');
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -853,11 +850,16 @@ class _DeviceLogs extends State<DeviceLogs> {
     return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
 
-  Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
-    final path = (await getExternalStorageDirectory()).path;
-    final file = File('$path/$fileName');
+
+  Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
+    List<int> bytes = document.save();
+    document.dispose();
+    final String path = (await getApplicationSupportDirectory()).path;
+    final String fileName =
+    Platform.isWindows ? '$path\\'+name.toString() : '$path/'+name.toString();
+    final File file = File(fileName);
     await file.writeAsBytes(bytes, flush: true);
-    OpenFile.open('$path/$fileName');
+    OpenFile.open(fileName);
   }
 
   void showDeviceDetails() {
