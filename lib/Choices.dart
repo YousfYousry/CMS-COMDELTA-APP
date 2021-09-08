@@ -30,6 +30,29 @@ List<S2Choice<String>> client = [
   S2Choice<String>(value: 'Comdelta Test', title: 'Comdelta Test'),
 ];
 
+List<S2Choice<String>> clientCompressed = [
+  S2Choice<String>(value: 'DHarmoni', title: 'DHarmoni'),
+  S2Choice<String>(value: 'Digi', title: 'Digi'),
+  S2Choice<String>(value: 'Sacofa', title: 'Sacofa'),
+  S2Choice<String>(value: 'U Mobile', title: 'U Mobile'),
+  S2Choice<String>(value: 'EDOTCO', title: 'EDOTCO'),
+  S2Choice<String>(value: 'Maxis', title: 'Maxis'),
+  S2Choice<String>(value: 'Red One', title: 'Red One'),
+  S2Choice<String>(value: 'xenox', title: 'xenox'),
+  S2Choice<String>(value: 'sampugita', title: 'sampugita'),
+  S2Choice<String>(
+      value: 'R&D',
+      title: 'R&D'),
+  S2Choice<String>(
+      value: 'Comdelta', title: 'Comdelta'),
+  S2Choice<String>(value: 'Test Log', title: 'Test Log'),
+  S2Choice<String>(value: 'YTL', title: 'YTL'),
+  S2Choice<String>(value: 'Telekom', title: 'Telekom'),
+  S2Choice<String>(value: 'Bullish Aim', title: 'Bullish Aim'),
+  S2Choice<String>(value: 'Comdelta Test', title: 'Comdelta Test'),
+];
+
+
 List<S2Choice<String>> location = [
   S2Choice<String>(value: 'Kuala Lumpur', title: 'Kuala Lumpur'),
   S2Choice<String>(value: 'Labuan', title: 'Labuan'),

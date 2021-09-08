@@ -9,12 +9,13 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 import '../../Choices.dart';
 
 class ExportExcel {
+  final name;
   final items;
   final progressBar;
   final workbook = Workbook();
-  Style styleHeader,styleCellWhite,styleCellGrey;
+  Style styleHeader, styleCellWhite, styleCellGrey;
 
-  ExportExcel(this.items, this.progressBar) {
+  ExportExcel(this.name, this.items, this.progressBar) {
     progressBar(true);
     //Header Style
     styleHeader = workbook.styles.add('Style1');
@@ -61,11 +62,11 @@ class ExportExcel {
     styleCellGrey.numberFormat = '_(\$* #,##0_)';
     workbook.styles.addStyle(styleCellGrey);
 
-    if(items is List<DeviceJason>) {
+    if (items is List<DeviceJason>) {
       exportDevices();
-    }else if(items is List<LogJason>){
+    } else if (items is List<LogJason>) {
       exportLogs();
-    }else{
+    } else {
       progressBar(false);
       toast("Failed");
     }
@@ -92,21 +93,34 @@ class ExportExcel {
 
     //Cells
     for (int i = 0; i < items.length; i++) {
-      String num = (i+2).toString();
-      sheet.getRangeByName('A'+num).setText(items[i].id.toString());
-      sheet.getRangeByName('B'+num).setText(items[i].deviceName.toString());
-      sheet.getRangeByName('C'+num).setText(client[getInt(items[i].client) - 1].value.toString());
-      sheet.getRangeByName('D'+num).setText(items[i].deviceDetails.toString());
-      sheet.getRangeByName('E'+num).setText(items[i].deviceLocation.toString());
-      sheet.getRangeByName('F'+num).setText((items[i].lat==500?"":items[i].lat).toString());
-      sheet.getRangeByName('G'+num).setText((items[i].lon==500?"":items[i].lon).toString());
-      sheet.getRangeByName('H'+num).setText(items[i].deviceHeight.toString());
-      sheet.getRangeByName('I'+num).setText(items[i].serialNum.toString());
-      sheet.getRangeByName('J'+num).setText(items[i].simProvider.toString());
-      sheet.getRangeByName('K'+num).setText(items[i].batchNum.toString());
-      sheet.getRangeByName('L'+num).setText(items[i].activationDate.toString());
-      sheet.getRangeByName('M'+num).setText(items[i].lastSignal.toString());
-      sheet.getRangeByName('A'+num+':M'+num).cellStyle = (i%2==0)? styleCellWhite : styleCellGrey;
+      String num = (i + 2).toString();
+      sheet.getRangeByName('A' + num).setText(items[i].id.toString());
+      sheet.getRangeByName('B' + num).setText(items[i].deviceName.toString());
+      sheet
+          .getRangeByName('C' + num)
+          .setText(client[getInt(items[i].client) - 1].value.toString());
+      sheet
+          .getRangeByName('D' + num)
+          .setText(items[i].deviceDetails.toString());
+      sheet
+          .getRangeByName('E' + num)
+          .setText(items[i].deviceLocation.toString());
+      sheet
+          .getRangeByName('F' + num)
+          .setText((items[i].lat == 500 ? "" : items[i].lat).toString());
+      sheet
+          .getRangeByName('G' + num)
+          .setText((items[i].lon == 500 ? "" : items[i].lon).toString());
+      sheet.getRangeByName('H' + num).setText(items[i].deviceHeight.toString());
+      sheet.getRangeByName('I' + num).setText(items[i].serialNum.toString());
+      sheet.getRangeByName('J' + num).setText(items[i].simProvider.toString());
+      sheet.getRangeByName('K' + num).setText(items[i].batchNum.toString());
+      sheet
+          .getRangeByName('L' + num)
+          .setText(items[i].activationDate.toString());
+      sheet.getRangeByName('M' + num).setText(items[i].lastSignal.toString());
+      sheet.getRangeByName('A' + num + ':M' + num).cellStyle =
+          (i % 2 == 0) ? styleCellWhite : styleCellGrey;
     }
 
     //saving file
@@ -130,28 +144,30 @@ class ExportExcel {
 
     //Cells
     for (int i = 0; i < items.length; i++) {
-      String num = (i+2).toString();
-      sheet.getRangeByName('A'+num).setText(items[i].createDate.toString());
-      sheet.getRangeByName('B'+num).setText(items[i].lid1.toString());
-      sheet.getRangeByName('C'+num).setText(items[i].ls1.toString());
-      sheet.getRangeByName('D'+num).setText(items[i].lid2.toString());
-      sheet.getRangeByName('E'+num).setText(items[i].ls2.toString());
-      sheet.getRangeByName('F'+num).setText(items[i].lid3.toString());
-      sheet.getRangeByName('G'+num).setText(items[i].ls3.toString());
-      sheet.getRangeByName('H'+num).setText(items[i].batteryValue.toString());
-      sheet.getRangeByName('I'+num).setText(items[i].rssiValue.toString());
-      sheet.getRangeByName('A'+num+':I'+num).cellStyle = (i%2==0)? styleCellWhite : styleCellGrey;
+      String num = (i + 2).toString();
+      sheet.getRangeByName('A' + num).setText(items[i].createDate.toString());
+      sheet.getRangeByName('B' + num).setText(items[i].lid1.toString());
+      sheet.getRangeByName('C' + num).setText(items[i].ls1.toString());
+      sheet.getRangeByName('D' + num).setText(items[i].lid2.toString());
+      sheet.getRangeByName('E' + num).setText(items[i].ls2.toString());
+      sheet.getRangeByName('F' + num).setText(items[i].lid3.toString());
+      sheet.getRangeByName('G' + num).setText(items[i].ls3.toString());
+      sheet.getRangeByName('H' + num).setText(items[i].batteryValue.toString());
+      sheet.getRangeByName('I' + num).setText(items[i].rssiValue.toString());
+      sheet.getRangeByName('A' + num + ':I' + num).cellStyle =
+          (i % 2 == 0) ? styleCellWhite : styleCellGrey;
     }
 
     //saving file
     saveFile(workbook);
   }
 
-  Future<void> saveFile(Workbook workbook) async{
+  Future<void> saveFile(Workbook workbook) async {
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();
     final String path = (await getApplicationSupportDirectory()).path;
-    final String fileName = Platform.isWindows ? '$path\\Output.xlsx' : '$path/Output.xlsx';
+    final String fileName =
+        Platform.isWindows ? '$path\\'+name.toString()+'.xlsx' : '$path/'+name.toString()+'.xlsx';
     final File file = File(fileName);
     await file.writeAsBytes(bytes, flush: true);
     OpenFile.open(fileName);

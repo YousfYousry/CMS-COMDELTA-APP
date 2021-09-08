@@ -542,7 +542,7 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   Future<void> pdf() async {
     if (loading) {
-      toast("Please be patient...");
+      toast("Loading, please be patient");
       return;
     }
 
@@ -611,9 +611,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                       ? PdfTextAlignment.left
                       : PdfTextAlignment.center),
               font: fontGridTitle,
-              cellPadding: PdfPaddings(left: (i == 0)
-                  ? 5
-                  : 2, right: 2, top: 2, bottom: 2));
+              cellPadding: PdfPaddings(
+                  left: (i == 0) ? 5 : 2, right: 2, top: 2, bottom: 2));
           header.cells[i].style.backgroundBrush =
               PdfSolidBrush(PdfColor(0, 101, 163));
           header.cells[i].style.textBrush =
@@ -640,10 +639,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                         ? PdfTextAlignment.left
                         : PdfTextAlignment.center),
                 font: fontGrid,
-                cellPadding:
-                PdfPaddings(left: (l == 0)
-                    ? 5
-                    : 2, right: 2, top: 2, bottom: 2));
+                cellPadding: PdfPaddings(
+                    left: (l == 0) ? 5 : 2, right: 2, top: 2, bottom: 2));
             if (i % 2 != 0) {
               row.cells[l].style.backgroundBrush = PdfBrushes.lightGray;
             }
@@ -658,8 +655,11 @@ class _DeviceLogs extends State<DeviceLogs> {
             format: PdfLayoutFormat(
                 paginateBounds: Rect.fromLTWH(
                     40, 40, width - 40, height - (size.height + 30))),
-            bounds: Rect.fromLTWH(40, 40 + width / 7 + 10 + size4.height + 10,
-                width - 40, height - (size.height + 30)));
+            bounds: Rect.fromLTWH(
+                40,
+                (width / 7) + 100 + size4.height + (size3.height * 2),
+                width - 40,
+                height - (size.height + 30)));
 
         for (int num = 0; num < document.pages.count; num++) {
           page = document.pages[num];
@@ -732,16 +732,63 @@ class _DeviceLogs extends State<DeviceLogs> {
               alignment: PdfTextAlignment.right,
             ));
 
-        graphics.drawString('Client: '+client[getInt(widget.device.client) - 1].value, fontTitle,
+        String str1 = 'Client: ' + clientCompressed[getInt(widget.device.client) - 1].value;
+        String str2 = 'Device name: ' + widget.device.deviceName;
+        String str3 = 'Height: ' + widget.device.deviceHeight;
+        String str4 = 'Location: ' + widget.device.deviceLocation;
+
+        String str5 = 'Site Details: ' +
+            widget.device.deviceDetails;
+        String str6 = "";
+        if (widget.device.activationDate.toString().isNotEmpty)
+          str6 = 'Activation date: ' + widget.device.activationDate;
+
+        graphics.drawString(str1, font,
             brush: PdfBrushes.black,
-            bounds: Rect.fromLTWH(40, 40 + width / 7 + 30+size4.height, 0, 0),
+            bounds: Rect.fromLTWH(40, 40 + width / 7 + 30 + size4.height, 0, 0),
             format: PdfStringFormat(
               alignment: PdfTextAlignment.left,
             ));
 
-        graphics.drawString('Device name: '+widget.device.deviceName, fontTitle,
+        graphics.drawString(str2, font,
             brush: PdfBrushes.black,
-            bounds: Rect.fromLTWH((width-80)/4+40, 40 + width / 7 + 30+size4.height, 0, 0),
+            bounds: Rect.fromLTWH((width - 80) / 4 + 40,
+                40 + width / 7 + 30 + size4.height, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.left,
+            ));
+
+        graphics.drawString(str3, font,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH((width - 80) / 2 + 40,
+                40 + width / 7 + 30 + size4.height, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.left,
+            ));
+
+        graphics.drawString(str4, font,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH(
+                width - 40, 40 + width / 7 + 30 + size4.height, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.right,
+            ));
+
+        graphics.drawString(str5, font,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH(
+                40,
+                width / 7 + 75 + size4.height + size3.height,
+                str6.isEmpty ? (width - 80) : (width - 80) / 2,
+                0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.left,
+            ));
+
+        graphics.drawString(str6, font,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH((width - 80) / 2 + 40,
+                width / 7 + 75 + size4.height + size3.height, 0, 0),
             format: PdfStringFormat(
               alignment: PdfTextAlignment.left,
             ));
@@ -749,7 +796,7 @@ class _DeviceLogs extends State<DeviceLogs> {
         List<int> bytes = document.save();
         document.dispose();
 
-        saveAndLaunchFile(bytes, 'Output.pdf');
+        saveAndLaunchFile(bytes, widget.device.id.toString()+'.pdf');
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -766,13 +813,13 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   Future<void> excel() async {
     if (loading) {
-      toast("Please be patient...");
+      toast("Loading, please be patient");
       return;
     }
 
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel(this.logs, (bool loading) {
+        ExportExcel(widget.device.id,this.logs, (bool loading) {
           setState(() {
             this.loading = loading;
           });

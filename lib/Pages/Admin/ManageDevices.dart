@@ -772,7 +772,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         List<int> bytes = document.save();
         document.dispose();
 
-        saveAndLaunchFile(bytes, 'Output.pdf');
+        saveAndLaunchFile(bytes, 'Device List.pdf');
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -810,7 +810,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                 }
               }
             }
-            ExportExcel(logs,progressBar);
+            ExportExcel(id,logs,progressBar);
           } else {
             progressBar(false);
             throw Exception("Unable to get Log list");
@@ -836,7 +836,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   Future<void> exportExcel() async {
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel(devices, progressBar);
+        ExportExcel("Device List",devices, progressBar);
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
