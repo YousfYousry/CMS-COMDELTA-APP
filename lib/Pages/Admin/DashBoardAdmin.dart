@@ -15,15 +15,18 @@ import 'package:flutter/material.dart';
 
 // import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 // import 'package:intl/intl.dart';
 // import 'package:login_cms_comdelta/Choices.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/NewDashBoard.dart';
+import 'package:login_cms_comdelta/Widgets/Functions/WidgetSize.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
+
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
@@ -38,7 +41,7 @@ const PrimaryColor = const Color(0xff0065a3);
 //   'Active Device Last 72 Hour',
 //   'Inactive Device Last 72 Hours'
 // ];
-double width;
+double width, height;
 
 class DashBoardTest1 extends StatefulWidget {
   DashBoardTest1({Key key, this.title}) : super(key: key);
@@ -59,6 +62,8 @@ class DashBoardTest1 extends StatefulWidget {
 class _DashBoardTest1 extends State<DashBoardTest1>
     with SingleTickerProviderStateMixin {
   // bool advancedSearchBool = false;
+  double radius = 80, radius2 = 80;
+
   int activeHours = 72, inActiveHours = 72;
   List<DeviceJason> duplicatedDevices = [];
   List<DeviceJason> activeDevices = [];
@@ -183,9 +188,12 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   @override
   Widget build(BuildContext context) {
     if (advancedSearch == null)
-      advancedSearch = AdvancedSearch(context, getLocations,new TextEditingController());
+      advancedSearch =
+          AdvancedSearch(context, getLocations, new TextEditingController());
 
     width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
+
     TextEditingController activeController = new TextEditingController()
       ..text = activeHours.toString();
     activeController.selection = new TextSelection(
@@ -276,224 +284,232 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             //     ),
             //   ),
             // ),
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2))
-                  ],
-                  color: Colors.white,
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Total projects",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
+            Container(
+              height: 100,
+              margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                // color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        "Total projects",
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.all(0),
-                        child: Countup(
-                          begin: 0,
-                          end: values[2],
-                          duration: Duration(seconds: 2),
-                          separator: ',',
-                          style: TextStyle(
-                              fontSize: 50,
-                              fontWeight: FontWeight.bold,
-                              color: PrimaryColor),
-                        ),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.all(0),
+                      child: Countup(
+                        begin: 0,
+                        end: values[2],
+                        duration: Duration(seconds: 2),
+                        separator: ',',
+                        style: TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                            color: PrimaryColor),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            Expanded(
-              flex: 4,
-              child: Container(
-                constraints: BoxConstraints(
-                    minHeight: width, minWidth: width, maxHeight: width),
-                padding: EdgeInsets.only(bottom: 35),
-                margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2))
-                  ],
-                  color: Colors.white,
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Active & Inactive projects",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
+
+            WidgetSize(
+              onChange: (Size size) {
+                setState(() {
+                  radius = (size.height < width) ? size.height : width;
+                });
+              },
+              child: Expanded(
+                child: Container(
+                  constraints: BoxConstraints(
+                      minHeight: width, minWidth: width, maxHeight: width),
+                  padding: EdgeInsets.only(bottom: 35),
+                  margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  decoration: BoxDecoration(
+                    // color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: Offset(0, 2))
+                    ],
+                    color: Colors.white,
+                  ),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            "Active & Inactive projects",
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.black54),
+                          ),
                         ),
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Spacer(),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 30, top: 50),
-                          height: width,
-                          width: width,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: CircularPercentIndicator(
-                              radius: width - 80,
-                              animation: true,
-                              animationDuration: 2000,
-                              lineWidth: 20.0,
-                              percent: values[0] / values[2],
-                              center: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Spacer(),
-                                  Countup(
-                                    begin: 0,
-                                    end: values[0],
-                                    duration: Duration(seconds: 2),
-                                    separator: ',',
-                                    style: TextStyle(
-                                        fontSize: 50,
-                                        fontWeight: FontWeight.bold,
-                                        color: PrimaryColor),
-                                  ),
-                                  Countup(
-                                    begin: values[2],
-                                    end: values[1],
-                                    duration: Duration(seconds: 2),
-                                    separator: ',',
-                                    style: TextStyle(
-                                        fontSize: 45,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey),
-                                  ),
-                                  Spacer(),
-                                ],
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Spacer(),
+                          Container(
+                            padding: EdgeInsets.only(bottom: 30, top: 50),
+                            height: radius,
+                            width: radius,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: CircularPercentIndicator(
+                                radius: radius - 80,
+                                animation: true,
+                                animationDuration: 2000,
+                                lineWidth: 20.0,
+                                percent: values[0] / values[2],
+                                center: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Spacer(),
+                                    Countup(
+                                      begin: 0,
+                                      end: values[0],
+                                      duration: Duration(seconds: 2),
+                                      separator: ',',
+                                      style: TextStyle(
+                                          fontSize: 50,
+                                          fontWeight: FontWeight.bold,
+                                          color: PrimaryColor),
+                                    ),
+                                    Countup(
+                                      begin: values[2],
+                                      end: values[1],
+                                      duration: Duration(seconds: 2),
+                                      separator: ',',
+                                      style: TextStyle(
+                                          fontSize: 45,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey),
+                                    ),
+                                    Spacer(),
+                                  ],
+                                ),
+                                circularStrokeCap: CircularStrokeCap.butt,
+                                backgroundColor: Colors.grey,
+                                progressColor: PrimaryColor,
                               ),
-                              circularStrokeCap: CircularStrokeCap.butt,
-                              backgroundColor: Colors.grey,
-                              progressColor: PrimaryColor,
                             ),
                           ),
-                        ),
-                        Container(
-                          child: Row(
-                            children: [
-                              Spacer(),
-                              Column(
-                                children: [
-                                  // Container(
-                                  //   width: 20,
-                                  //   height: 15,
-                                  //   child: Align(
-                                  //     alignment: Alignment.centerLeft,
-                                  //     child: CircleAvatar(
-                                  //       backgroundColor: Colors.purple,
-                                  //       radius: 5,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  Container(
-                                    width: 20,
-                                    height: 15,
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: CircleAvatar(
-                                        backgroundColor: Color(0xff0065a3),
-                                        radius: 5,
+                          Container(
+                            child: Row(
+                              children: [
+                                Spacer(),
+                                Column(
+                                  children: [
+                                    // Container(
+                                    //   width: 20,
+                                    //   height: 15,
+                                    //   child: Align(
+                                    //     alignment: Alignment.centerLeft,
+                                    //     child: CircleAvatar(
+                                    //       backgroundColor: Colors.purple,
+                                    //       radius: 5,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Container(
+                                      width: 20,
+                                      height: 15,
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: CircleAvatar(
+                                          backgroundColor: Color(0xff0065a3),
+                                          radius: 5,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    width: 20,
-                                    height: 15,
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey,
-                                        radius: 5,
+                                    Container(
+                                      width: 20,
+                                      height: 15,
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.grey,
+                                          radius: 5,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Container(
-                                  //   height: 15,
-                                  //   child: Align(
-                                  //     alignment: Alignment.centerLeft,
-                                  //     child: Text(
-                                  //       "Total devices",
-                                  //       style: TextStyle(fontSize: 14, color: Colors.grey),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  Container(
-                                    height: 15,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "Active projects last 72 hours",
-                                        style: TextStyle(
-                                            // height: 15,
-                                            fontSize: 14,
-                                            color: Colors.grey),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Container(
+                                    //   height: 15,
+                                    //   child: Align(
+                                    //     alignment: Alignment.centerLeft,
+                                    //     child: Text(
+                                    //       "Total devices",
+                                    //       style: TextStyle(fontSize: 14, color: Colors.grey),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Container(
+                                      height: 15,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "Active projects last 72 hours",
+                                          style: TextStyle(
+                                              // height: 15,
+                                              fontSize: 14,
+                                              color: Colors.grey),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    height: 15,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        "Inactive projects last 72 hours",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            // height: 15,
-                                            fontSize: 14,
-                                            color: Colors.grey),
+                                    Container(
+                                      height: 15,
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "Inactive projects last 72 hours",
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              // height: 15,
+                                              fontSize: 14,
+                                              color: Colors.grey),
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Spacer(),
-                            ],
+                                    )
+                                  ],
+                                ),
+                                Spacer(),
+                              ],
+                            ),
                           ),
-                        ),
-                        Spacer(),
-                      ],
-                    ),
-                  ],
+                          Spacer(),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -504,470 +520,473 @@ class _DashBoardTest1 extends State<DashBoardTest1>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              flex: 24,
-              child: Container(
-                padding: EdgeInsets.only(bottom: 20),
-                margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2))
-                  ],
-                  color: Colors.white,
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Active projects",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
+            WidgetSize(
+              onChange: (Size size) {
+                setState(() {
+                  radius2 = (size.height < width) ? size.height : width;
+                });
+              },
+              child: Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    // color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: Offset(0, 2))
+                    ],
+                    color: Colors.white,
+                  ),
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            "Active projects",
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.black54),
+                          ),
                         ),
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Spacer(),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 20, top: 40),
-                          height: width - 20,
-                          width: width,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: CircularPercentIndicator(
-                              radius: width - 80,
-                              animation: true,
-                              animationDuration: 2000,
-                              lineWidth: 20.0,
-                              animateFromLastPercent: true,
-                              percent: values[4] / values[2],
-                              center: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Spacer(),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Spacer(),
-                                      Text(
-                                        "% ",
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            // fontWeight: FontWeight.bold,
-                                            color: Colors.transparent),
-                                      ),
-                                      Countup(
-                                        begin: values[3] / values[2] * 100,
-                                        end: values[4] / values[2] * 100,
-                                        duration: Duration(seconds: 2),
-                                        separator: ',',
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            // fontWeight: FontWeight.bold,
-                                            color: PrimaryColor),
-                                      ),
-                                      Text(
-                                        " %",
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            // fontWeight: FontWeight.bold,
-                                            color: Colors.grey),
-                                      ),
-                                      Spacer(),
-                                    ],
-                                  ),
-                                  Countup(
-                                    begin: values[3],
-                                    end: values[4],
-                                    duration: Duration(seconds: 2),
-                                    separator: ',',
-                                    style: TextStyle(
-                                        fontSize: 50,
-                                        fontWeight: FontWeight.bold,
-                                        color: PrimaryColor),
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Spacer(),
-                                      Text(
-                                        "% ",
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            color: Colors.transparent),
-                                      ),
-                                      Spacer(),
-                                    ],
-                                  ),
-                                  Spacer(),
-                                ],
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Spacer(),
+                          Container(
+                            padding: EdgeInsets.only(bottom: 20, top: 40),
+                            height: radius2 - 20,
+                            width: radius2,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: CircularPercentIndicator(
+                                radius: radius2 - 80,
+                                animation: true,
+                                animationDuration: 2000,
+                                lineWidth: 20.0,
+                                animateFromLastPercent: true,
+                                percent: values[4] / values[2],
+                                center: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Spacer(),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Spacer(),
+                                        Text(
+                                          "% ",
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              // fontWeight: FontWeight.bold,
+                                              color: Colors.transparent),
+                                        ),
+                                        Countup(
+                                          begin: values[3] / values[2] * 100,
+                                          end: values[4] / values[2] * 100,
+                                          duration: Duration(seconds: 2),
+                                          separator: ',',
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              // fontWeight: FontWeight.bold,
+                                              color: PrimaryColor),
+                                        ),
+                                        Text(
+                                          " %",
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              // fontWeight: FontWeight.bold,
+                                              color: Colors.grey),
+                                        ),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                    Countup(
+                                      begin: values[3],
+                                      end: values[4],
+                                      duration: Duration(seconds: 2),
+                                      separator: ',',
+                                      style: TextStyle(
+                                          fontSize: 50,
+                                          fontWeight: FontWeight.bold,
+                                          color: PrimaryColor),
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Spacer(),
+                                        Text(
+                                          "% ",
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              color: Colors.transparent),
+                                        ),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                  ],
+                                ),
+                                circularStrokeCap: CircularStrokeCap.butt,
+                                backgroundColor: Colors.grey,
+                                progressColor: PrimaryColor,
                               ),
-                              circularStrokeCap: CircularStrokeCap.butt,
-                              backgroundColor: Colors.grey,
-                              progressColor: PrimaryColor,
                             ),
                           ),
-                        ),
-                        Container(
-                          child: Row(
-                            children: [
-                              Spacer(),
-                              Container(
-                                width: 20,
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleAvatar(
-                                    backgroundColor: Color(0xff0065a3),
-                                    radius: 5,
+                          Container(
+                            child: Row(
+                              children: [
+                                Spacer(),
+                                Container(
+                                  width: 20,
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: CircleAvatar(
+                                      backgroundColor: Color(0xff0065a3),
+                                      radius: 5,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Text(
-                                "Active projects last ",
-                                style: TextStyle(
-                                    // height: 15,
-                                    fontSize: 14,
-                                    color: Colors.grey),
-                              ),
-                              Text(
-                                activeHours.toString(),
-                                style: TextStyle(
-                                    // height: 15,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: PrimaryColor),
-                              ),
-                              Text(
-                                " hours",
-                                style: TextStyle(
-                                    // height: 15,
-                                    fontSize: 14,
-                                    color: Colors.grey),
-                              ),
-                              Spacer(),
-                            ],
+                                Text(
+                                  "Active projects last ",
+                                  style: TextStyle(
+                                      // height: 15,
+                                      fontSize: 14,
+                                      color: Colors.grey),
+                                ),
+                                Text(
+                                  activeHours.toString(),
+                                  style: TextStyle(
+                                      // height: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: PrimaryColor),
+                                ),
+                                Text(
+                                  " hours",
+                                  style: TextStyle(
+                                      // height: 15,
+                                      fontSize: 14,
+                                      color: Colors.grey),
+                                ),
+                                Spacer(),
+                              ],
+                            ),
                           ),
-                        ),
-                        Spacer(),
-                      ],
-                    ),
-                  ],
+                          Spacer(),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            Expanded(
-              flex: 9,
-              child: Container(
-                margin: EdgeInsets.only(right: 10, left: 10, bottom: 10),
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2))
-                  ],
-                  color: Colors.white,
-                ),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        "Edit last hours",
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
+            Container(
+              height: 150,
+              margin: EdgeInsets.only(right: 10, left: 10, bottom: 10),
+              decoration: BoxDecoration(
+                // color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: Offset(0, 2))
+                ],
+                color: Colors.white,
+              ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "Edit last hours",
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    customBorder: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    onTap: () {
-                                      if (activeHours > 0) {
-                                        setState(() {
-                                          --activeHours;
-                                        });
-                                        getActive();
-                                      }
-                                    },
-                                    child: Icon(
-                                      Icons.remove,
-                                      color: PrimaryColor,
-                                      size: 40.0,
-                                    ),
-                                  )),
-                              onTapDown: (TapDownDetails details) {
-                                timer = Timer.periodic(
-                                    Duration(milliseconds: 50), (t) {
-                                  if (activeHours > 0) {
-                                    setState(() {
-                                      --activeHours;
-                                    });
-                                  }
-                                });
-                              },
-                              onTapUp: (TapUpDetails details) {
-                                timer.cancel();
-                                getActive();
-                              },
-                              onTapCancel: () {
-                                timer.cancel();
-                                getActive();
-                              },
-                            ),
-                            Spacer(),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                customBorder: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50)),
-                                onTap: () {
-                                  AwesomeDialog(
-                                    dialogBackgroundColor: Colors.white,
-                                    // padding: EdgeInsets.all(0),
-                                    context: context,
-                                    btnCancelColor: Colors.red,
-                                    btnOkColor: PrimaryColor,
-                                    btnOkIcon: Icons.check_circle,
-                                    btnCancelIcon: Icons.cancel,
-                                    btnOkText: "Submit",
-                                    btnCancelOnPress: () {},
-                                    btnOkOnPress: () {
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50)),
+                                  onTap: () {
+                                    if (activeHours > 0) {
                                       setState(() {
-                                        activeHours =
-                                            getInteger(activeController.text);
-                                        getActive();
+                                        --activeHours;
                                       });
-                                    },
-                                    animType: AnimType.SCALE,
-                                    dialogType: DialogType.NO_HEADER,
-                                    body: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            "Edit last hours",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.black),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        TextField(
-                                          textAlign: TextAlign.center,
-                                          controller: activeController,
-                                          decoration: InputDecoration(
-                                            // filled: true,
-                                            border: InputBorder.none,
-                                            focusedBorder: InputBorder.none,
-                                            enabledBorder: InputBorder.none,
-                                            errorBorder: InputBorder.none,
-                                            disabledBorder: InputBorder.none,
-                                            contentPadding: EdgeInsets.only(
-                                                left: 15,
-                                                bottom: 11,
-                                                top: 11,
-                                                right: 15),
-                                          ),
-                                          style: TextStyle(
-                                            // height: 15,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 30,
-                                            color: PrimaryColor,
-                                          ),
-                                          focusNode: focusNode,
-                                          keyboardType: TextInputType.number,
-                                          autofocus: true,
-                                        ),
-                                        // SizedBox(
-                                        //   height: 20,
-                                        // ),
-                                        // Row(
-                                        //   children: [
-                                        //     Spacer(),
-                                        //     Material(
-                                        //       color: Colors.transparent,
-                                        //       child: InkWell(
-                                        //         onTap: () => null,
-                                        //         child: Padding(
-                                        //           padding: EdgeInsets.all(10),
-                                        //           child: Text(
-                                        //             "Cancel",
-                                        //             style: TextStyle(
-                                        //                 color: Colors.black),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ),
-                                        //     Material(
-                                        //       color: Colors.transparent,
-                                        //       child: InkWell(
-                                        //         onTap: () => null,
-                                        //         child: Padding(
-                                        //           padding: EdgeInsets.all(10),
-                                        //           child: Text(
-                                        //             "Submit",
-                                        //             style: TextStyle(
-                                        //                 color: PrimaryColor),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ),
-                                        //     SizedBox(
-                                        //       width: 10,
-                                        //     )
-                                        //   ],
-                                        // ),
-                                      ],
-                                    ),
-                                    title: 'This is Ignored',
-                                    desc: 'This is also Ignored',
-                                  )..show();
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                    activeHours.toString(),
-                                    style: TextStyle(
-                                        // height: 15,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 30,
-                                        color: PrimaryColor),
+                                      getActive();
+                                    }
+                                  },
+                                  child: Icon(
+                                    Icons.remove,
+                                    color: PrimaryColor,
+                                    size: 40.0,
                                   ),
+                                )),
+                            onTapDown: (TapDownDetails details) {
+                              timer = Timer.periodic(Duration(milliseconds: 50),
+                                  (t) {
+                                if (activeHours > 0) {
+                                  setState(() {
+                                    --activeHours;
+                                  });
+                                }
+                              });
+                            },
+                            onTapUp: (TapUpDetails details) {
+                              timer.cancel();
+                              getActive();
+                            },
+                            onTapCancel: () {
+                              timer.cancel();
+                              getActive();
+                            },
+                          ),
+                          Spacer(),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50)),
+                              onTap: () {
+                                AwesomeDialog(
+                                  dialogBackgroundColor: Colors.white,
+                                  // padding: EdgeInsets.all(0),
+                                  context: context,
+                                  btnCancelColor: Colors.red,
+                                  btnOkColor: PrimaryColor,
+                                  btnOkIcon: Icons.check_circle,
+                                  btnCancelIcon: Icons.cancel,
+                                  btnOkText: "Submit",
+                                  btnCancelOnPress: () {},
+                                  btnOkOnPress: () {
+                                    setState(() {
+                                      activeHours =
+                                          getInteger(activeController.text);
+                                      getActive();
+                                    });
+                                  },
+                                  animType: AnimType.SCALE,
+                                  dialogType: DialogType.NO_HEADER,
+                                  body: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "Edit last hours",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      TextField(
+                                        textAlign: TextAlign.center,
+                                        controller: activeController,
+                                        decoration: InputDecoration(
+                                          // filled: true,
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          contentPadding: EdgeInsets.only(
+                                              left: 15,
+                                              bottom: 11,
+                                              top: 11,
+                                              right: 15),
+                                        ),
+                                        style: TextStyle(
+                                          // height: 15,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: PrimaryColor,
+                                        ),
+                                        focusNode: focusNode,
+                                        keyboardType: TextInputType.number,
+                                        autofocus: true,
+                                      ),
+                                      // SizedBox(
+                                      //   height: 20,
+                                      // ),
+                                      // Row(
+                                      //   children: [
+                                      //     Spacer(),
+                                      //     Material(
+                                      //       color: Colors.transparent,
+                                      //       child: InkWell(
+                                      //         onTap: () => null,
+                                      //         child: Padding(
+                                      //           padding: EdgeInsets.all(10),
+                                      //           child: Text(
+                                      //             "Cancel",
+                                      //             style: TextStyle(
+                                      //                 color: Colors.black),
+                                      //           ),
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //     Material(
+                                      //       color: Colors.transparent,
+                                      //       child: InkWell(
+                                      //         onTap: () => null,
+                                      //         child: Padding(
+                                      //           padding: EdgeInsets.all(10),
+                                      //           child: Text(
+                                      //             "Submit",
+                                      //             style: TextStyle(
+                                      //                 color: PrimaryColor),
+                                      //           ),
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //     SizedBox(
+                                      //       width: 10,
+                                      //     )
+                                      //   ],
+                                      // ),
+                                    ],
+                                  ),
+                                  title: 'This is Ignored',
+                                  desc: 'This is also Ignored',
+                                )..show();
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  activeHours.toString(),
+                                  style: TextStyle(
+                                      // height: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 30,
+                                      color: PrimaryColor),
                                 ),
                               ),
                             ),
-                            Spacer(),
-                            GestureDetector(
-                              child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    customBorder: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    onTap: () {
-                                      setState(() {
-                                        ++activeHours;
-                                      });
-                                      getActive();
-                                    },
-                                    child: Icon(
-                                      Icons.add,
-                                      color: PrimaryColor,
-                                      size: 40.0,
-                                    ),
-                                  )),
-                              onTapDown: (TapDownDetails details) {
-                                timer = Timer.periodic(
-                                    Duration(milliseconds: 50), (t) {
-                                  setState(() {
-                                    ++activeHours;
-                                  });
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50)),
+                                  onTap: () {
+                                    setState(() {
+                                      ++activeHours;
+                                    });
+                                    getActive();
+                                  },
+                                  child: Icon(
+                                    Icons.add,
+                                    color: PrimaryColor,
+                                    size: 40.0,
+                                  ),
+                                )),
+                            onTapDown: (TapDownDetails details) {
+                              timer = Timer.periodic(Duration(milliseconds: 50),
+                                  (t) {
+                                setState(() {
+                                  ++activeHours;
                                 });
-                              },
-                              onTapUp: (TapUpDetails details) {
-                                timer.cancel();
-                                getActive();
-                                // toast("msg");
-                              },
-                              onTapCancel: () {
-                                timer.cancel();
-                                getActive();
-                                // toast("msg");
-                              },
-                            ),
+                              });
+                            },
+                            onTapUp: (TapUpDetails details) {
+                              timer.cancel();
+                              getActive();
+                              // toast("msg");
+                            },
+                            onTapCancel: () {
+                              timer.cancel();
+                              getActive();
+                              // toast("msg");
+                            },
+                          ),
 
-                            // RawMaterialButton(
-                            //   onLongPress: () {},
-                            //   onPressed: () {
-                            //     setState(() {
-                            //       ++activeHours;
-                            //     });
-                            //     getActive();
-                            //   },
-                            //   elevation: 0.0,
-                            //   fillColor: Colors.white,
-                            //   child: Icon(
-                            //     Icons.add,
-                            //     color: PrimaryColor,
-                            //     size: 30.0,
-                            //   ),
-                            //   // padding: EdgeInsets.all(15.0),
-                            //   shape: CircleBorder(),
-                            // ),
-                          ],
-                        ),
+                          // RawMaterialButton(
+                          //   onLongPress: () {},
+                          //   onPressed: () {
+                          //     setState(() {
+                          //       ++activeHours;
+                          //     });
+                          //     getActive();
+                          //   },
+                          //   elevation: 0.0,
+                          //   fillColor: Colors.white,
+                          //   child: Icon(
+                          //     Icons.add,
+                          //     color: PrimaryColor,
+                          //     size: 30.0,
+                          //   ),
+                          //   // padding: EdgeInsets.all(15.0),
+                          //   shape: CircleBorder(),
+                          // ),
+                        ],
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        margin: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          // color: Colors.white.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(5),
-                          color: PrimaryColor,
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => showActive(),
-                            child: Container(
-                              height: 35,
-                              child: Row(
-                                children: [
-                                  Spacer(),
-                                  Text(
-                                    "Show on maps",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(7),
-                                    child: Icon(
-                                      CupertinoIcons.map,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        // color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(5),
+                        color: PrimaryColor,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => showActive(),
+                          child: Container(
+                            height: 35,
+                            child: Row(
+                              children: [
+                                Spacer(),
+                                Text(
+                                  "Show on maps",
+                                  style: TextStyle(
                                       color: Colors.white,
-                                      size: 18,
-                                    ),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(7),
+                                  child: Icon(
+                                    CupertinoIcons.map,
+                                    color: Colors.white,
+                                    size: 18,
                                   ),
-                                  Spacer(),
-                                ],
-                              ),
+                                ),
+                                Spacer(),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             // Padding(
@@ -1017,7 +1036,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              flex: 24,
               child: Container(
                 padding: EdgeInsets.only(bottom: 20),
                 margin: EdgeInsets.all(10),
@@ -1051,12 +1069,12 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                         Spacer(),
                         Container(
                           padding: EdgeInsets.only(bottom: 20, top: 40),
-                          height: width - 20,
-                          width: width,
+                          height: radius2 - 20,
+                          width: radius2,
                           child: Align(
                             alignment: Alignment.center,
                             child: CircularPercentIndicator(
-                              radius: width - 80,
+                              radius: radius2 - 80,
                               animation: true,
                               animationDuration: 2000,
                               lineWidth: 20.0,
@@ -1179,308 +1197,304 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                 ),
               ),
             ),
-            Expanded(
-              flex: 9,
-              child: Container(
-                margin: EdgeInsets.only(right: 10, left: 10, bottom: 10),
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2))
-                  ],
-                  color: Colors.white,
-                ),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        "Edit last hours",
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
+            Container(
+              height: 150,
+              margin: EdgeInsets.only(right: 10, left: 10, bottom: 10),
+              decoration: BoxDecoration(
+                // color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: Offset(0, 2))
+                ],
+                color: Colors.white,
+              ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "Edit last hours",
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    customBorder: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    onTap: () {
-                                      if (inActiveHours > 0) {
-                                        setState(() {
-                                          --inActiveHours;
-                                        });
-                                        getInactive();
-                                      }
-                                    },
-                                    child: Icon(
-                                      Icons.remove,
-                                      color: PrimaryColor,
-                                      size: 40.0,
-                                    ),
-                                  )),
-                              onTapDown: (TapDownDetails details) {
-                                timer = Timer.periodic(
-                                    Duration(milliseconds: 50), (t) {
-                                  if (inActiveHours > 0) {
-                                    setState(() {
-                                      --inActiveHours;
-                                    });
-                                  }
-                                });
-                              },
-                              onTapUp: (TapUpDetails details) {
-                                timer.cancel();
-                                getInactive();
-                              },
-                              onTapCancel: () {
-                                timer.cancel();
-                                getInactive();
-                              },
-                            ),
-                            Spacer(),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                customBorder: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50)),
-                                onTap: () {
-                                  AwesomeDialog(
-                                    dialogBackgroundColor: Colors.white,
-                                    // padding: EdgeInsets.all(0),
-                                    context: context,
-                                    btnCancelColor: Colors.red,
-                                    btnOkColor: PrimaryColor,
-                                    btnOkIcon: Icons.check_circle,
-                                    btnCancelIcon: Icons.cancel,
-                                    btnOkText: "Submit",
-                                    btnCancelOnPress: () {},
-                                    btnOkOnPress: () {
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 10, right: 10),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50)),
+                                  onTap: () {
+                                    if (inActiveHours > 0) {
                                       setState(() {
-                                        inActiveHours =
-                                            getInteger(inActiveController.text);
-                                        getInactive();
+                                        --inActiveHours;
                                       });
-                                    },
-                                    animType: AnimType.SCALE,
-                                    dialogType: DialogType.NO_HEADER,
-                                    body: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            "Edit last hours",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.black),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        TextField(
-                                          textAlign: TextAlign.center,
-                                          controller: inActiveController,
-                                          decoration: InputDecoration(
-                                            // filled: true,
-                                            border: InputBorder.none,
-                                            focusedBorder: InputBorder.none,
-                                            enabledBorder: InputBorder.none,
-                                            errorBorder: InputBorder.none,
-                                            disabledBorder: InputBorder.none,
-                                            contentPadding: EdgeInsets.only(
-                                                left: 15,
-                                                bottom: 11,
-                                                top: 11,
-                                                right: 15),
-                                          ),
-                                          style: TextStyle(
-                                            // height: 15,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 30,
-                                            color: PrimaryColor,
-                                          ),
-                                          focusNode: focusNode,
-                                          keyboardType: TextInputType.number,
-                                          autofocus: true,
-                                        ),
-                                        // SizedBox(
-                                        //   height: 20,
-                                        // ),
-                                        // Row(
-                                        //   children: [
-                                        //     Spacer(),
-                                        //     Material(
-                                        //       color: Colors.transparent,
-                                        //       child: InkWell(
-                                        //         onTap: () => null,
-                                        //         child: Padding(
-                                        //           padding: EdgeInsets.all(10),
-                                        //           child: Text(
-                                        //             "Cancel",
-                                        //             style: TextStyle(
-                                        //                 color: Colors.black),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ),
-                                        //     Material(
-                                        //       color: Colors.transparent,
-                                        //       child: InkWell(
-                                        //         onTap: () => null,
-                                        //         child: Padding(
-                                        //           padding: EdgeInsets.all(10),
-                                        //           child: Text(
-                                        //             "Submit",
-                                        //             style: TextStyle(
-                                        //                 color: PrimaryColor),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ),
-                                        //     SizedBox(
-                                        //       width: 10,
-                                        //     )
-                                        //   ],
-                                        // ),
-                                      ],
-                                    ),
-                                    title: 'This is Ignored',
-                                    desc: 'This is also Ignored',
-                                  )..show();
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                    inActiveHours.toString(),
-                                    style: TextStyle(
-                                        // height: 15,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 30,
-                                        color: PrimaryColor),
+                                      getInactive();
+                                    }
+                                  },
+                                  child: Icon(
+                                    Icons.remove,
+                                    color: PrimaryColor,
+                                    size: 40.0,
                                   ),
+                                )),
+                            onTapDown: (TapDownDetails details) {
+                              timer = Timer.periodic(Duration(milliseconds: 50),
+                                  (t) {
+                                if (inActiveHours > 0) {
+                                  setState(() {
+                                    --inActiveHours;
+                                  });
+                                }
+                              });
+                            },
+                            onTapUp: (TapUpDetails details) {
+                              timer.cancel();
+                              getInactive();
+                            },
+                            onTapCancel: () {
+                              timer.cancel();
+                              getInactive();
+                            },
+                          ),
+                          Spacer(),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50)),
+                              onTap: () {
+                                AwesomeDialog(
+                                  dialogBackgroundColor: Colors.white,
+                                  // padding: EdgeInsets.all(0),
+                                  context: context,
+                                  btnCancelColor: Colors.red,
+                                  btnOkColor: PrimaryColor,
+                                  btnOkIcon: Icons.check_circle,
+                                  btnCancelIcon: Icons.cancel,
+                                  btnOkText: "Submit",
+                                  btnCancelOnPress: () {},
+                                  btnOkOnPress: () {
+                                    setState(() {
+                                      inActiveHours =
+                                          getInteger(inActiveController.text);
+                                      getInactive();
+                                    });
+                                  },
+                                  animType: AnimType.SCALE,
+                                  dialogType: DialogType.NO_HEADER,
+                                  body: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "Edit last hours",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      TextField(
+                                        textAlign: TextAlign.center,
+                                        controller: inActiveController,
+                                        decoration: InputDecoration(
+                                          // filled: true,
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          contentPadding: EdgeInsets.only(
+                                              left: 15,
+                                              bottom: 11,
+                                              top: 11,
+                                              right: 15),
+                                        ),
+                                        style: TextStyle(
+                                          // height: 15,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: PrimaryColor,
+                                        ),
+                                        focusNode: focusNode,
+                                        keyboardType: TextInputType.number,
+                                        autofocus: true,
+                                      ),
+                                      // SizedBox(
+                                      //   height: 20,
+                                      // ),
+                                      // Row(
+                                      //   children: [
+                                      //     Spacer(),
+                                      //     Material(
+                                      //       color: Colors.transparent,
+                                      //       child: InkWell(
+                                      //         onTap: () => null,
+                                      //         child: Padding(
+                                      //           padding: EdgeInsets.all(10),
+                                      //           child: Text(
+                                      //             "Cancel",
+                                      //             style: TextStyle(
+                                      //                 color: Colors.black),
+                                      //           ),
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //     Material(
+                                      //       color: Colors.transparent,
+                                      //       child: InkWell(
+                                      //         onTap: () => null,
+                                      //         child: Padding(
+                                      //           padding: EdgeInsets.all(10),
+                                      //           child: Text(
+                                      //             "Submit",
+                                      //             style: TextStyle(
+                                      //                 color: PrimaryColor),
+                                      //           ),
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //     SizedBox(
+                                      //       width: 10,
+                                      //     )
+                                      //   ],
+                                      // ),
+                                    ],
+                                  ),
+                                  title: 'This is Ignored',
+                                  desc: 'This is also Ignored',
+                                )..show();
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  inActiveHours.toString(),
+                                  style: TextStyle(
+                                      // height: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 30,
+                                      color: PrimaryColor),
                                 ),
                               ),
                             ),
-                            Spacer(),
-                            GestureDetector(
-                              child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    customBorder: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    onTap: () {
-                                      setState(() {
-                                        ++inActiveHours;
-                                      });
-                                      getInactive();
-                                    },
-                                    child: Icon(
-                                      Icons.add,
-                                      color: PrimaryColor,
-                                      size: 40.0,
-                                    ),
-                                  )),
-                              onTapDown: (TapDownDetails details) {
-                                timer = Timer.periodic(
-                                    Duration(milliseconds: 50), (t) {
-                                  setState(() {
-                                    ++inActiveHours;
-                                  });
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50)),
+                                  onTap: () {
+                                    setState(() {
+                                      ++inActiveHours;
+                                    });
+                                    getInactive();
+                                  },
+                                  child: Icon(
+                                    Icons.add,
+                                    color: PrimaryColor,
+                                    size: 40.0,
+                                  ),
+                                )),
+                            onTapDown: (TapDownDetails details) {
+                              timer = Timer.periodic(Duration(milliseconds: 50),
+                                  (t) {
+                                setState(() {
+                                  ++inActiveHours;
                                 });
-                              },
-                              onTapUp: (TapUpDetails details) {
-                                timer.cancel();
-                                getInactive();
-                                // toast("msg");
-                              },
-                              onTapCancel: () {
-                                timer.cancel();
-                                getInactive();
-                                // toast("msg");
-                              },
-                            ),
+                              });
+                            },
+                            onTapUp: (TapUpDetails details) {
+                              timer.cancel();
+                              getInactive();
+                              // toast("msg");
+                            },
+                            onTapCancel: () {
+                              timer.cancel();
+                              getInactive();
+                              // toast("msg");
+                            },
+                          ),
 
-                            // RawMaterialButton(
-                            //   onLongPress: () {},
-                            //   onPressed: () {
-                            //     setState(() {
-                            //       ++activeHours;
-                            //     });
-                            //     getActive();
-                            //   },
-                            //   elevation: 0.0,
-                            //   fillColor: Colors.white,
-                            //   child: Icon(
-                            //     Icons.add,
-                            //     color: PrimaryColor,
-                            //     size: 30.0,
-                            //   ),
-                            //   // padding: EdgeInsets.all(15.0),
-                            //   shape: CircleBorder(),
-                            // ),
-                          ],
-                        ),
+                          // RawMaterialButton(
+                          //   onLongPress: () {},
+                          //   onPressed: () {
+                          //     setState(() {
+                          //       ++activeHours;
+                          //     });
+                          //     getActive();
+                          //   },
+                          //   elevation: 0.0,
+                          //   fillColor: Colors.white,
+                          //   child: Icon(
+                          //     Icons.add,
+                          //     color: PrimaryColor,
+                          //     size: 30.0,
+                          //   ),
+                          //   // padding: EdgeInsets.all(15.0),
+                          //   shape: CircleBorder(),
+                          // ),
+                        ],
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        margin: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          // color: Colors.white.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(5),
-                          color: PrimaryColor,
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => showInActive(),
-                            child: Container(
-                              height: 35,
-                              child: Row(
-                                children: [
-                                  Spacer(),
-                                  Text(
-                                    "Show on maps",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(7),
-                                    child: Icon(
-                                      CupertinoIcons.map,
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        // color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(5),
+                        color: PrimaryColor,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => showInActive(),
+                          child: Container(
+                            height: 35,
+                            child: Row(
+                              children: [
+                                Spacer(),
+                                Text(
+                                  "Show on maps",
+                                  style: TextStyle(
                                       color: Colors.white,
-                                      size: 18,
-                                    ),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(7),
+                                  child: Icon(
+                                    CupertinoIcons.map,
+                                    color: Colors.white,
+                                    size: 18,
                                   ),
-                                  Spacer(),
-                                ],
-                              ),
+                                ),
+                                Spacer(),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             // Padding(
@@ -1986,12 +2000,11 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                   inActiveLast72++;
                 }
                 if (advancedSearch.filterDevice(device)) {
-                    if (device.lat != 500 && device.lon != 500) {
-                      addMarker(device);
-                      positions.add(new LatLng(device.lat, device.lon));
-                    }
+                  if (device.lat != 500 && device.lon != 500) {
+                    addMarker(device);
+                    positions.add(new LatLng(device.lat, device.lon));
+                  }
                 }
-
               }
             }
             // advancedSearchBool = false;

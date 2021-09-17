@@ -5,13 +5,16 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
+import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+
+// import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,86 +22,110 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
+enum Span { def, up, down }
 
-class DeviceLogs extends StatefulWidget {
-  final device;
+// var spanUp = WidgetSpan(
+//       child: Padding(
+//         padding: EdgeInsets.only(left: 2, bottom: 2),
+//         child: ImageIcon(
+//           AssetImage('assets/image/sortup.png'),
+//           size: 12,
+//           color: Colors.black,
+//         ),
+//       ),
+//     ),
+//     spanDown = WidgetSpan(
+//       child: Padding(
+//         padding: EdgeInsets.only(left: 2, bottom: 2),
+//         child: ImageIcon(
+//           AssetImage('assets/image/sortdown.png'),
+//           size: 12,
+//           color: Colors.black,
+//         ),
+//       ),
+//     ),
+//     spanDefault = WidgetSpan(
+//       child: Transform.rotate(
+//         angle: 90 * math.pi / 180,
+//         child: Icon(
+//           Icons.sync_alt,
+//           size: 15,
+//           color: Colors.grey,
+//         ),
+//       ),
+//     );
 
-  DeviceLogs(this.device);
-
+class SpanUp extends StatelessWidget {
   @override
-  _DeviceLogs createState() => _DeviceLogs();
-}
-
-var spanUp = WidgetSpan(
-      child: Padding(
-        padding: EdgeInsets.only(left: 2, bottom: 2),
-        child: ImageIcon(
-          AssetImage('assets/image/sortup.png'),
-          size: 12,
-          color: Colors.black,
-        ),
-      ),
-    ),
-    spanDown = WidgetSpan(
-      child: Padding(
-        padding: EdgeInsets.only(left: 2, bottom: 2),
-        child: ImageIcon(
-          AssetImage('assets/image/sortdown.png'),
-          size: 12,
-          color: Colors.black,
-        ),
-      ),
-    ),
-    spanDefault = WidgetSpan(
-      child: Transform.rotate(
-        angle: 90 * math.pi / 180,
-        child: Icon(
-          Icons.sync_alt,
-          size: 15,
-          color: Colors.grey,
-        ),
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 2, bottom: 2),
+      child: ImageIcon(
+        AssetImage('assets/image/sortup.png'),
+        size: 12,
+        color: Colors.black,
       ),
     );
+  }
+}
 
-class _DeviceLogs extends State<DeviceLogs> {
-  TextEditingController searchController = new TextEditingController();
-  bool loading = true, validate = false;
+class SpanDown extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 2, bottom: 2),
+      child: ImageIcon(
+        AssetImage('assets/image/sortdown.png'),
+        size: 12,
+        color: Colors.black,
+      ),
+    );
+  }
+}
 
-  var spans = [
-    spanUp,
-    spanDefault,
-    spanDefault,
-    spanDefault,
-    spanDefault,
-    spanDefault,
-    spanDefault,
-    spanDefault,
-    spanDefault
-  ];
+class SpanDefault extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: 90 * math.pi / 180,
+      child: Icon(
+        Icons.sync_alt,
+        size: 15,
+        color: Colors.grey,
+      ),
+    );
+  }
+}
 
-  List<LogJason> logs = [];
-  List<LogJason> duplicateLogs = [];
+class TitleElement extends StatelessWidget {
+  final double width, height;
+  final String title;
+  final Span span;
+  final Function func;
+  final int index;
 
-  LinkedScrollControllerGroup _controllers;
-  ScrollController _letters;
-  ScrollController _numbers;
+  const TitleElement(
+      {Key key,
+      this.width,
+      this.height,
+      this.title,
+      this.span,
+      this.func,
+      this.index})
+      : super(key: key);
 
-  Widget titleElement(double width, double height, String title, int index) {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: width,
       height: height,
       child: InkWell(
-        onTap: () {
-          setState(() {
-            bool isUp = (spans[index] != spanDown);
-            resetSpans(isUp, index);
-            spans[index] = isUp ? spanDown : spanUp;
-          });
-        },
+        onTap: sort,
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(
@@ -111,7 +138,12 @@ class _DeviceLogs extends State<DeviceLogs> {
                 ),
                 children: [
                   TextSpan(text: title),
-                  spans[index],
+                  WidgetSpan(
+                      child: (span == Span.def)
+                          ? SpanDefault()
+                          : (span == Span.up)
+                              ? SpanUp()
+                              : SpanDown()),
                 ],
               ),
             ),
@@ -121,8 +153,22 @@ class _DeviceLogs extends State<DeviceLogs> {
     );
   }
 
-  Widget value(
-      double height, double width, String title, String high, bool border) {
+  void sort() {
+    func(this.index);
+  }
+}
+
+class Value extends StatelessWidget {
+  final double width, height;
+  final String title, high;
+  final bool border;
+
+  const Value(
+      {Key key, this.height, this.width, this.title, this.high, this.border})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 10),
       height: height,
@@ -150,8 +196,19 @@ class _DeviceLogs extends State<DeviceLogs> {
       ),
     );
   }
+}
 
-  Widget valueBulb(double height, double width, String title, bool border) {
+class ValueBulb extends StatelessWidget {
+  final double width, height;
+  final String title, high;
+  final bool border;
+
+  const ValueBulb(
+      {Key key, this.height, this.width, this.title, this.high, this.border})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: height,
       width: width,
@@ -170,13 +227,60 @@ class _DeviceLogs extends State<DeviceLogs> {
       ),
     );
   }
+}
+
+class DeviceLogs extends StatefulWidget {
+  final device;
+
+  DeviceLogs(this.device);
+
+  @override
+  _DeviceLogs createState() => _DeviceLogs();
+}
+
+class _DeviceLogs extends State<DeviceLogs> {
+  TextEditingController searchController = new TextEditingController();
+  bool loading = true, validate = false;
+  static const _pageSize = 20;
+  final PagingController<int, LogJason> _pagingController =
+  PagingController(firstPageKey: 0);
+  // final PagingController<int, LogJason> controller =
+  // PagingController(firstPageKey: 0);
+
+  var spans = [
+    Span.up,
+    Span.def,
+    Span.def,
+    Span.def,
+    Span.def,
+    Span.def,
+    Span.def,
+    Span.def,
+    Span.def
+  ];
+
+  List<LogJason> logs = [];
+  List<LogJason> duplicateLogs = [];
+
+  LinkedScrollControllerGroup horizontal;
+  LinkedScrollControllerGroup vertical;
+  // ScrollController _letters;
+  // ScrollController _numbers;
+
+  setSpans(int index) {
+    // bool isUp = (spans[index] != Span.down);
+    // setState(() {
+    //   resetSpans(isUp, index);
+    //   spans[index] = isUp ? Span.down : Span.up;
+    // });
+  }
 
   void resetSpans(bool isUp, int index) {
     this.logs.sort((a, b) => isUp
         ? a.getE(index).compareTo(b.getE(index))
         : b.getE(index).compareTo(a.getE(index)));
     for (int i = 0; i < spans.length; i++) {
-      spans[i] = spanDefault;
+      spans[i] = Span.def;
     }
   }
 
@@ -211,11 +315,44 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   @override
   void initState() {
-    getLogs();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+    // getLogs();
     super.initState();
-    _controllers = LinkedScrollControllerGroup();
-    _letters = _controllers.addAndGet();
-    _numbers = _controllers.addAndGet();
+    horizontal = LinkedScrollControllerGroup();
+    vertical = LinkedScrollControllerGroup();
+    // _letters = _controllers.addAndGet();
+    // _numbers = _controllers.addAndGet();
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      // toast("started");
+      // this.logs.clear();
+      final newItems = await RemoteApi.getCharacterList(pageKey, _pageSize,widget.device.id);
+      // final newItems = await getAllLogs(pageKey, _pageSize);
+      // toast("finished");
+      // toast(newItems.length.toString());
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+      // this.logs.addAll(newItems);
+      // this.duplicateLogs.addAll(newItems);
+    } catch (error) {
+      _pagingController.error = error;
+      print(error);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -235,136 +372,220 @@ class _DeviceLogs extends State<DeviceLogs> {
               context,
               "Device " + widget.device.id + " Logs",
               showDeviceDetails,
+              _pagingController.refresh,
               pdf,
               excel),
           preferredSize: const Size.fromHeight(50),
         ),
-        body: Stack(
-          children: [
+        body:
+            // Stack(
+            // children: [
             Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: TextField(
-                    onChanged: (text) => filterSearchResults(text),
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      errorText: validate ? 'No result was found' : null,
-                      labelText: "Search",
-                      hintText: "Search",
-                      contentPadding: EdgeInsets.all(20.0),
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                      ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                onChanged: (text) => filterSearchResults(text),
+                controller: searchController,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  errorText: validate ? 'No result was found' : null,
+                  labelText: "Search",
+                  hintText: "Search",
+                  contentPadding: EdgeInsets.all(20.0),
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.grey),
-                    ),
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, bottom: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          color: Colors.black12,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              titleElement(130, 30, "Detail", 0),
-                              Container(
-                                height: 30,
-                                width: 1,
-                                color: Colors.grey,
-                              ),
-                              Flexible(
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  controller: _letters,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      titleElement(70, 30, "L1#", 1),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(70, 30, "L1@", 2),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(70, 30, "L2#", 3),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(70, 30, "L2@", 4),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(70, 30, "L3#", 5),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(70, 30, "L3@", 6),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(80, 30, "Battery", 7),
-                                      Container(
-                                        height: 30,
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
-                                      titleElement(70, 30, "Rssi", 8),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.grey),
+                ),
+                margin: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, bottom: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      color: Colors.black12,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TitleElement(
+                            width: 130,
+                            height: 30,
+                            title: "Detail",
+                            span: spans[0],
+                            func: setSpans,
+                            index: 0,
                           ),
-                        ),
-                        Container(
-                          height: 1,
-                          width: double.infinity,
-                          color: Colors.grey,
-                        ),
-                        Expanded(
-                          child: Container(
-                            color: Colors.white,
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: Colors.grey,
+                          ),
+                          Flexible(
                             child: SingleChildScrollView(
-                              physics: ScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              controller: horizontal.addAndGet(),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
+                                children: [
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L1#",
+                                      span: spans[1],
+                                      func: setSpans,
+                                      index: 1),
                                   Container(
-                                    width: 131,
-                                    child: ListView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: logs.length,
-                                      itemBuilder: (context, index) {
-                                        return Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L1@",
+                                      span: spans[2],
+                                      func: setSpans,
+                                      index: 2),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L2#",
+                                      span: spans[3],
+                                      func: setSpans,
+                                      index: 3),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L2@",
+                                      span: spans[4],
+                                      func: setSpans,
+                                      index: 4),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L3#",
+                                      span: spans[5],
+                                      func: setSpans,
+                                      index: 5),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L3@",
+                                      span: spans[6],
+                                      func: setSpans,
+                                      index: 6),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 80,
+                                      height: 30,
+                                      title: "Battery",
+                                      span: spans[7],
+                                      func: setSpans,
+                                      index: 7),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "Rssi",
+                                      span: spans[8],
+                                      func: setSpans,
+                                      index: 8),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 1,
+                      width: double.infinity,
+                      color: Colors.grey,
+                    ),
+                    Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        child: RefreshIndicator(
+                          onRefresh: () => Future.sync(
+                                () => _pagingController.refresh(),
+                          ),
+                          child:
+//                               SingleChildScrollView(
+//                                 physics: const AlwaysScrollableScrollPhysics(),
+// child:
+
+
+
+
+
+                          PagedListView<int, LogJason>(
+                            // physics: NeverScrollableScrollPhysics(),
+                            // scrollController: vertical.addAndGet(),
+                            // shrinkWrap: true,
+                            pagingController: _pagingController,
+                            builderDelegate: PagedChildBuilderDelegate<LogJason>(
+                              itemBuilder: (context, item, index) =>
+
+
+
+
+
+                          Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+
+                                      SizedBox(
+                                        width: 131,
+                                        child:
+                                      // PagedListView<int, LogJason>(
+                                      //   physics: NeverScrollableScrollPhysics(),
+                                      //   // scrollController: vertical.addAndGet(),
+                                      //   shrinkWrap: true,
+                                      //   pagingController: _pagingController,
+                                      //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
+                                      //     itemBuilder: (context, item, index) =>
+                                    Container(
                                           decoration: BoxDecoration(
                                             border: Border(
                                               right: BorderSide(
@@ -382,8 +603,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                                           child: Align(
                                             alignment: Alignment.center,
                                             child: SubstringHighlight(
-                                              text: logs[index].createDate,
-                                              term: logs[index].highLight,
+                                              text: item.createDate,
+                                              term: item.highLight,
                                               textStyleHighlight: TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.red,
@@ -395,24 +616,28 @@ class _DeviceLogs extends State<DeviceLogs> {
                                               ),
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: SingleChildScrollView(
-                                      physics: ScrollPhysics(),
-                                      controller: _numbers,
-                                      scrollDirection: Axis.horizontal,
-                                      child: Container(
-                                        width: 577,
-                                        child: ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: logs.length,
-                                          itemBuilder: (context, index) {
-                                            return Container(
+                                        ),
+                          //             ),
+                          //
+                          // ),
+                          ),
+                                      Flexible(
+                                        child: SingleChildScrollView(
+                                          physics: ScrollPhysics(),
+                                          // controller: horizontal.addAndGet(),
+                                          scrollDirection: Axis.horizontal,
+                                          child:
+                                          SizedBox(
+                                            width: 577,
+                                            child:
+                                          // PagedListView<int, LogJason>(
+                                          //   physics: NeverScrollableScrollPhysics(),
+                                          //   // scrollController: vertical.addAndGet(),
+                                          //   shrinkWrap: true,
+                                          //   pagingController: _pagingController,
+                                          //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
+                                          //     itemBuilder: (context, item, index) =>
+                                          Container(
                                               decoration: BoxDecoration(
                                                 border: Border(
                                                   bottom: BorderSide(
@@ -426,71 +651,266 @@ class _DeviceLogs extends State<DeviceLogs> {
                                               height: 30,
                                               child: Row(
                                                 children: [
-                                                  value(
-                                                      30,
-                                                      71,
-                                                      logs[index].lid1,
-                                                      logs[index].highLight,
-                                                      true),
-                                                  valueBulb(30, 71,
-                                                      logs[index].ls1, true),
-                                                  value(
-                                                      30,
-                                                      71,
-                                                      logs[index].lid2,
-                                                      logs[index].highLight,
-                                                      true),
-                                                  valueBulb(30, 71,
-                                                      logs[index].ls2, true),
-                                                  value(
-                                                      30,
-                                                      71,
-                                                      logs[index].lid3,
-                                                      logs[index].highLight,
-                                                      true),
-                                                  valueBulb(30, 71,
-                                                      logs[index].ls3, true),
-                                                  value(
-                                                      30,
-                                                      81,
-                                                      logs[index].batteryValue,
-                                                      logs[index].highLight,
-                                                      true),
-                                                  value(
-                                                      30,
-                                                      70,
-                                                      logs[index].rssiValue,
-                                                      logs[index].highLight,
-                                                      false),
+                                                  Value(
+                                                      height: 30,
+                                                      width: 71,
+                                                      title: item.lid1,
+                                                      high: item.highLight,
+                                                      border: true),
+                                                  ValueBulb(
+                                                      height: 30,
+                                                      width: 71,
+                                                      title: item.ls1,
+                                                      border: true),
+                                                  Value(
+                                                      height: 30,
+                                                      width: 71,
+                                                      title: item.lid2,
+                                                      high: item.highLight,
+                                                      border: true),
+                                                  ValueBulb(
+                                                      height: 30,
+                                                      width: 71,
+                                                      title: item.ls2,
+                                                      border: true),
+                                                  Value(
+                                                      height: 30,
+                                                      width: 71,
+                                                      title: item.lid3,
+                                                      high: item.highLight,
+                                                      border: true),
+                                                  ValueBulb(
+                                                      height: 30,
+                                                      width: 71,
+                                                      title: item.ls3,
+                                                      border: true),
+                                                  Value(
+                                                      height: 30,
+                                                      width: 81,
+                                                      title: item.batteryValue,
+                                                      high: item.highLight,
+                                                      border: true),
+                                                  Value(
+                                                      height: 30,
+                                                      width: 70,
+                                                      title: item.rssiValue,
+                                                      high: item.highLight,
+                                                      border: false),
                                                 ],
                                               ),
-                                            );
-                                          },
+                                            ),
+                                        //   ),
+                                        // ),
+                                      ),
+
+
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
+
+
                               ),
-                            ),
+
                           ),
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+              ),
+
+                    // child: Container(
+                    //   color: Colors.white,
+                    //   child: SingleChildScrollView(
+                    //     physics: ScrollPhysics(),
+
+                    //     child: Row(
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       children: <Widget>[
+                    //         SizedBox(
+                    //           width: 131,
+                    //           child: ListView.builder(
+                    //             physics: NeverScrollableScrollPhysics(),
+                    //             shrinkWrap: true,
+                    //             itemCount: logs.length,
+                    //             itemBuilder: (context, index) {
+                    //               return Container(
+                    //                 decoration: BoxDecoration(
+                    //                   border: Border(
+                    //                     right: BorderSide(
+                    //                         width: 1.0,
+                    //                         color: Colors.grey),
+                    //                     bottom: BorderSide(
+                    //                         width: 1.0,
+                    //                         color: Colors.grey),
+                    //                   ),
+                    //                   color: (index % 2 == 0)
+                    //                       ? Colors.white
+                    //                       : Color(0xf1f1f1f1),
+                    //                 ),
+                    //                 height: 30,
+                    //                 child: Align(
+                    //                   alignment: Alignment.center,
+                    //                   child: SubstringHighlight(
+                    //                     text: logs[index].createDate,
+                    //                     term: logs[index].highLight,
+                    //                     textStyleHighlight: TextStyle(
+                    //                       fontSize: 13,
+                    //                       color: Colors.red,
+                    //                       fontWeight: FontWeight.bold,
+                    //                     ),
+                    //                     textStyle: TextStyle(
+                    //                       fontSize: 12,
+                    //                       color: Colors.black,
+                    //                     ),
+                    //                   ),
+                    //                 ),
+                    //               );
+                    //             },
+                    //           ),
+                    //         ),
+                    //         Flexible(
+                    //           child: SingleChildScrollView(
+                    //             physics: ScrollPhysics(),
+                    //             controller: _numbers,
+                    //             scrollDirection: Axis.horizontal,
+                    //             child: SizedBox(
+                    //               width: 577,
+                    //               child: ListView.builder(
+                    //                 physics:
+                    //                     NeverScrollableScrollPhysics(),
+                    //                 shrinkWrap: true,
+                    //                 itemCount: logs.length,
+                    //                 itemBuilder: (context, index) {
+                    //                   return Container(
+                    //                     decoration: BoxDecoration(
+                    //                       border: Border(
+                    //                         bottom: BorderSide(
+                    //                             width: 1.0,
+                    //                             color: Colors.grey),
+                    //                       ),
+                    //                       color: (index % 2 == 0)
+                    //                           ? Colors.white
+                    //                           : Color(0xf1f1f1f1),
+                    //                     ),
+                    //                     height: 30,
+                    //                     child: Row(
+                    //                       children: [
+                    //                         Value(
+                    //                            height : 30,
+                    //                            width  : 71,
+                    //                            title  : logs[index].lid1,
+                    //                            high   : logs[index].highLight,
+                    //                            border : true),
+                    //                         ValueBulb(
+                    //                             height :        30,
+                    //                             width  :        71,
+                    //                             title  :       logs[index].ls1,
+                    //                             border :     true),
+                    //                        Value(
+                    //                         height :   30,
+                    //                         width  :   71,
+                    //                         title  :   logs[index].lid2,
+                    //                         high   :   logs[index].highLight,
+                    //                         border :   true),
+                    //                         ValueBulb(
+                    //                         height :    30,
+                    //                         width  :    71,
+                    //                         title  :   logs[index].ls2,
+                    //                         border :    true),
+                    //                         Value(
+                    //                          height :  30,
+                    //                          width  :  71,
+                    //                          title  :  logs[index].lid3,
+                    //                          high   :  logs[index].highLight,
+                    //                          border :  true),
+                    //                         ValueBulb(
+                    //                         height :    30,
+                    //                         width  :    71,
+                    //                         title  :   logs[index].ls3,
+                    //                         border :    true),
+                    //                         Value(
+                    //                          height :  30,
+                    //                          width  :  81,
+                    //                          title  :  logs[index].batteryValue,
+                    //                          high   :  logs[index].highLight,
+                    //                          border :  true),
+                    //                         Value(
+                    //                          height :   30,
+                    //                          width  :   70,
+                    //                          title  :   logs[index].rssiValue,
+                    //                          high   :   logs[index].highLight,
+                    //                          border :   false),
+                    //                       ],
+                    //                     ),
+                    //                   );
+                    //                 },
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
                 ),
-              ],
-            ),
-            Center(
-              child: Loading(
-                loading: loading,
               ),
             ),
           ],
         ),
+        // Center(
+        //   child: Loading(
+        //     loading: loading,
+        //   ),
+        // ),
+        // ],
+        // ),
       ),
     );
   }
+
+  // Future<List<LogJason>> getAllLogs(int offset, int limit) async{
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   http.post(
+  //       Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+  //       body: {
+  //         'device_id': widget.device.id,
+  //         'offset': offset.toString(),
+  //         'limit': limit.toString(),
+  //         'search_term': "",
+  //       }).then((value) {
+  //     if (value.statusCode == 200) {
+  //       List<LogJason> logs = [];
+  //       List<dynamic> values = [];
+  //       values = json.decode(value.body);
+  //
+  //       if (values.length > 0) {
+  //         for (int i = 0; i < values.length; i++) {
+  //           if (values[i] != null) {
+  //             Map<String, dynamic> map = values[i];
+  //             logs.add(LogJason.fromJson(map));
+  //           }
+  //         }
+  //       }
+  //       toast("finished ");
+  //       return logs;
+  //       // showLogs(logs);
+  //     } else {
+  //       setState(() {
+  //         loading = false;
+  //       });
+  //       throw Exception("Unable to get Log list");
+  //     }
+  //   }).onError((error, stackTrace) {
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //     toast('Error: ' + error.message);
+  //     return null;
+  //   });
+  //   return null;
+  // }
 
   void getLogs() {
     setState(() {
@@ -514,7 +934,8 @@ class _DeviceLogs extends State<DeviceLogs> {
             }
           }
         }
-        showLogs(logs);
+        toast("finished ");
+        // showLogs(logs);
       } else {
         setState(() {
           loading = false;
@@ -531,18 +952,19 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   void showLogs(List<LogJason> logs) {
     logs.sort((a, b) => b.createDate.compareTo(a.createDate));
-    setState(() {
-      this.duplicateLogs.clear();
-      this.logs.clear();
-      this.logs.addAll(logs);
-      this.duplicateLogs.addAll(logs);
-      loading = false;
-    });
+    this.duplicateLogs.clear();
+    this.logs.clear();
+    // setState(() {
+    //   this.logs.addAll(logs);
+    //   loading = false;
+    // });
+    // this.duplicateLogs.addAll(logs);
+    // toast("FFFFFFFFFFF");
   }
 
   Future<void> pdf() async {
-    if (loading) {
-      toast("Loading, please be patient");
+    if (logs.isEmpty) {
+      toast("No logs available");
       return;
     }
 
@@ -732,13 +1154,13 @@ class _DeviceLogs extends State<DeviceLogs> {
               alignment: PdfTextAlignment.right,
             ));
 
-        String str1 = 'Client: ' + clientCompressed[getInt(widget.device.client) - 1].value;
+        String str1 = 'Client: ' +
+            clientCompressed[getInt(widget.device.client) - 1].value;
         String str2 = 'Device name: ' + widget.device.deviceName;
         String str3 = 'Height: ' + widget.device.deviceHeight;
         String str4 = 'Location: ' + widget.device.deviceLocation;
 
-        String str5 = 'Site Details: ' +
-            widget.device.deviceDetails;
+        String str5 = 'Site Details: ' + widget.device.deviceDetails;
         String str6 = "";
         if (widget.device.activationDate.toString().isNotEmpty)
           str6 = 'Activation date: ' + widget.device.activationDate;
@@ -793,7 +1215,7 @@ class _DeviceLogs extends State<DeviceLogs> {
               alignment: PdfTextAlignment.left,
             ));
 
-        saveAndLaunchFile(document, widget.device.id.toString()+'.pdf');
+        saveAndLaunchFile(document, widget.device.id.toString() + '.pdf');
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -809,14 +1231,14 @@ class _DeviceLogs extends State<DeviceLogs> {
   }
 
   Future<void> excel() async {
-    if (loading) {
-      toast("Loading, please be patient");
+    if (logs.isEmpty) {
+      toast("No logs available");
       return;
     }
 
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel(widget.device.id,this.logs, (bool loading) {
+        ExportExcel(widget.device.id, this.logs, (bool loading) {
           setState(() {
             this.loading = loading;
           });
@@ -850,13 +1272,13 @@ class _DeviceLogs extends State<DeviceLogs> {
     return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
 
-
   Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
     List<int> bytes = document.save();
     document.dispose();
     final String path = (await getApplicationSupportDirectory()).path;
-    final String fileName =
-    Platform.isWindows ? '$path\\'+name.toString() : '$path/'+name.toString();
+    final String fileName = Platform.isWindows
+        ? '$path\\' + name.toString()
+        : '$path/' + name.toString();
     final File file = File(fileName);
     await file.writeAsBytes(bytes, flush: true);
     OpenFile.open(fileName);
