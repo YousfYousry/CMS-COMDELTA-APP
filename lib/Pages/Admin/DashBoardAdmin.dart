@@ -335,13 +335,11 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             WidgetSize(
               onChange: (Size size) {
                 setState(() {
-                  radius = (size.height < width) ? size.height : width;
+                  radius = (size.height-80 < width) ? size.height-80 : width;
                 });
               },
               child: Expanded(
                 child: Container(
-                  constraints: BoxConstraints(
-                      minHeight: width, minWidth: width, maxHeight: width),
                   padding: EdgeInsets.only(bottom: 35),
                   margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
                   decoration: BoxDecoration(
@@ -523,7 +521,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             WidgetSize(
               onChange: (Size size) {
                 setState(() {
-                  radius2 = (size.height < width) ? size.height : width;
+                  radius2 = (size.height-50 < width) ? size.height -50: width;
                 });
               },
               child: Expanded(
