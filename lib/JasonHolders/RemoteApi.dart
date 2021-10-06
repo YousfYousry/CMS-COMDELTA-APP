@@ -6,32 +6,47 @@ import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 
 class RemoteApi {
   static Future<List<LogJason>> getCharacterList(
-      int offset,
-      int limit,
-      String id,{
-        String searchTerm,
-      }) async =>
-      http
-          .post(
-          Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
-          body: {
-            'device_id': id,
-            'offset': offset.toString(),
-            'limit': limit.toString(),
-            'search_term': searchTerm.toString(),
-          },
-      )
-          .mapFromResponse<List<LogJason>, List<dynamic>>(
-            (jsonArray) => _parseItemListFromJsonArray(
+    int offset,
+    int limit,
+    String id, {
+    String searchTerm,
+  }) async =>
+      http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+        body: {
+          'device_id': id,
+          // 'offset': offset.toString(),
+          // 'limit': limit.toString(),
+          // 'search_term': searchTerm.toString(),
+        },
+      ).mapFromResponse<List<LogJason>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(
           jsonArray,
-              (jsonObject) => LogJason.fromJson(jsonObject),
+          (jsonObject) => LogJason.fromJson(jsonObject,searchTerm),
+        ),
+      );
+
+  static Future<List<LogJason>> getList(
+    String id, {
+    String searchTerm,
+  }) async =>
+      http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+        body: {
+          'device_id': id,
+          'search_term': "",
+        },
+      ).mapFromResponse<List<LogJason>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(
+          jsonArray,
+          (jsonObject) => LogJason.fromJson(jsonObject,searchTerm),
         ),
       );
 
   static List<T> _parseItemListFromJsonArray<T>(
-      List<dynamic> jsonArray,
-      T Function(dynamic object) mapper,
-      ) =>
+    List<dynamic> jsonArray,
+    T Function(dynamic object) mapper,
+  ) =>
       jsonArray.map(mapper).toList();
 }
 

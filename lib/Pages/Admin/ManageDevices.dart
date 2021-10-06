@@ -226,8 +226,10 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         //   backgroundColor: Color(0xff0065a3),
         // ),
         // drawer: SideDrawerAdmin(),
-        body: Stack(
-          children: [
+        resizeToAvoidBottomInset: false,
+        body:
+        // Stack(
+        //   children: [
             Column(
               children: [
                 Padding(
@@ -366,180 +368,194 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                           child: Container(
                             clipBehavior: Clip.hardEdge,
                             decoration: new BoxDecoration(color: Colors.white),
-                            child: ListView.builder(
-                              itemCount: devices.length,
-                              itemBuilder: (context, index) {
-                                return Slidable(
-                                  actionPane: SlidableDrawerActionPane(),
-                                  actionExtentRatio: 0.20,
-                                  child: new Column(
-                                    children: [
-                                      Material(
-                                        color: (index % 2 == 0)
-                                            ? Colors.white
-                                            : Color(0xf1f1f1f1),
-                                        child: InkWell(
-                                          onTap: () {
-                                            ShowDevice(context, devices[index]);
-                                          },
-                                          child: Container(
-                                            height: 40,
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: SubstringHighlight(
-                                                      text: devices[index].id,
-                                                      term: devices[index]
-                                                          .highLight,
-                                                      textStyleHighlight:
-                                                          TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      textStyle: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-
-                                                    // Text(
-                                                    //   ID,
-                                                    //   textAlign: TextAlign.left,
-                                                    //   style: TextStyle(fontSize: 12),
-                                                    // ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  height: 40,
-                                                  width: 1,
-                                                  color: Colors.grey,
-                                                ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: SubstringHighlight(
-                                                      text: devices[index]
-                                                          .deviceName,
-                                                      term: devices[index]
-                                                          .highLight,
-                                                      textStyleHighlight:
-                                                          TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      textStyle: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    // Text(
-                                                    //   Details,
-                                                    //   textAlign: TextAlign.left,
-                                                    //   style: TextStyle(fontSize: 12),
-                                                    // ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  height: 40,
-                                                  width: 1,
-                                                  color: Colors.grey,
-                                                ),
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: SubstringHighlight(
-                                                      text: devices[index]
-                                                          .deviceLocation,
-                                                      term: devices[index]
-                                                          .highLight,
-                                                      textStyleHighlight:
-                                                          TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      textStyle: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    // Text(
-                                                    //   Location,
-                                                    //   textAlign: TextAlign.left,
-                                                    //   style: TextStyle(fontSize: 12),
-                                                    // ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 1,
-                                        width: double.infinity,
-                                        color: Colors.grey,
-                                      ),
-                                    ],
+                            child:Stack(
+                              children: [
+                                RefreshIndicator(
+                                  onRefresh: () => Future.sync(
+                                        () => getLocations(),
                                   ),
-                                  actions: [
-                                    new IconSlideAction(
-                                      caption: 'Logs',
-                                      color: Color(0xffFFB61E),
-                                      icon: Icons.signal_cellular_alt,
-                                      onTap: () => deviceLogs(devices[index]),
-                                    ),
-                                    new IconSlideAction(
-                                      caption: 'Download',
-                                      color: Colors.green,
-                                      icon: Icons.download,
-                                      onTap: () => downloadLogs(devices[index].id),
-                                    ),
-                                  ],
-                                  secondaryActions: <Widget>[
-                                    new IconSlideAction(
-                                      caption: 'Edit',
-                                      color: Color(0xff62D0F1),
-                                      icon: Icons.edit,
-                                      onTap: () => editDevice(devices[index]),
-                                    ),
-                                    new IconSlideAction(
-                                      caption: 'Delete',
-                                      color: Color(0xffE5343D),
-                                      icon: Icons.delete,
-                                      onTap: () {
-                                        AwesomeDialog(
-                                          context: context,
-                                          dialogType: DialogType.WARNING,
-                                          animType: AnimType.BOTTOMSLIDE,
-                                          title: 'Delete Device',
-                                          desc:
-                                              'Do you really want to delete ' +
-                                                  devices[index].deviceName,
-                                          btnCancelOnPress: () {},
-                                          btnOkOnPress: () {
-                                            deleteSnack.show();
-                                            sendDeleteReq(devices[index].id);
-                                          },
-                                        )..show();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
+                                  child: ListView.builder(
+                                    itemCount: devices.length,
+                                    itemBuilder: (context, index) {
+                                      return Slidable(
+                                        actionPane: SlidableDrawerActionPane(),
+                                        actionExtentRatio: 0.20,
+                                        child: new Column(
+                                          children: [
+                                            Material(
+                                              color: (index % 2 == 0)
+                                                  ? Colors.white
+                                                  : Color(0xf1f1f1f1),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  ShowDevice(context, devices[index]);
+                                                },
+                                                child: Container(
+                                                  height: 40,
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Padding(
+                                                          padding: EdgeInsets.only(
+                                                              left: 10),
+                                                          child: SubstringHighlight(
+                                                            text: devices[index].id,
+                                                            term: devices[index]
+                                                                .highLight,
+                                                            textStyleHighlight:
+                                                            TextStyle(
+                                                              fontSize: 13,
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                              FontWeight.bold,
+                                                            ),
+                                                            textStyle: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.black,
+                                                            ),
+                                                          ),
+
+                                                          // Text(
+                                                          //   ID,
+                                                          //   textAlign: TextAlign.left,
+                                                          //   style: TextStyle(fontSize: 12),
+                                                          // ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 40,
+                                                        width: 1,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      Expanded(
+                                                        flex: 4,
+                                                        child: Padding(
+                                                          padding: EdgeInsets.only(
+                                                              left: 10),
+                                                          child: SubstringHighlight(
+                                                            text: devices[index]
+                                                                .deviceName,
+                                                            term: devices[index]
+                                                                .highLight,
+                                                            textStyleHighlight:
+                                                            TextStyle(
+                                                              fontSize: 13,
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                              FontWeight.bold,
+                                                            ),
+                                                            textStyle: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.black,
+                                                            ),
+                                                          ),
+                                                          // Text(
+                                                          //   Details,
+                                                          //   textAlign: TextAlign.left,
+                                                          //   style: TextStyle(fontSize: 12),
+                                                          // ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        height: 40,
+                                                        width: 1,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: Padding(
+                                                          padding: EdgeInsets.only(
+                                                              left: 10),
+                                                          child: SubstringHighlight(
+                                                            text: devices[index]
+                                                                .deviceLocation,
+                                                            term: devices[index]
+                                                                .highLight,
+                                                            textStyleHighlight:
+                                                            TextStyle(
+                                                              fontSize: 13,
+                                                              color: Colors.red,
+                                                              fontWeight:
+                                                              FontWeight.bold,
+                                                            ),
+                                                            textStyle: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.black,
+                                                            ),
+                                                          ),
+                                                          // Text(
+                                                          //   Location,
+                                                          //   textAlign: TextAlign.left,
+                                                          //   style: TextStyle(fontSize: 12),
+                                                          // ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              height: 1,
+                                              width: double.infinity,
+                                              color: Colors.grey,
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          new IconSlideAction(
+                                            caption: 'Logs',
+                                            color: Color(0xffFFB61E),
+                                            icon: Icons.signal_cellular_alt,
+                                            onTap: () => deviceLogs(devices[index]),
+                                          ),
+                                          new IconSlideAction(
+                                            caption: 'Download',
+                                            color: Colors.green,
+                                            icon: Icons.download,
+                                            onTap: () => downloadLogs(devices[index].id),
+                                          ),
+                                        ],
+                                        secondaryActions: <Widget>[
+                                          new IconSlideAction(
+                                            caption: 'Edit',
+                                            color: Color(0xff62D0F1),
+                                            icon: Icons.edit,
+                                            onTap: () => editDevice(devices[index]),
+                                          ),
+                                          new IconSlideAction(
+                                            caption: 'Delete',
+                                            color: Color(0xffE5343D),
+                                            icon: Icons.delete,
+                                            onTap: () {
+                                              AwesomeDialog(
+                                                context: context,
+                                                dialogType: DialogType.WARNING,
+                                                animType: AnimType.BOTTOMSLIDE,
+                                                title: 'Delete Device',
+                                                desc:
+                                                'Do you really want to delete ' +
+                                                    devices[index].deviceName,
+                                                btnCancelOnPress: () {},
+                                                btnOkOnPress: () {
+                                                  deleteSnack.show();
+                                                  sendDeleteReq(devices[index].id);
+                                                },
+                                              )..show();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Center(
+                                  child: Loading(
+                                    loading: loading,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -549,13 +565,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                 ),
               ],
             ),
-            Center(
-              child: Loading(
-                loading: loading,
-              ),
-            ),
-          ],
-        ),
+        //   ],
+        // ),
       ),
     );
   }
@@ -805,7 +816,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
               for (int i = 0; i < values.length; i++) {
                 if (values[i] != null) {
                   Map<String, dynamic> map = values[i];
-                  logs.add(LogJason.fromJson(map));
+                  logs.add(LogJason.fromJson(map,""));
                 }
               }
             }

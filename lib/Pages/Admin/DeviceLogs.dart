@@ -1,9 +1,10 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+
+// import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +14,9 @@ import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 
+// import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 // import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:open_file/open_file.dart';
@@ -23,8 +26,7 @@ import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter/cupertino.dart';
-
-import '../../Choices.dart';
+// import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 enum Span { def, up, down }
@@ -106,7 +108,7 @@ class TitleElement extends StatelessWidget {
   final double width, height;
   final String title;
   final Span span;
-  final Function func;
+  final func;
   final int index;
 
   const TitleElement(
@@ -241,9 +243,13 @@ class DeviceLogs extends StatefulWidget {
 class _DeviceLogs extends State<DeviceLogs> {
   TextEditingController searchController = new TextEditingController();
   bool loading = true, validate = false;
-  static const _pageSize = 20;
+
+  // String searchTerm="";
+
+  // static const _pageSize = 0;
   final PagingController<int, LogJason> _pagingController =
-  PagingController(firstPageKey: 0);
+      PagingController(firstPageKey: 0);
+
   // final PagingController<int, LogJason> controller =
   // PagingController(firstPageKey: 0);
 
@@ -259,35 +265,33 @@ class _DeviceLogs extends State<DeviceLogs> {
     Span.def
   ];
 
-  List<LogJason> logs = [];
-  List<LogJason> duplicateLogs = [];
+  List<LogJason> allLogs = [];
 
   LinkedScrollControllerGroup horizontal;
   LinkedScrollControllerGroup vertical;
-  // ScrollController _letters;
-  // ScrollController _numbers;
 
-  setSpans(int index) {
-    // bool isUp = (spans[index] != Span.down);
-    // setState(() {
-    //   resetSpans(isUp, index);
-    //   spans[index] = isUp ? Span.down : Span.up;
-    // });
+  ScrollController vertical1;
+  ScrollController vertical2;
+  ScrollController horizontal1;
+  ScrollController horizontal2;
+
+  Future<void> setSpans(int index) async{
+    bool isUp = (spans[index] != Span.down);
+    setState(() {
+      _pagingController.itemList.sort((a, b) => isUp
+          ? a.getE(index).compareTo(b.getE(index))
+          : b.getE(index).compareTo(a.getE(index)));
+      for (int i = 0; i < spans.length; i++) {
+        spans[i] = Span.def;
+      }
+      spans[index] = isUp ? Span.down : Span.up;
+    });
   }
 
-  void resetSpans(bool isUp, int index) {
-    this.logs.sort((a, b) => isUp
-        ? a.getE(index).compareTo(b.getE(index))
-        : b.getE(index).compareTo(a.getE(index)));
-    for (int i = 0; i < spans.length; i++) {
-      spans[i] = Span.def;
-    }
-  }
-
-  void filterSearchResults(String query) {
+  Future<void> filterSearchResults(String query) async {
     bool resultFound = false;
     var dummySearchList = [];
-    dummySearchList.addAll(duplicateLogs);
+    dummySearchList.addAll(allLogs);
     if (query.isNotEmpty) {
       List<LogJason> dummyListData = [];
       dummySearchList.forEach((item) {
@@ -299,16 +303,18 @@ class _DeviceLogs extends State<DeviceLogs> {
       });
       setState(() {
         validate = !resultFound;
-        logs.clear();
-        logs.addAll(dummyListData);
+        // logs.clear();
+        // logs.addAll(dummyListData);
+        _pagingController.itemList = dummyListData;
       });
       return;
     } else {
       setState(() {
         validate = false;
-        logs.clear();
-        logs.addAll(duplicateLogs);
-        logs.forEach((item) => item.setHighLight(''));
+        allLogs.forEach((element) => element.setHighLight(''));
+        _pagingController.itemList = allLogs;
+        // logs.clear();
+        // logs.forEach((item) => item.setHighLight(''));
       });
     }
   }
@@ -316,37 +322,57 @@ class _DeviceLogs extends State<DeviceLogs> {
   @override
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
-      _fetchPage(pageKey);
+      if (!loading) progress(true);
+      _fetchPage().then((value) => (loading) ? progress(false) : {});
     });
+
+    // _pagingController.addListener(() {
+    //
+    //
+    // });
     // getLogs();
     super.initState();
     horizontal = LinkedScrollControllerGroup();
     vertical = LinkedScrollControllerGroup();
-    // _letters = _controllers.addAndGet();
-    // _numbers = _controllers.addAndGet();
+
+    vertical1 = vertical.addAndGet();
+    vertical2 = vertical.addAndGet();
+    horizontal1 = horizontal.addAndGet();
+    horizontal2 = horizontal.addAndGet();
   }
 
-  Future<void> _fetchPage(int pageKey) async {
+  Future<void> _fetchPage() async {
     try {
       // toast("started");
-      // this.logs.clear();
-      final newItems = await RemoteApi.getCharacterList(pageKey, _pageSize,widget.device.id);
+      // loading = true;
+
+      // this.duplicateLogs = ;
+      // progress(true);
+      allLogs.addAll(await RemoteApi.getList(widget.device.id));
+      _pagingController.appendLastPage(allLogs);
+      // setState(() {
+      //   this.logs.clear();
+      //   this.logs.addAll(this.duplicateLogs);
+      //   loading = false;
+      // });
+
       // final newItems = await getAllLogs(pageKey, _pageSize);
       // toast("finished");
       // toast(newItems.length.toString());
-      final isLastPage = newItems.length < _pageSize;
-      if (isLastPage) {
-        _pagingController.appendLastPage(newItems);
-      } else {
-        final nextPageKey = pageKey + newItems.length;
-        _pagingController.appendPage(newItems, nextPageKey);
-      }
+      // final isLastPage = newItems.length < _pageSize;
+      // if (isLastPage) {
+      //   _pagingController.appendLastPage(newItems);
+      // } else {
+      //   final nextPageKey = pageKey + newItems.length;
+      //   _pagingController.appendPage(newItems, null);
+      // }
       // this.logs.addAll(newItems);
       // this.duplicateLogs.addAll(newItems);
     } catch (error) {
       _pagingController.error = error;
       print(error);
     }
+    // progress(false);
   }
 
   @override
@@ -359,11 +385,15 @@ class _DeviceLogs extends State<DeviceLogs> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        // setState(() {
+        //   horizontal = LinkedScrollControllerGroup();
+        //   vertical = LinkedScrollControllerGroup();
         FocusScopeNode currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus &&
             currentFocus.focusedChild != null) {
           FocusManager.instance.primaryFocus.unfocus();
         }
+        // });
       },
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
@@ -377,12 +407,14 @@ class _DeviceLogs extends State<DeviceLogs> {
               excel),
           preferredSize: const Size.fromHeight(50),
         ),
+        // resizeToAvoidBottomInset: false,
         body:
+
             // Stack(
-            // children: [
+            //   children: [
             Column(
           children: [
-            Padding(
+            Container(
               padding: const EdgeInsets.all(20),
               child: TextField(
                 onChanged: (text) => filterSearchResults(text),
@@ -435,7 +467,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                           Flexible(
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
-                              controller: horizontal.addAndGet(),
+                              controller: horizontal1,
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -545,177 +577,379 @@ class _DeviceLogs extends State<DeviceLogs> {
                     Expanded(
                       child: Container(
                         color: Colors.white,
-                        child: RefreshIndicator(
-                          onRefresh: () => Future.sync(
+                        child: Stack(
+                          children: [
+                            RefreshIndicator(
+                              onRefresh: () => Future.sync(
                                 () => _pagingController.refresh(),
-                          ),
-                          child:
-//                               SingleChildScrollView(
-//                                 physics: const AlwaysScrollableScrollPhysics(),
-// child:
-
-
-
-
-
-                          PagedListView<int, LogJason>(
-                            // physics: NeverScrollableScrollPhysics(),
-                            // scrollController: vertical.addAndGet(),
-                            // shrinkWrap: true,
-                            pagingController: _pagingController,
-                            builderDelegate: PagedChildBuilderDelegate<LogJason>(
-                              itemBuilder: (context, item, index) =>
-
-
-
-
-
-                          Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-
-                                      SizedBox(
-                                        width: 131,
-                                        child:
-                                      // PagedListView<int, LogJason>(
-                                      //   physics: NeverScrollableScrollPhysics(),
-                                      //   // scrollController: vertical.addAndGet(),
-                                      //   shrinkWrap: true,
-                                      //   pagingController: _pagingController,
-                                      //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
-                                      //     itemBuilder: (context, item, index) =>
-                                    Container(
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              right: BorderSide(
-                                                  width: 1.0,
-                                                  color: Colors.grey),
-                                              bottom: BorderSide(
-                                                  width: 1.0,
-                                                  color: Colors.grey),
-                                            ),
-                                            color: (index % 2 == 0)
-                                                ? Colors.white
-                                                : Color(0xf1f1f1f1),
-                                          ),
-                                          height: 30,
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: SubstringHighlight(
-                                              text: item.createDate,
-                                              term: item.highLight,
-                                              textStyleHighlight: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textStyle: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                          //             ),
-                          //
-                          // ),
-                          ),
-                                      Flexible(
-                                        child: SingleChildScrollView(
-                                          physics: ScrollPhysics(),
-                                          // controller: horizontal.addAndGet(),
-                                          scrollDirection: Axis.horizontal,
-                                          child:
-                                          SizedBox(
-                                            width: 577,
-                                            child:
-                                          // PagedListView<int, LogJason>(
-                                          //   physics: NeverScrollableScrollPhysics(),
-                                          //   // scrollController: vertical.addAndGet(),
-                                          //   shrinkWrap: true,
-                                          //   pagingController: _pagingController,
-                                          //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
-                                          //     itemBuilder: (context, item, index) =>
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  bottom: BorderSide(
-                                                      width: 1.0,
-                                                      color: Colors.grey),
-                                                ),
-                                                color: (index % 2 == 0)
-                                                    ? Colors.white
-                                                    : Color(0xf1f1f1f1),
-                                              ),
-                                              height: 30,
-                                              child: Row(
-                                                children: [
-                                                  Value(
-                                                      height: 30,
-                                                      width: 71,
-                                                      title: item.lid1,
-                                                      high: item.highLight,
-                                                      border: true),
-                                                  ValueBulb(
-                                                      height: 30,
-                                                      width: 71,
-                                                      title: item.ls1,
-                                                      border: true),
-                                                  Value(
-                                                      height: 30,
-                                                      width: 71,
-                                                      title: item.lid2,
-                                                      high: item.highLight,
-                                                      border: true),
-                                                  ValueBulb(
-                                                      height: 30,
-                                                      width: 71,
-                                                      title: item.ls2,
-                                                      border: true),
-                                                  Value(
-                                                      height: 30,
-                                                      width: 71,
-                                                      title: item.lid3,
-                                                      high: item.highLight,
-                                                      border: true),
-                                                  ValueBulb(
-                                                      height: 30,
-                                                      width: 71,
-                                                      title: item.ls3,
-                                                      border: true),
-                                                  Value(
-                                                      height: 30,
-                                                      width: 81,
-                                                      title: item.batteryValue,
-                                                      high: item.highLight,
-                                                      border: true),
-                                                  Value(
-                                                      height: 30,
-                                                      width: 70,
-                                                      title: item.rssiValue,
-                                                      high: item.highLight,
-                                                      border: false),
-                                                ],
-                                              ),
-                                            ),
-                                        //   ),
-                                        // ),
-                                      ),
-
-
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-
                               ),
+                              notificationPredicate:
+                                  (ScrollNotification notification) {
+                                return true;
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 131,
+                                    child: NotificationListener<
+                                        OverscrollIndicatorNotification>(
+                                      onNotification:
+                                          (OverscrollIndicatorNotification
+                                              overscroll) {
+                                        overscroll.disallowGlow();
+                                        return false;
+                                      },
+                                      child: PagedListView<int, LogJason>(
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        scrollController: vertical1,
+                                        shrinkWrap: true,
+                                        pagingController: _pagingController,
+                                        builderDelegate:
+                                            PagedChildBuilderDelegate<LogJason>(
+                                          animateTransitions: true,
+                                          firstPageErrorIndicatorBuilder: (_) =>
+                                              SizedBox(),
+                                          newPageErrorIndicatorBuilder: (_) =>
+                                              SizedBox(),
+                                          firstPageProgressIndicatorBuilder:
+                                              (_) {
+                                            // setState(() {
+                                            //   loading = true;
+                                            // });
+                                            return SizedBox();
+                                          },
+                                          newPageProgressIndicatorBuilder: (_) {
+                                            // setState(() {
+                                            //   loading = true;
+                                            // });
+                                            return SizedBox();
+                                          },
+                                          noItemsFoundIndicatorBuilder: (_) =>
+                                              SizedBox(),
+                                          noMoreItemsIndicatorBuilder: (_) =>
+                                              SizedBox(),
+                                          itemBuilder: (context, item, index) =>
+                                              Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                right: BorderSide(
+                                                    width: 1.0,
+                                                    color: Colors.grey),
+                                                bottom: BorderSide(
+                                                    width: 1.0,
+                                                    color: Colors.grey),
+                                              ),
+                                              color: (index % 2 == 0)
+                                                  ? Colors.white
+                                                  : Color(0xf1f1f1f1),
+                                            ),
+                                            height: 30,
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: SubstringHighlight(
+                                                text: item.createDate,
+                                                term: item.highLight,
+                                                textStyleHighlight: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                textStyle: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: SingleChildScrollView(
+                                      physics: ScrollPhysics(),
+                                      controller: horizontal2,
+                                      scrollDirection: Axis.horizontal,
+                                      child: SizedBox(
+                                        width: 577,
+                                        child: NotificationListener<
+                                            OverscrollIndicatorNotification>(
+                                          onNotification:
+                                              (OverscrollIndicatorNotification
+                                                  overscroll) {
+                                            overscroll.disallowGlow();
+                                            return true;
+                                          },
+                                          child: PagedListView<int, LogJason>(
+                                            physics:
+                                                AlwaysScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            scrollController: vertical2,
+                                            pagingController: _pagingController,
+                                            builderDelegate:
+                                                PagedChildBuilderDelegate<
+                                                    LogJason>(
+                                              firstPageErrorIndicatorBuilder:
+                                                  (_) => SizedBox(),
+                                              newPageErrorIndicatorBuilder:
+                                                  (_) => SizedBox(),
+                                              firstPageProgressIndicatorBuilder:
+                                                  (_) => SizedBox(),
+                                              newPageProgressIndicatorBuilder:
+                                                  (_) => SizedBox(),
+                                              noItemsFoundIndicatorBuilder:
+                                                  (_) => SizedBox(),
+                                              noMoreItemsIndicatorBuilder:
+                                                  (_) => SizedBox(),
+                                              animateTransitions: true,
+                                              itemBuilder:
+                                                  (context, item, index) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                        width: 1.0,
+                                                        color: Colors.grey),
+                                                  ),
+                                                  color: (index % 2 == 0)
+                                                      ? Colors.white
+                                                      : Color(0xf1f1f1f1),
+                                                ),
+                                                height: 30,
+                                                child: Row(
+                                                  children: [
+                                                    Value(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.lid1,
+                                                        high: item.highLight,
+                                                        border: true),
+                                                    ValueBulb(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.ls1,
+                                                        border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.lid2,
+                                                        high: item.highLight,
+                                                        border: true),
+                                                    ValueBulb(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.ls2,
+                                                        border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.lid3,
+                                                        high: item.highLight,
+                                                        border: true),
+                                                    ValueBulb(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.ls3,
+                                                        border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 81,
+                                                        title:
+                                                            item.batteryValue,
+                                                        high: item.highLight,
+                                                        border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 70,
+                                                        title: item.rssiValue,
+                                                        high: item.highLight,
+                                                        border: false),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            //
+                            // PagedListView<int, LogJason>(
+                            //   // physics: NeverScrollableScrollPhysics(),
+                            //   // scrollController: vertical.addAndGet(),
+                            //   // shrinkWrap: false,
+                            //   addAutomaticKeepAlives: false,
+                            //   pagingController: _pagingController,
+                            //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
+                            //     animateTransitions: true,
+                            //
 
-                          ),
+                            //
+                            //     // transitionDuration: const Duration(milliseconds: 500),
+                            //     itemBuilder: (context, item, index) =>
+                            //
+                            //
+                            //
+                            //
+                            //
+                            // Row(
+                            //           crossAxisAlignment:
+                            //               CrossAxisAlignment.start,
+                            //           children: <Widget>[
+                            //
+                            //             SizedBox(
+                            //               width: 131,
+                            //               child:
+                            //             // PagedListView<int, LogJason>(
+                            //             //   physics: NeverScrollableScrollPhysics(),
+                            //             //   // scrollController: vertical.addAndGet(),
+                            //             //   shrinkWrap: true,
+                            //             //   pagingController: _pagingController,
+                            //             //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
+                            //             //     itemBuilder: (context, item, index) =>
+                            //           Container(
+                            //                 decoration: BoxDecoration(
+                            //                   border: Border(
+                            //                     right: BorderSide(
+                            //                         width: 1.0,
+                            //                         color: Colors.grey),
+                            //                     bottom: BorderSide(
+                            //                         width: 1.0,
+                            //                         color: Colors.grey),
+                            //                   ),
+                            //                   color: (index % 2 == 0)
+                            //                       ? Colors.white
+                            //                       : Color(0xf1f1f1f1),
+                            //                 ),
+                            //                 height: 30,
+                            //                 child: Align(
+                            //                   alignment: Alignment.center,
+                            //                   child: SubstringHighlight(
+                            //                     text: item.createDate,
+                            //                     term: item.highLight,
+                            //                     textStyleHighlight: TextStyle(
+                            //                       fontSize: 13,
+                            //                       color: Colors.red,
+                            //                       fontWeight: FontWeight.bold,
+                            //                     ),
+                            //                     textStyle: TextStyle(
+                            //                       fontSize: 12,
+                            //                       color: Colors.black,
+                            //                     ),
+                            //                   ),
+                            //                 ),
+                            //               ),
+                            // //             ),
+                            // //
+                            // // ),
+                            // ),
+                            //             Flexible(
+                            //               child: SingleChildScrollView(
+                            //                 physics: ScrollPhysics(),
+                            //                 controller: horizontal.addAndGet(),
+                            //                 scrollDirection: Axis.horizontal,
+                            //                 child:
+                            //                 SizedBox(
+                            //                   width: 577,
+                            //                   child:
+                            //                 // PagedListView<int, LogJason>(
+                            //                 //   physics: NeverScrollableScrollPhysics(),
+                            //                 //   // scrollController: vertical.addAndGet(),
+                            //                 //   shrinkWrap: true,
+                            //                 //   pagingController: _pagingController,
+                            //                 //   builderDelegate: PagedChildBuilderDelegate<LogJason>(
+                            //                 //     itemBuilder: (context, item, index) =>
+                            //                 Container(
+                            //                     decoration: BoxDecoration(
+                            //                       border: Border(
+                            //                         bottom: BorderSide(
+                            //                             width: 1.0,
+                            //                             color: Colors.grey),
+                            //                       ),
+                            //                       color: (index % 2 == 0)
+                            //                           ? Colors.white
+                            //                           : Color(0xf1f1f1f1),
+                            //                     ),
+                            //                     height: 30,
+                            //                     child: Row(
+                            //                       children: [
+                            //                         Value(
+                            //                             height: 30,
+                            //                             width: 71,
+                            //                             title: item.lid1,
+                            //                             high: item.highLight,
+                            //                             border: true),
+                            //                         ValueBulb(
+                            //                             height: 30,
+                            //                             width: 71,
+                            //                             title: item.ls1,
+                            //                             border: true),
+                            //                         Value(
+                            //                             height: 30,
+                            //                             width: 71,
+                            //                             title: item.lid2,
+                            //                             high: item.highLight,
+                            //                             border: true),
+                            //                         ValueBulb(
+                            //                             height: 30,
+                            //                             width: 71,
+                            //                             title: item.ls2,
+                            //                             border: true),
+                            //                         Value(
+                            //                             height: 30,
+                            //                             width: 71,
+                            //                             title: item.lid3,
+                            //                             high: item.highLight,
+                            //                             border: true),
+                            //                         ValueBulb(
+                            //                             height: 30,
+                            //                             width: 71,
+                            //                             title: item.ls3,
+                            //                             border: true),
+                            //                         Value(
+                            //                             height: 30,
+                            //                             width: 81,
+                            //                             title: item.batteryValue,
+                            //                             high: item.highLight,
+                            //                             border: true),
+                            //                         Value(
+                            //                             height: 30,
+                            //                             width: 70,
+                            //                             title: item.rssiValue,
+                            //                             high: item.highLight,
+                            //                             border: false),
+                            //                       ],
+                            //                     ),
+                            //                   ),
+                            //               //   ),
+                            //               // ),
+                            //             ),
+                            //
+                            //
+                            //               ),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //
+                            //
+                            //     ),
+                            //
+                            // ),
+                            Center(
+                              child: Loading(
+                                loading: loading,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-              ),
+                    ),
+                    // ),
 
                     // child: Container(
                     //   color: Colors.white,
@@ -857,17 +1091,25 @@ class _DeviceLogs extends State<DeviceLogs> {
             ),
           ],
         ),
-        // Center(
-        //   child: Loading(
-        //     loading: loading,
+        //   Center(
+        //     child: Loading(
+        //       loading: loading,
+        //     ),
         //   ),
-        // ),
         // ],
         // ),
       ),
     );
   }
 
+  void progress(bool load) {
+    setState(() {
+      this.loading = load;
+    });
+  }
+
+  // @override
+  // bool get wantKeepAlive => true;
   // Future<List<LogJason>> getAllLogs(int offset, int limit) async{
   //   setState(() {
   //     loading = true;
@@ -912,58 +1154,58 @@ class _DeviceLogs extends State<DeviceLogs> {
   //   return null;
   // }
 
-  void getLogs() {
-    setState(() {
-      loading = true;
-    });
-    http.post(
-        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
-        body: {
-          'device_id': widget.device.id,
-        }).then((value) {
-      if (value.statusCode == 200) {
-        List<LogJason> logs = [];
-        List<dynamic> values = [];
-        values = json.decode(value.body);
-
-        if (values.length > 0) {
-          for (int i = 0; i < values.length; i++) {
-            if (values[i] != null) {
-              Map<String, dynamic> map = values[i];
-              logs.add(LogJason.fromJson(map));
-            }
-          }
-        }
-        toast("finished ");
-        // showLogs(logs);
-      } else {
-        setState(() {
-          loading = false;
-        });
-        throw Exception("Unable to get Log list");
-      }
-    }).onError((error, stackTrace) {
-      setState(() {
-        loading = false;
-      });
-      toast('Error: ' + error.message);
-    });
-  }
-
-  void showLogs(List<LogJason> logs) {
-    logs.sort((a, b) => b.createDate.compareTo(a.createDate));
-    this.duplicateLogs.clear();
-    this.logs.clear();
-    // setState(() {
-    //   this.logs.addAll(logs);
-    //   loading = false;
-    // });
-    // this.duplicateLogs.addAll(logs);
-    // toast("FFFFFFFFFFF");
-  }
+  // void getLogs() {
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   http.post(
+  //       Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+  //       body: {
+  //         'device_id': widget.device.id,
+  //       }).then((value) {
+  //     if (value.statusCode == 200) {
+  //       List<LogJason> logs = [];
+  //       List<dynamic> values = [];
+  //       values = json.decode(value.body);
+  //
+  //       if (values.length > 0) {
+  //         for (int i = 0; i < values.length; i++) {
+  //           if (values[i] != null) {
+  //             Map<String, dynamic> map = values[i];
+  //             logs.add(LogJason.fromJson(map));
+  //           }
+  //         }
+  //       }
+  //       toast("finished ");
+  //       // showLogs(logs);
+  //     } else {
+  //       setState(() {
+  //         loading = false;
+  //       });
+  //       throw Exception("Unable to get Log list");
+  //     }
+  //   }).onError((error, stackTrace) {
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //     toast('Error: ' + error.message);
+  //   });
+  // }
+  //
+  // void showLogs(List<LogJason> logs) {
+  //   logs.sort((a, b) => b.createDate.compareTo(a.createDate));
+  //   this.duplicateLogs.clear();
+  //   this.logs.clear();
+  //   // setState(() {
+  //   //   this.logs.addAll(logs);
+  //   //   loading = false;
+  //   // });
+  //   // this.duplicateLogs.addAll(logs);
+  //   // toast("FFFFFFFFFFF");
+  // }
 
   Future<void> pdf() async {
-    if (logs.isEmpty) {
+    if (_pagingController.itemList.isEmpty) {
       toast("No logs available");
       return;
     }
@@ -1045,14 +1287,14 @@ class _DeviceLogs extends State<DeviceLogs> {
 
         PdfGridRow row;
 
-        for (int i = 0; i < logs.length; i++) {
+        for (int i = 0; i < _pagingController.itemList.length; i++) {
           row = grid.rows.add();
-          row.cells[0].value = logs[i].createDate;
-          row.cells[1].value = logs[i].ls1.contains("1") ? "ON" : "OFF";
-          row.cells[2].value = logs[i].ls2.contains("1") ? "ON" : "OFF";
-          row.cells[3].value = logs[i].ls3.contains("1") ? "ON" : "OFF";
-          row.cells[4].value = logs[i].batteryValue;
-          row.cells[5].value = logs[i].rssiValue;
+          row.cells[0].value = _pagingController.itemList[i].createDate;
+          row.cells[1].value = _pagingController.itemList[i].ls1.contains("1") ? "ON" : "OFF";
+          row.cells[2].value = _pagingController.itemList[i].ls2.contains("1") ? "ON" : "OFF";
+          row.cells[3].value = _pagingController.itemList[i].ls3.contains("1") ? "ON" : "OFF";
+          row.cells[4].value = _pagingController.itemList[i].batteryValue;
+          row.cells[5].value = _pagingController.itemList[i].rssiValue;
 
           for (int l = 0; l < 6; l++) {
             row.cells[l].style = PdfGridCellStyle(
@@ -1154,8 +1396,7 @@ class _DeviceLogs extends State<DeviceLogs> {
               alignment: PdfTextAlignment.right,
             ));
 
-        String str1 = 'Client: ' +
-            clientCompressed[getInt(widget.device.client) - 1].value;
+        String str1 = 'Client: ' + compress(widget.device.client);
         String str2 = 'Device name: ' + widget.device.deviceName;
         String str3 = 'Height: ' + widget.device.deviceHeight;
         String str4 = 'Location: ' + widget.device.deviceLocation;
@@ -1231,14 +1472,14 @@ class _DeviceLogs extends State<DeviceLogs> {
   }
 
   Future<void> excel() async {
-    if (logs.isEmpty) {
+    if (_pagingController.itemList.isEmpty) {
       toast("No logs available");
       return;
     }
 
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel(widget.device.id, this.logs, (bool loading) {
+        ExportExcel(widget.device.id, this._pagingController.itemList, (bool loading) {
           setState(() {
             this.loading = loading;
           });
@@ -1255,6 +1496,18 @@ class _DeviceLogs extends State<DeviceLogs> {
       }
       return true;
     });
+  }
+
+  String compress(String str) {
+    if (str.contains("Research & Development Department")) {
+      return "R&D";
+    } else if (str.contains("Comdelta Technologies")) {
+      return "Comdelta";
+    } else if (str.length > 11) {
+      return str.substring(0, 11) + "...";
+    } else {
+      return str;
+    }
   }
 
   // Future<String> getDirectoryPath() async {

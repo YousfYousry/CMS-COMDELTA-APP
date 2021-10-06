@@ -1,9 +1,6 @@
 import 'dart:convert';
-
-//
 // import 'package:pdf/pdf.dart';
 // import 'dart:io';
-//
 // import 'package:pdf/widgets.dart' as pw;
 // import 'dart:io';
 // import 'package:firebase_messaging/firebase_messaging.dart';
@@ -18,7 +15,6 @@ import 'Pages/Client/DashBoard.dart';
 import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
 import 'Widgets/ProgressBars/ProgressBar.dart';
-
 // import 'Widgets/Others/TextFieldShadow.dart';
 // import 'Pages/Client/DashBoard.dart';
 
@@ -57,6 +53,7 @@ import 'Widgets/ProgressBars/ProgressBar.dart';
 //         ));
 //   }
 // }
+
 final routeObserver = RouteObserver<PageRoute>();
 
 Future<void> main() async {
@@ -119,7 +116,6 @@ Widget getRoute(String str) {
 
 class LoginPage extends StatefulWidget {
   // MyHomePage({Key key, this.title}) : super(key: key);
-
   // final String title;
 
   @override
@@ -131,7 +127,6 @@ class _LoginPage extends State<LoginPage> {
   TextEditingController emailFieldController = new TextEditingController(),
       passFieldController = new TextEditingController();
   bool validateEmail = false, validatePassword = false, loading = false;
-
   // FirebaseMessaging messaging;
 
   // @override

@@ -30,9 +30,10 @@ class LogJason {
     this._lg,
     this._batteryValue,
     this._rssiValue,
+    this._highLight,
   );
 
-  factory LogJason.fromJson(Map<String, dynamic> json) {
+  factory LogJason.fromJson(Map<String, dynamic> json, String search) {
     String getStr(Object str) {
       return (str != null && !str.toString().contains("null"))
           ? str.toString()
@@ -52,6 +53,7 @@ class LogJason {
       getStr(json['lg']),
       getStr(json['battery_value']),
       getStr(json['rssi_value']),
+      getStr(search),
     );
   }
 
