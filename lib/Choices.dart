@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_select/smart_select.dart';
 
+// import 'JasonHolders/RemoteApi.dart';
+
 // const PrimaryColor = const Color(0xff0065a3);
 
 List<S2Choice<String>> clientStatus = [
@@ -29,6 +31,7 @@ List<S2Choice<String>> client = [
   S2Choice<String>(value: 'Bullish Aim', title: 'Bullish Aim'),
   S2Choice<String>(value: 'Comdelta Test', title: 'Comdelta Test'),
 ];
+// List<S2Choice<String>> client;
 
 // List<S2Choice<String>> clientCompressed = [
 //   S2Choice<String>(value: 'DHarmoni', title: 'DHarmoni'),

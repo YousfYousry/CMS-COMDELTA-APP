@@ -26,6 +26,8 @@ import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter/cupertino.dart';
+
+import '../../Choices.dart';
 // import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
@@ -323,7 +325,14 @@ class _DeviceLogs extends State<DeviceLogs> {
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
       if (!loading) progress(true);
-      _fetchPage().then((value) => (loading) ? progress(false) : {});
+      _fetchPage().then((value) {
+      if (loading)  {
+        progress(false);
+      }
+      if(allLogs.isEmpty){
+        toast("No logs are available for this device!");
+      }
+      });
     });
 
     // _pagingController.addListener(() {
@@ -1205,6 +1214,11 @@ class _DeviceLogs extends State<DeviceLogs> {
   // }
 
   Future<void> pdf() async {
+    if(loading){
+      toast("Loading, Please be patient!");
+      return;
+    }
+
     if (_pagingController.itemList.isEmpty) {
       toast("No logs available");
       return;
@@ -1472,6 +1486,11 @@ class _DeviceLogs extends State<DeviceLogs> {
   }
 
   Future<void> excel() async {
+    if(loading){
+      toast("Loading, Please be patient!");
+      return;
+    }
+
     if (_pagingController.itemList.isEmpty) {
       toast("No logs available");
       return;
@@ -1499,9 +1518,14 @@ class _DeviceLogs extends State<DeviceLogs> {
   }
 
   String compress(String str) {
-    if (str.contains("Research & Development Department")) {
+    try{
+      str = client[int.parse(str) - 1].value;
+    }catch(error){
+
+    }
+    if (str.toLowerCase().contains("research & development department")) {
       return "R&D";
-    } else if (str.contains("Comdelta Technologies")) {
+    } else if (str.toLowerCase().contains("comdelta technologies")) {
       return "Comdelta";
     } else if (str.length > 11) {
       return str.substring(0, 11) + "...";

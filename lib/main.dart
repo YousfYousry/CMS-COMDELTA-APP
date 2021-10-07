@@ -10,7 +10,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
+// import 'package:smart_select/smart_select.dart';
 import 'Choices.dart';
+import 'JasonHolders/RemoteApi.dart';
 import 'Pages/Client/DashBoard.dart';
 import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
@@ -54,6 +56,7 @@ import 'Widgets/ProgressBars/ProgressBar.dart';
 //   }
 // }
 
+
 final routeObserver = RouteObserver<PageRoute>();
 
 Future<void> main() async {
@@ -83,6 +86,7 @@ Future<void> main() async {
       ),
     ),
   );
+  client = await RemoteApi.getClientList();
 }
 
 Widget getRoute(String str) {

@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+// import 'package:login_cms_comdelta/JasonHolders/ClientNameJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
+import 'package:smart_select/smart_select.dart';
 
 class RemoteApi {
   static Future<List<LogJason>> getCharacterList(
@@ -42,6 +44,24 @@ class RemoteApi {
           (jsonObject) => LogJason.fromJson(jsonObject,searchTerm),
         ),
       );
+
+
+  static Future<List<S2Choice<String>>> getClientList() async =>
+      http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getClientList.php'),
+        body: {},
+      ).mapFromResponse<List<S2Choice<String>>, List<dynamic>>(
+            (jsonArray) => _parseItemListFromJsonArray(
+          jsonArray,
+              (jsonObject) {
+                var str = jsonObject['client_name'];
+                return (str != null && !str.toString().contains("null"))
+                    ? S2Choice<String>(value: str.toString(), title: str.toString())
+                    : S2Choice<String>(value: '', title: '');
+              }
+        ),
+      );
+
 
   static List<T> _parseItemListFromJsonArray<T>(
     List<dynamic> jsonArray,

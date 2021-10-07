@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
@@ -47,36 +48,79 @@ class ManageDevice extends StatefulWidget {
   @override
   _ManageDevice createState() => _ManageDevice();
 }
+//
+// var spanUp = WidgetSpan(
+//       child: Padding(
+//         padding: EdgeInsets.only(left: 2, bottom: 2),
+//         child: ImageIcon(
+//           AssetImage('assets/image/sortup.png'),
+//           size: 12,
+//           color: Colors.black,
+//         ),
+//       ),
+//     ),
+//     spanDown = WidgetSpan(
+//       child: Padding(
+//         padding: EdgeInsets.only(left: 2, bottom: 2),
+//         child: ImageIcon(
+//           AssetImage('assets/image/sortdown.png'),
+//           size: 12,
+//           color: Colors.black,
+//         ),
+//       ),
+//     ),
+//     spanDefault = WidgetSpan(
+//       child: Transform.rotate(
+//           angle: 90 * math.pi / 180,
+//           child: Icon(
+//             Icons.sync_alt,
+//             size: 15,
+//             color: Colors.grey,
+//           )),
+//     );
 
-var spanUp = WidgetSpan(
-      child: Padding(
-        padding: EdgeInsets.only(left: 2, bottom: 2),
-        child: ImageIcon(
-          AssetImage('assets/image/sortup.png'),
-          size: 12,
-          color: Colors.black,
-        ),
+
+class SpanUp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 2, bottom: 2),
+      child: ImageIcon(
+        AssetImage('assets/image/sortup.png'),
+        size: 12,
+        color: Colors.black,
       ),
-    ),
-    spanDown = WidgetSpan(
-      child: Padding(
-        padding: EdgeInsets.only(left: 2, bottom: 2),
-        child: ImageIcon(
-          AssetImage('assets/image/sortdown.png'),
-          size: 12,
-          color: Colors.black,
-        ),
-      ),
-    ),
-    spanDefault = WidgetSpan(
-      child: Transform.rotate(
-          angle: 90 * math.pi / 180,
-          child: Icon(
-            Icons.sync_alt,
-            size: 15,
-            color: Colors.grey,
-          )),
     );
+  }
+}
+
+class SpanDown extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 2, bottom: 2),
+      child: ImageIcon(
+        AssetImage('assets/image/sortdown.png'),
+        size: 12,
+        color: Colors.black,
+      ),
+    );
+  }
+}
+
+class SpanDefault extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: 90 * math.pi / 180,
+      child: Icon(
+        Icons.sync_alt,
+        size: 15,
+        color: Colors.grey,
+      ),
+    );
+  }
+}
 
 class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   TextEditingController searchController = new TextEditingController();
@@ -92,53 +136,62 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   //     activationToAd = new TextEditingController(),
   //     lastSignalAd = new TextEditingController();
 
-  var span1 = spanUp, span2 = spanDefault, span3 = spanDefault;
-  List<DeviceJason> devices = [];
+  // var span1 = SpanUp, span2 = SpanDefault, span3 = SpanDefault;
+  var spans = [
+  Span.up,
+  Span.def,
+  Span.def
+  ];
+
+  final PagingController<int, DeviceJason> _pagingController =
+  PagingController(firstPageKey: 0);
+
+  // List<DeviceJason> devices = [];
   List<DeviceJason> duplicateDevices = [];
 
-  void _sort1() {
-    if (span1 != spanDown) {
+  Future<void> _sort1() async{
+    if (spans[0] != Span.down) {
       sortState = 0;
-      devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
-      span1 = spanDown;
+      _pagingController.itemList.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+      spans[0] = Span.down;
     } else {
       sortState = 1;
-      devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
-      span1 = spanUp;
+      _pagingController.itemList.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+      spans[0] = Span.up;
     }
-    span2 = spanDefault;
-    span3 = spanDefault;
+    spans[1] = Span.def;
+    spans[2] = Span.def;
   }
 
-  void _sort2() {
-    if (span2 != spanDown) {
+  Future<void> _sort2() async{
+    if (spans[1] != Span.down) {
       sortState = 2;
-      devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
-      span2 = spanDown;
+      _pagingController.itemList.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+      spans[1] = Span.down;
     } else {
       sortState = 3;
-      devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
-      span2 = spanUp;
+      _pagingController.itemList.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+      spans[1] = Span.up;
     }
-    span1 = spanDefault;
-    span3 = spanDefault;
+    spans[0] = Span.def;
+    spans[2] = Span.def;
   }
 
-  void _sort3() {
-    if (span3 != spanDown) {
+  Future<void> _sort3() async{
+    if (spans[2] != Span.down) {
       sortState = 4;
-      devices.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
-      span3 = spanDown;
+      _pagingController.itemList.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+      spans[2] = Span.down;
     } else {
       sortState = 5;
-      devices.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
-      span3 = spanUp;
+      _pagingController.itemList.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      spans[2] = Span.up;
     }
-    span2 = spanDefault;
-    span1 = spanDefault;
+    spans[0] = Span.def;
+    spans[1] = Span.def;
   }
 
-  void filterSearchResults(String query) {
+  Future<void> filterSearchResults(String query) async{
     bool resultFound = false;
     var dummySearchList = [];
     dummySearchList.addAll(duplicateDevices);
@@ -155,19 +208,21 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       });
       setState(() {
         validate = !resultFound;
-        devices.clear();
-        devices.addAll(dummyListData);
+        // devices.clear();
+        _pagingController.itemList = dummyListData;
       });
       return;
     } else {
       setState(() {
         validate = false;
-        span1 = spanUp;
-        span2 = spanDefault;
-        span3 = spanDefault;
-        devices.clear();
-        devices.addAll(duplicateDevices);
-        devices.forEach((item) => item.setHighLight(''));
+        spans[0] = Span.up;
+        spans[1] = Span.def;
+        spans[2] = Span.def;
+        duplicateDevices.forEach((element) => element.setHighLight(''));
+        _pagingController.itemList = duplicateDevices;
+        // devices.clear();
+        // devices.addAll(duplicateDevices);
+        // devices.forEach((item) => item.setHighLight(''));
       });
     }
   }
@@ -182,6 +237,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _pagingController.dispose();
     super.dispose();
   }
 
@@ -289,7 +345,12 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                         ),
                                         children: [
                                           TextSpan(text: 'ID'),
-                                          span1,
+                                          WidgetSpan(
+                                              child: (spans[0] == Span.def)
+                                                  ? SpanDefault()
+                                                  : (spans[0] == Span.up)
+                                                  ? SpanUp()
+                                                  : SpanDown()),
                                         ],
                                       ),
                                     ),
@@ -319,7 +380,12 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                         ),
                                         children: [
                                           TextSpan(text: 'Device Name'),
-                                          span2,
+                                          WidgetSpan(
+                                              child: (spans[1] == Span.def)
+                                                  ? SpanDefault()
+                                                  : (spans[1] == Span.up)
+                                                  ? SpanUp()
+                                                  : SpanDown()),
                                         ],
                                       ),
                                     ),
@@ -349,7 +415,12 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                         ),
                                         children: [
                                           TextSpan(text: 'Location'),
-                                          span3,
+                                          WidgetSpan(
+                                              child: (spans[2] == Span.def)
+                                                  ? SpanDefault()
+                                                  : (spans[2] == Span.up)
+                                                  ? SpanUp()
+                                                  : SpanDown()),
                                         ],
                                       ),
                                     ),
@@ -374,10 +445,29 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                   onRefresh: () => Future.sync(
                                         () => getLocations(),
                                   ),
-                                  child: ListView.builder(
-                                    itemCount: devices.length,
-                                    itemBuilder: (context, index) {
-                                      return Slidable(
+                                  child: PagedListView<int, DeviceJason>(
+                                    physics:
+                                    AlwaysScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    pagingController: _pagingController,
+                                    builderDelegate:
+                                    PagedChildBuilderDelegate<
+                                        DeviceJason>(
+                                      firstPageErrorIndicatorBuilder:
+                                          (_) => SizedBox(),
+                                      newPageErrorIndicatorBuilder:
+                                          (_) => SizedBox(),
+                                      firstPageProgressIndicatorBuilder:
+                                          (_) => SizedBox(),
+                                      newPageProgressIndicatorBuilder:
+                                          (_) => SizedBox(),
+                                      noItemsFoundIndicatorBuilder:
+                                          (_) => SizedBox(),
+                                      noMoreItemsIndicatorBuilder:
+                                          (_) => SizedBox(),
+                                      animateTransitions: true,
+                                      itemBuilder:
+                                          (context, item, index) => Slidable(
                                         actionPane: SlidableDrawerActionPane(),
                                         actionExtentRatio: 0.20,
                                         child: new Column(
@@ -388,7 +478,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                                   : Color(0xf1f1f1f1),
                                               child: InkWell(
                                                 onTap: () {
-                                                  ShowDevice(context, devices[index]);
+                                                  ShowDevice(context, item);
                                                 },
                                                 child: Container(
                                                   height: 40,
@@ -400,8 +490,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                                           padding: EdgeInsets.only(
                                                               left: 10),
                                                           child: SubstringHighlight(
-                                                            text: devices[index].id,
-                                                            term: devices[index]
+                                                            text: item.id,
+                                                            term: item
                                                                 .highLight,
                                                             textStyleHighlight:
                                                             TextStyle(
@@ -434,9 +524,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                                           padding: EdgeInsets.only(
                                                               left: 10),
                                                           child: SubstringHighlight(
-                                                            text: devices[index]
+                                                            text: item
                                                                 .deviceName,
-                                                            term: devices[index]
+                                                            term: item
                                                                 .highLight,
                                                             textStyleHighlight:
                                                             TextStyle(
@@ -468,9 +558,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                                           padding: EdgeInsets.only(
                                                               left: 10),
                                                           child: SubstringHighlight(
-                                                            text: devices[index]
+                                                            text: item
                                                                 .deviceLocation,
-                                                            term: devices[index]
+                                                            term: item
                                                                 .highLight,
                                                             textStyleHighlight:
                                                             TextStyle(
@@ -508,13 +598,13 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                             caption: 'Logs',
                                             color: Color(0xffFFB61E),
                                             icon: Icons.signal_cellular_alt,
-                                            onTap: () => deviceLogs(devices[index]),
+                                            onTap: () => deviceLogs(item),
                                           ),
                                           new IconSlideAction(
                                             caption: 'Download',
                                             color: Colors.green,
                                             icon: Icons.download,
-                                            onTap: () => downloadLogs(devices[index].id),
+                                            onTap: () => downloadLogs(item.id),
                                           ),
                                         ],
                                         secondaryActions: <Widget>[
@@ -522,7 +612,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                             caption: 'Edit',
                                             color: Color(0xff62D0F1),
                                             icon: Icons.edit,
-                                            onTap: () => editDevice(devices[index]),
+                                            onTap: () => editDevice(item),
                                           ),
                                           new IconSlideAction(
                                             caption: 'Delete',
@@ -536,18 +626,18 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                                 title: 'Delete Device',
                                                 desc:
                                                 'Do you really want to delete ' +
-                                                    devices[index].deviceName,
+                                                    item.deviceName,
                                                 btnCancelOnPress: () {},
                                                 btnOkOnPress: () {
                                                   deleteSnack.show();
-                                                  sendDeleteReq(devices[index].id);
+                                                  sendDeleteReq(item.id);
                                                 },
                                               )..show();
                                             },
                                           ),
                                         ],
-                                      );
-                                    },
+                                      ),
+                                      ),
                                   ),
                                 ),
                                 Center(
@@ -599,6 +689,11 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   }
 
   Future<void> exportPDF() async {
+    if(loading){
+      toast("Loading, Please be patient!");
+      return;
+    }
+
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
         PdfDocument document = PdfDocument();
@@ -675,17 +770,17 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
         PdfGridRow row;
 
-        for (int i = 0; i < devices.length; i++) {
+        for (int i = 0; i < _pagingController.itemList.length; i++) {
           row = grid.rows.add();
-          row.cells[0].value = devices[i].id;
-          row.cells[1].value = devices[i].deviceName;
-          row.cells[2].value = devices[i].deviceDetails;
-          row.cells[3].value = devices[i].deviceLocation;
-          row.cells[4].value = devices[i].deviceHeight;
-          row.cells[5].value = devices[i].serialNum;
-          row.cells[6].value = devices[i].simProvider;
-          row.cells[7].value = devices[i].batchNum;
-          row.cells[8].value = devices[i].activationDate;
+          row.cells[0].value = _pagingController.itemList[i].id;
+          row.cells[1].value = _pagingController.itemList[i].deviceName;
+          row.cells[2].value = _pagingController.itemList[i].deviceDetails;
+          row.cells[3].value = _pagingController.itemList[i].deviceLocation;
+          row.cells[4].value = _pagingController.itemList[i].deviceHeight;
+          row.cells[5].value = _pagingController.itemList[i].serialNum;
+          row.cells[6].value = _pagingController.itemList[i].simProvider;
+          row.cells[7].value = _pagingController.itemList[i].batchNum;
+          row.cells[8].value = _pagingController.itemList[i].activationDate;
 
           for (int l = 0; l < 9; l++) {
             if (i % 2 != 0) {
@@ -844,9 +939,14 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   }
 
   Future<void> exportExcel() async {
+    if(loading){
+      toast("Loading, Please be patient!");
+      return;
+    }
+
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel("Device List",devices, progressBar);
+        ExportExcel("Device List",_pagingController.itemList, progressBar);
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -1181,38 +1281,36 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   void showDevices(List<DeviceJason> devices) {
     setState(() {
-      this.devices.clear();
-      this.devices.addAll(devices);
+      // this.devices.clear();
+      _pagingController.itemList=devices;
       if (sortState == 0) {
-        this.devices.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+        _pagingController.itemList.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
         this
             .duplicateDevices
             .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
       } else if (sortState == 1) {
-        this.devices.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+        _pagingController.itemList.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
         this
             .duplicateDevices
             .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
       } else if (sortState == 2) {
-        this.devices.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+        _pagingController.itemList.sort((a, b) => a.deviceName.compareTo(b.deviceName));
         this
             .duplicateDevices
             .sort((a, b) => a.deviceName.compareTo(b.deviceName));
       } else if (sortState == 3) {
-        this.devices.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+        _pagingController.itemList.sort((a, b) => b.deviceName.compareTo(a.deviceName));
         this
             .duplicateDevices
             .sort((a, b) => b.deviceName.compareTo(a.deviceName));
       } else if (sortState == 4) {
-        this
-            .devices
+        _pagingController.itemList
             .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
         this
             .duplicateDevices
             .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
       } else if (sortState == 5) {
-        this
-            .devices
+        _pagingController.itemList
             .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
         this
             .duplicateDevices

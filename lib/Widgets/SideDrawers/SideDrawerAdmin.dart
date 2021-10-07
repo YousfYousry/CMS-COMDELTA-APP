@@ -5,7 +5,7 @@ import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
-import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
+// import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import '../../Pages/ForgotPasswordPage.dart';
@@ -188,7 +188,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   children: [
                     itemChild("Manage Device", ManageDevice()),
                     itemChild("Add Device", AddDevice("Add Device", null)),
-                    itemChild("Failed Device", FailedDevice()),
+                    // itemChild("Failed Device", FailedDevice()),
                   ],
                 ),
                 isExpanded: button2,
