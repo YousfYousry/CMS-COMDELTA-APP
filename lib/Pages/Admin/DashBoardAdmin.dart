@@ -20,6 +20,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:login_cms_comdelta/Choices.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/NewDashBoard.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/NewUpdateChecker.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/WidgetSize.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
@@ -162,6 +163,8 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     _pageController.addListener(handlePageChange);
 
     super.initState();
+
+    // NewUpdateChecker(this.context);
   }
 
   void handlePageChange() {

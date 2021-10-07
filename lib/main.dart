@@ -10,6 +10,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
+import 'package:upgrader/upgrader.dart';
 // import 'package:smart_select/smart_select.dart';
 import 'Choices.dart';
 import 'JasonHolders/RemoteApi.dart';
@@ -74,6 +75,7 @@ Future<void> main() async {
   //   badge: true,
   //   sound: true,
   // );
+  // Upgrader().clearSavedSettings(); // REMOVE this for release builds
   load('user_type').then(
     (value) => runApp(
       MaterialApp(
@@ -81,7 +83,11 @@ Future<void> main() async {
           primarySwatch: MaterialColor(0xff0065a3, customColors),
         ),
         // home: MyApp(getRoute(value)),
-        home: getRoute(value),
+        home: UpgradeAlert(
+            // debugLogging: true,
+            // debugAlwaysUpgrade: true,
+            child:getRoute(value)
+        ),
         navigatorObservers: [routeObserver],
       ),
     ),
