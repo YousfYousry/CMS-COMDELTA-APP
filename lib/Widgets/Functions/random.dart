@@ -56,7 +56,7 @@ Future<String> load(String key) async {
   return prefs.getString(key) ?? '-1';
 }
 
-void save(String key, String data) async {
+Future<void> save(String key, String data) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(key, data);
 }

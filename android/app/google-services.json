@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:202244202804:android:07b6050aed301a5db84561",
+        "mobilesdk_app_id": "1:202244202804:android:fd4f3b89f4dc3ee9b84561",
         "android_client_info": {
-          "package_name": "com.example.login_cms_comdelta"
+          "package_name": "com.Comdelta.cms_comdelta"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "202244202804-brvkqrjq5n6en4q96sleikr2drjc8cdv.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "202244202804-4bvaadn463248op8999esmjgi7edoje7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.loginCmsComdelta"
+              }
             }
           ]
         }

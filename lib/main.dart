@@ -1,80 +1,84 @@
 import 'dart:convert';
-// import 'package:pdf/pdf.dart';
-// import 'dart:io';
-// import 'package:pdf/widgets.dart' as pw;
-// import 'dart:io';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
 import 'package:upgrader/upgrader.dart';
-// import 'package:smart_select/smart_select.dart';
 import 'Choices.dart';
 import 'JasonHolders/RemoteApi.dart';
 import 'Pages/Client/DashBoard.dart';
 import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
 import 'Widgets/ProgressBars/ProgressBar.dart';
-// import 'Widgets/Others/TextFieldShadow.dart';
-// import 'Pages/Client/DashBoard.dart';
 
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
-//
-// const AndroidNotificationChannel channel = AndroidNotificationChannel(
-//   'high_importance_channel', // id
-//   'High Importance Notifications', // title
-//   'This channel is used for important notifications.', // description
-//   importance: Importance.high,
-// );
-//
-// Future<void> _messageHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-//   notification(message);
-// }
-//
-// void notification(RemoteMessage message) {
-//   RemoteNotification notification = message.notification;
-//   AndroidNotification android = message.notification?.android;
-//   if (notification != null && android != null) {
-//     flutterLocalNotificationsPlugin.show(
-//         notification.hashCode,
-//         notification.title,
-//         notification.body,
-//         NotificationDetails(
-//           android: AndroidNotificationDetails(
-//             channel.id,
-//             channel.name,
-//             channel.description,
-//             // TODO add a proper drawable resource to android, for now using
-//             //      one that already exists in example app.
-//             // icon: 'launch_background',
-//           ),
-//         ));
-//   }
-// }
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  'This channel is used for important notifications.', // description
+  importance: Importance.max,
+);
+
+Future<void> _messageHandler(RemoteMessage message) async {
+  toast(message.notification.title);
+  RemoteNotification notification = message.notification;
+  AndroidNotification android = message.notification?.android;
+  if (notification != null && android != null) {
+    flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        iOS: IOSNotificationDetails(sound: 'slow_spring_board.aiff'),
+        android: AndroidNotificationDetails(
+            channel.id, channel.name, channel.description,
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker'
+          // TODO add a proper drawable resource to android, for now using
+          //      one that already exists in example app.
+          // icon: 'launch_background',
+        ),
+      ),
+    );
+  }
+}
+
 
 
 final routeObserver = RouteObserver<PageRoute>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
-  // FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  await Firebase.initializeApp();
+  //.timeout(Duration(microseconds: 10000),onTimeout: (){
+  //   toast("Error initializing google services!");
+  //   return;
+  // });
+
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onMessage.listen(_messageHandler);
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    toast("messageOpened");
+  });
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
   //
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //         AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
-  //
-  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // );
   // Upgrader().clearSavedSettings(); // REMOVE this for release builds
   load('user_type').then(
     (value) => runApp(
@@ -86,8 +90,7 @@ Future<void> main() async {
         home: UpgradeAlert(
             // debugLogging: true,
             // debugAlwaysUpgrade: true,
-            child:getRoute(value)
-        ),
+            child: getRoute(value)),
         navigatorObservers: [routeObserver],
       ),
     ),
@@ -137,6 +140,7 @@ class _LoginPage extends State<LoginPage> {
   TextEditingController emailFieldController = new TextEditingController(),
       passFieldController = new TextEditingController();
   bool validateEmail = false, validatePassword = false, loading = false;
+
   // FirebaseMessaging messaging;
 
   // @override
@@ -400,7 +404,8 @@ class _LoginPage extends State<LoginPage> {
                     Center(
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0,right: 20.0,bottom: 80),
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, bottom: 80),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -429,7 +434,10 @@ class _LoginPage extends State<LoginPage> {
                                 child: AutoSizeText(
                                   'Smart Solar Aviation Obstruction Light',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 1000),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 1000),
                                   maxLines: 1,
                                 ),
                               ),
@@ -439,7 +447,8 @@ class _LoginPage extends State<LoginPage> {
                                 child: AutoSizeText(
                                   'Centralized Management System',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.white,fontSize: 1000),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 1000),
                                   maxLines: 1,
                                 ),
                               ),
@@ -486,76 +495,49 @@ class _LoginPage extends State<LoginPage> {
     }
     setState(() => loading = true);
 
-    http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
+    final response = await http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
         body: {
           'email': emailFieldController.text,
           'password': passFieldController.text
-        }).then((response) {
-      if (response.statusCode == 200) {
-        Map<String, dynamic> map = json.decode(response.body);
-        if (map["res"] == "0") {
-          String userType;
-          var route;
-          // toast(map["type"].toString());
-          if (map["type"].toString().compareTo('3') != 0) {
-            // FirebaseMessaging.instance.getToken().then((value) {
-            //   http.post(
-            //       Uri.parse(
-            //           'http://103.18.247.174:8080/AmitProject/saveToken.php'),
-            //       body: {
-            //         'client_id': result[0],
-            //         'token': value,
-            //       }).then((response) {
-            //     String res = json.decode(response.body);
-            //     if (res.contains("200")) {
-            //       save('token', value);
-            userType = "admin";
-            route = DashBoardTest1();
-
-            // Navigator.pushReplacement(context,
-            //     MaterialPageRoute(builder: (context) => DashBoardTest1()));
-            // print(">>>:"+value+":<<<");
-            // toast('Logged in successfully');
-            // setState(() => loading = false);
-            //     } else {
-            //       toast(res);
-            //       setState(() => loading = false);
-            //     }
-            //   }).onError((error, stackTrace) {
-            //     toast('Error: ' + error.message);
-            //     setState(() => loading = false);
-            //   });
-            // }).onError((error, stackTrace) {
-            //   toast('Error getting notification token');
-            //   setState(() => loading = false);
-            // });
-          } else {
-            userType = "client";
-            route = DashBoard();
-            // print(">>>:"+value+":<<<");
-          }
-
-          save('user_type', userType);
-          save('profile_pic', '-1');
-          save('client_id', map["clientId"].toString());
-          save('user_id', map["userId"].toString());
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => route));
-          toast('Logged in successfully');
-          setState(() => loading = false);
-        } else {
-          toast('Email or password is incorrect');
-          setState(() => loading = false);
-        }
-      } else {
-        toast(getResponseError(response));
-        setState(() => loading = false);
-      }
-    }).onError((error, stackTrace) {
+        }).onError((error, stackTrace) {
       toast('Error: ' + error.message);
-      print(error);
       setState(() => loading = false);
+      return;
     });
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> map = json.decode(response.body);
+      if (map["res"] == "0") {
+        String userType;
+        var route;
+        if (map["type"].toString().compareTo('3') != 0) {
+          if (!await setNotificationToken(map["clientId"].toString())) {
+            setState(() => loading = false);
+            return;
+          }
+          userType = "admin";
+          route = DashBoardTest1();
+        } else {
+          userType = "client";
+          route = DashBoard();
+        }
+
+        save('user_type', userType);
+        save('profile_pic', '-1');
+        save('client_id', map["clientId"].toString());
+        save('user_id', map["userId"].toString());
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => route));
+        toast('Logged in successfully');
+      } else {
+        toast('Email or password is incorrect');
+      }
+    } else {
+      toast(getResponseError(response));
+    }
+
+    setState(() => loading = false);
   }
 
   String getResponseError(http.Response response) {
@@ -574,28 +556,46 @@ class _LoginPage extends State<LoginPage> {
         return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
     }
   }
+
+  Future<bool> setNotificationToken(String clientId) async {
+    final token = await FirebaseMessaging.instance.getToken();
+    final response = await http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/saveToken.php'),
+        body: {
+          'token': token,
+          'client_id': clientId,
+        });
+
+    if (json.decode(response.body).contains("200")) {
+      await save('token', token);
+      return true;
+    } else {
+      toast("Failed to set notification token");
+      return false;
+    }
+  }
 }
 
-void logOut(BuildContext context) {
-  // load('token').then((value) {
-  //   http.post(
-  //       Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
-  //       body: {
-  //         'token': value,
-  //       }).then((response) {
-  //     String res = json.decode(response.body);
-  //     if (res == "200") {
-  //       save('token', '-1');
-  save('user_type', '-1');
-  save('profile_pic', '-1');
-  save('client_id', '-1');
-  save('user_id', '-1');
-  Navigator.pushReplacement(context, SizeRoute(page: LoginPage()));
-  // } else {
-  //   toast("Error logging out!");
-  // }
-  //   }).onError((error, stackTrace) {
-  //     toast('Error: ' + error.message);
-  //   });
-  // });
+Future<void> logOut(BuildContext context) async {
+  final token = await load('token');
+  final response = await http.post(
+      Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
+      body: {
+        'token': token,
+      }).onError((error, stackTrace) {
+    toast('Error: ' + error.message);
+    return;
+  });
+  String res = json.decode(response.body);
+  if (res == "200" || res == "100") {
+    if (res == "100") toast("Your notification token is not registered!");
+    save('token', '-1');
+    save('user_type', '-1');
+    save('profile_pic', '-1');
+    save('client_id', '-1');
+    save('user_id', '-1');
+    Navigator.pushReplacement(context, SizeRoute(page: LoginPage()));
+  } else {
+    toast("Error deleting token!");
+  }
 }
