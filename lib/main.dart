@@ -26,27 +26,27 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 
 Future<void> _messageHandler(RemoteMessage message) async {
   toast(message.notification.title);
-  RemoteNotification notification = message.notification;
-  AndroidNotification android = message.notification?.android;
-  if (notification != null && android != null) {
-    flutterLocalNotificationsPlugin.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        iOS: IOSNotificationDetails(sound: 'slow_spring_board.aiff'),
-        android: AndroidNotificationDetails(
-            channel.id, channel.name, channel.description,
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker'
-          // TODO add a proper drawable resource to android, for now using
-          //      one that already exists in example app.
-          // icon: 'launch_background',
-        ),
-      ),
-    );
-  }
+  // RemoteNotification notification = message.notification;
+  // AndroidNotification android = message.notification?.android;
+  // if (notification != null && android != null) {
+  //   flutterLocalNotificationsPlugin.show(
+  //     notification.hashCode,
+  //     notification.title,
+  //     notification.body,
+  //     NotificationDetails(
+  //       iOS: IOSNotificationDetails(sound: 'slow_spring_board.aiff'),
+  //       android: AndroidNotificationDetails(
+  //           channel.id, channel.name, channel.description,
+  //           importance: Importance.max,
+  //           priority: Priority.high,
+  //           ticker: 'ticker'
+  //         // TODO add a proper drawable resource to android, for now using
+  //         //      one that already exists in example app.
+  //         // icon: 'launch_background',
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 
@@ -74,10 +74,10 @@ Future<void> main() async {
     toast("messageOpened");
   });
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  // await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //         AndroidFlutterLocalNotificationsPlugin>()
+  //     ?.createNotificationChannel(channel);
   //
   // Upgrader().clearSavedSettings(); // REMOVE this for release builds
   load('user_type').then(
