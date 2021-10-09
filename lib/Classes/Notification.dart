@@ -1,10 +1,11 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 // import 'package:timezone/data/latest.dart' as tz;
 import '../main.dart';
 
 class NotificationService {
   static final NotificationService _notificationService =
-  NotificationService._internal();
+      NotificationService._internal();
 
   factory NotificationService() {
     return _notificationService;
@@ -12,29 +13,32 @@ class NotificationService {
 
   NotificationService._internal();
 
-
   Future<void> init() async {
     final AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     final IOSInitializationSettings initializationSettingsIOS =
-    IOSInitializationSettings(
+        IOSInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
       requestAlertPermission: true,
+      defaultPresentAlert: true,
+      defaultPresentSound: true,
+      defaultPresentBadge: true,
       // onDidReceiveLocalNotification: onDidReceiveLocalNotification,
     );
 
     final InitializationSettings initializationSettings =
-    InitializationSettings(
-        android: initializationSettingsAndroid,
-        iOS: initializationSettingsIOS,
-        macOS: null);
-
-    // tz.initializeTimeZones();  // <------
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: selectNotification);
+        // onSelectNotification: selectNotification
+    );
   }
 
+  Future selectNotification(String payload) async {
+    // toast(payload);
+  }
 }

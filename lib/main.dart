@@ -40,7 +40,7 @@ NotificationDetails(android: androidPlatformChannelSpecifics,iOS:iOSPlatformChan
 
 
 Future<void> _messageHandler(RemoteMessage message) async {
-  toast(message.notification.title);
+  // toast(message.notification.title);
   await flutterLocalNotificationsPlugin.show(
       12345,
       message.notification.title,
@@ -49,9 +49,7 @@ Future<void> _messageHandler(RemoteMessage message) async {
       payload: 'data');
 }
 
-Future selectNotification(String payload) async {
-  toast(payload);
-}
+
 
 final routeObserver = RouteObserver<PageRoute>();
 
