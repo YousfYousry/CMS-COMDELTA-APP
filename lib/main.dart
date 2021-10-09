@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/Classes/Notification.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Choices.dart';
@@ -14,48 +15,51 @@ import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
 import 'Widgets/ProgressBars/ProgressBar.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel', // id
-  'High Importance Notifications', // title
-  'This channel is used for important notifications.', // description
-  importance: Importance.max,
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+const AndroidNotificationDetails androidPlatformChannelSpecifics =
+AndroidNotificationDetails(
+    "high_important_channel",
+    "high important notification",
+    channelDescription: "this channel is used for important notifications.",
+    importance: Importance.max,
+    priority: Priority.max
 );
+const IOSNotificationDetails iOSPlatformChannelSpecifics =
+IOSNotificationDetails(
+  presentAlert: true,  // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+  presentBadge: true,  // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+  presentSound: true,  // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+  // sound: String?,  // Specifics the file path to play (only from iOS 10 onwards)
+  // badgeNumber: int?, // The application's icon badge number
+  // attachments: List<IOSNotificationAttachment>?, (only from iOS 10 onwards)
+  // subtitle: String?, //Secondary description  (only from iOS 10 onwards)
+  // threadIdentifier: String? (only from iOS 10 onwards)
+);
+const NotificationDetails platformChannelSpecifics =
+NotificationDetails(android: androidPlatformChannelSpecifics,iOS:iOSPlatformChannelSpecifics ,macOS: null);
+
 
 Future<void> _messageHandler(RemoteMessage message) async {
   toast(message.notification.title);
-  // RemoteNotification notification = message.notification;
-  // AndroidNotification android = message.notification?.android;
-  // if (notification != null && android != null) {
-  //   flutterLocalNotificationsPlugin.show(
-  //     notification.hashCode,
-  //     notification.title,
-  //     notification.body,
-  //     NotificationDetails(
-  //       iOS: IOSNotificationDetails(sound: 'slow_spring_board.aiff'),
-  //       android: AndroidNotificationDetails(
-  //           channel.id, channel.name, channel.description,
-  //           importance: Importance.max,
-  //           priority: Priority.high,
-  //           ticker: 'ticker'
-  //         // TODO add a proper drawable resource to android, for now using
-  //         //      one that already exists in example app.
-  //         // icon: 'launch_background',
-  //       ),
-  //     ),test
-  //   );
-  // }
+  await flutterLocalNotificationsPlugin.show(
+      12345,
+      message.notification.title,
+      message.notification.body,
+      platformChannelSpecifics,
+      payload: 'data');
 }
 
-
+Future selectNotification(String payload) async {
+  toast(payload);
+}
 
 final routeObserver = RouteObserver<PageRoute>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await NotificationService().init(); // <----
+
   //.timeout(Duration(microseconds: 10000),onTimeout: (){
   //   toast("Error initializing google services!");
   //   return;
@@ -63,16 +67,16 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
   FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onMessage.listen(_messageHandler);
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    toast("messageOpened");
-  });
+  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  //   toast("messageOpened");
+  // });
 
   // await flutterLocalNotificationsPlugin
   //     .resolvePlatformSpecificImplementation<
