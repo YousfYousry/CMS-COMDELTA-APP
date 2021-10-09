@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>202244202804-4bvaadn463248op8999esmjgi7edoje7.apps.googleusercontent.com</string>
+	<string>202244202804-5gf718jms314qucr9qe666sj8p2qa4vi.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.202244202804-4bvaadn463248op8999esmjgi7edoje7</string>
+	<string>com.googleusercontent.apps.202244202804-5gf718jms314qucr9qe666sj8p2qa4vi</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAX8r-E3B7iSGZ0hOqjrnnDTpLsJ8YMnxo</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.loginCmsComdelta</string>
+	<string>com.cmscomdelta.ssaol</string>
 	<key>PROJECT_ID</key>
 	<string>cmscomdelata</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:202244202804:ios:6c0fa4c5cbf4f39ab84561</string>
+	<string>1:202244202804:ios:04ab41bdf0ff858ab84561</string>
 </dict>
 </plist>
