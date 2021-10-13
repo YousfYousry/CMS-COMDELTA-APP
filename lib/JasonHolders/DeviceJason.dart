@@ -160,7 +160,6 @@ class DeviceJason {
         date.minute,
         date.second));
   }
-
   //
   // bool activeLastHour() {
   //   DateTime date = DateTime.now();

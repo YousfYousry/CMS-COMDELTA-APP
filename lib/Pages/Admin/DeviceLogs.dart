@@ -15,9 +15,6 @@ import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-// import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,9 +23,7 @@ import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../../Choices.dart';
-// import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 enum Span { def, up, down }
@@ -244,7 +239,7 @@ class DeviceLogs extends StatefulWidget {
 
 class _DeviceLogs extends State<DeviceLogs> {
   TextEditingController searchController = new TextEditingController();
-  bool loading = true, validate = false;
+  bool loading = false, validate = false;
 
   // String searchTerm="";
 
@@ -277,7 +272,7 @@ class _DeviceLogs extends State<DeviceLogs> {
   ScrollController horizontal1;
   ScrollController horizontal2;
 
-  Future<void> setSpans(int index) async{
+  Future<void> setSpans(int index) async {
     bool isUp = (spans[index] != Span.down);
     setState(() {
       _pagingController.itemList.sort((a, b) => isUp
@@ -292,11 +287,9 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   Future<void> filterSearchResults(String query) async {
     bool resultFound = false;
-    var dummySearchList = [];
-    dummySearchList.addAll(allLogs);
     if (query.isNotEmpty) {
       List<LogJason> dummyListData = [];
-      dummySearchList.forEach((item) {
+      allLogs.forEach((item) {
         if (item.isFound(query)) {
           resultFound = true;
           item.setHighLight(query);
@@ -305,36 +298,46 @@ class _DeviceLogs extends State<DeviceLogs> {
       });
       setState(() {
         validate = !resultFound;
-        // logs.clear();
-        // logs.addAll(dummyListData);
         _pagingController.itemList = dummyListData;
       });
-      return;
     } else {
       setState(() {
         validate = false;
+        if(spans[0] != Span.up){
+          allLogs.sort((a, b) =>
+               b.getE(0).compareTo(a.getE(0)));
+          spans[0] = Span.up;
+          for (int i = 1; i < spans.length; i++) {
+            spans[i] = Span.def;
+          }
+        }
         allLogs.forEach((element) => element.setHighLight(''));
         _pagingController.itemList = allLogs;
-        // logs.clear();
-        // logs.forEach((item) => item.setHighLight(''));
+      });
+    }
+  }
+
+  void refresh() {
+    if (!loading) {
+      progress(true);
+      _fetchPage().then((value) {
+        if (loading) {
+          progress(false);
+        }
+        if (allLogs.isEmpty) {
+          toast("No logs are available for this device!");
+        }
       });
     }
   }
 
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) {
-      if (!loading) progress(true);
-      _fetchPage().then((value) {
-      if (loading)  {
-        progress(false);
-      }
-      if(allLogs.isEmpty){
-        toast("No logs are available for this device!");
-      }
-      });
-    });
-
+    refresh();
+    // _pagingController.addPageRequestListener((pageKey) {
+    //
+    // });
+    //
     // _pagingController.addListener(() {
     //
     //
@@ -352,36 +355,20 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   Future<void> _fetchPage() async {
     try {
-      // toast("started");
-      // loading = true;
-
-      // this.duplicateLogs = ;
-      // progress(true);
-      allLogs.addAll(await RemoteApi.getList(widget.device.id));
-      _pagingController.appendLastPage(allLogs);
-      // setState(() {
-      //   this.logs.clear();
-      //   this.logs.addAll(this.duplicateLogs);
-      //   loading = false;
-      // });
-
-      // final newItems = await getAllLogs(pageKey, _pageSize);
-      // toast("finished");
-      // toast(newItems.length.toString());
-      // final isLastPage = newItems.length < _pageSize;
-      // if (isLastPage) {
-      //   _pagingController.appendLastPage(newItems);
-      // } else {
-      //   final nextPageKey = pageKey + newItems.length;
-      //   _pagingController.appendPage(newItems, null);
-      // }
-      // this.logs.addAll(newItems);
-      // this.duplicateLogs.addAll(newItems);
+      allLogs = await RemoteApi.getList(widget.device.id);
+      if(spans[0] != Span.up){
+        allLogs.sort((a, b) =>
+            b.getE(0).compareTo(a.getE(0)));
+        spans[0] = Span.up;
+        for (int i = 1; i < spans.length; i++) {
+          spans[i] = Span.def;
+        }
+      }
+      _pagingController.itemList = allLogs;
     } catch (error) {
       _pagingController.error = error;
       print(error);
     }
-    // progress(false);
   }
 
   @override
@@ -411,14 +398,13 @@ class _DeviceLogs extends State<DeviceLogs> {
               context,
               "Device " + widget.device.id + " Logs",
               showDeviceDetails,
-              _pagingController.refresh,
+              refresh,
               pdf,
               excel),
           preferredSize: const Size.fromHeight(50),
         ),
         // resizeToAvoidBottomInset: false,
         body:
-
             // Stack(
             //   children: [
             Column(
@@ -590,7 +576,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                           children: [
                             RefreshIndicator(
                               onRefresh: () => Future.sync(
-                                () => _pagingController.refresh(),
+                                () => refresh(),
                               ),
                               notificationPredicate:
                                   (ScrollNotification notification) {
@@ -1214,7 +1200,7 @@ class _DeviceLogs extends State<DeviceLogs> {
   // }
 
   Future<void> pdf() async {
-    if(loading){
+    if (loading) {
       toast("Loading, Please be patient!");
       return;
     }
@@ -1304,9 +1290,12 @@ class _DeviceLogs extends State<DeviceLogs> {
         for (int i = 0; i < _pagingController.itemList.length; i++) {
           row = grid.rows.add();
           row.cells[0].value = _pagingController.itemList[i].createDate;
-          row.cells[1].value = _pagingController.itemList[i].ls1.contains("1") ? "ON" : "OFF";
-          row.cells[2].value = _pagingController.itemList[i].ls2.contains("1") ? "ON" : "OFF";
-          row.cells[3].value = _pagingController.itemList[i].ls3.contains("1") ? "ON" : "OFF";
+          row.cells[1].value =
+              _pagingController.itemList[i].ls1.contains("1") ? "ON" : "OFF";
+          row.cells[2].value =
+              _pagingController.itemList[i].ls2.contains("1") ? "ON" : "OFF";
+          row.cells[3].value =
+              _pagingController.itemList[i].ls3.contains("1") ? "ON" : "OFF";
           row.cells[4].value = _pagingController.itemList[i].batteryValue;
           row.cells[5].value = _pagingController.itemList[i].rssiValue;
 
@@ -1486,7 +1475,7 @@ class _DeviceLogs extends State<DeviceLogs> {
   }
 
   Future<void> excel() async {
-    if(loading){
+    if (loading) {
       toast("Loading, Please be patient!");
       return;
     }
@@ -1498,7 +1487,8 @@ class _DeviceLogs extends State<DeviceLogs> {
 
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel(widget.device.id, this._pagingController.itemList, (bool loading) {
+        ExportExcel(widget.device.id, this._pagingController.itemList,
+            (bool loading) {
           setState(() {
             this.loading = loading;
           });
@@ -1518,11 +1508,9 @@ class _DeviceLogs extends State<DeviceLogs> {
   }
 
   String compress(String str) {
-    try{
+    try {
       str = client[int.parse(str) - 1].value;
-    }catch(error){
-
-    }
+    } catch (error) {}
     if (str.toLowerCase().contains("research & development department")) {
       return "R&D";
     } else if (str.toLowerCase().contains("comdelta technologies")) {

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:countup/countup.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
 
+// import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:http/http.dart' as http;
 import 'package:bubbled_navigation_bar/bubbled_navigation_bar.dart';
@@ -20,7 +22,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:intl/intl.dart';
 // import 'package:login_cms_comdelta/Choices.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
+import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/NewDashBoard.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/NewUpdateChecker.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/WidgetSize.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
@@ -35,6 +39,8 @@ import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
+import '../../Choices.dart';
+
 const PrimaryColor = const Color(0xff0065a3);
 
 // final elem = [
@@ -48,7 +54,6 @@ double width, height;
 class DashBoardTest1 extends StatefulWidget {
   DashBoardTest1({Key key, this.title}) : super(key: key);
   final titles = ['Devices', 'Active', 'Inactive', 'Maps'];
-
   final icons = [
     CupertinoIcons.device_phone_portrait,
     CupertinoIcons.antenna_radiowaves_left_right, //lock//lightbulb
@@ -62,10 +67,9 @@ class DashBoardTest1 extends StatefulWidget {
 }
 
 class _DashBoardTest1 extends State<DashBoardTest1>
-    with SingleTickerProviderStateMixin {
-  // bool advancedSearchBool = false;
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   double radius = 80, radius2 = 80;
-
+  StreamSubscription<ConnectivityResult> subscription;
   int activeHours = 72, inActiveHours = 72;
   List<DeviceJason> duplicatedDevices = [];
   List<DeviceJason> activeDevices = [];
@@ -74,8 +78,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   var focusNode;
   bool drawerOpen = false;
   AdvancedSearch advancedSearch;
-
-  // double percent = 0;
 
   String clientAd = "", simProviderAd = "";
   TextEditingController batchNumAd = new TextEditingController(),
@@ -99,7 +101,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
   var icons = [];
 
-  bool loading = true;
+  bool loading = false;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   GoogleMapController mapController;
   final LatLng _center = const LatLng(2.944590144570856, 101.60274569735296);
@@ -111,43 +113,30 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   Animation<double> _animation;
   AnimationController _animationController;
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png')
-        .then((greenIcon) {
-      BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(12, 12)),
-              'assets/image/yellowmarker.png')
-          .then((yellowIcon) {
-        BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(12, 12)),
-                'assets/image/redmarker.png')
-            .then((redIcon) {
-          icons = [greenIcon, yellowIcon, redIcon];
-          getLocations();
-        }).onError((error, stackTrace) {
-          toast(error.toString());
-          setState(() {
-            loading = false;
-          });
-        });
-      }).onError((error, stackTrace) {
-        toast(error.toString());
-        setState(() {
-          loading = false;
-        });
-      });
-    }).onError((error, stackTrace) {
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    try {
+      mapController = controller;
+      final greenIcon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png');
+      final yellowIcon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(12, 12)),
+          'assets/image/yellowmarker.png');
+      final redIcon = await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(12, 12)), 'assets/image/redmarker.png');
+      icons = [greenIcon, yellowIcon, redIcon];
+      await getLocations();
+    } catch (error) {
       toast(error.toString());
-      setState(() {
-        loading = false;
-      });
+    }
+    setState(() {
+      loading = false;
     });
   }
 
   @override
   void initState() {
     focusNode = FocusNode();
-
+    subscription =Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 260),
@@ -162,10 +151,34 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     _pageController = PreloadPageController(
         initialPage: 0, keepPage: false, viewportFraction: 1.0);
     _pageController.addListener(handlePageChange);
+    WidgetsBinding.instance.addObserver(this);
 
     super.initState();
+  }
 
-    // NewUpdateChecker(this.context);
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    if(result==ConnectivityResult.none){
+      toast("internet disconnected");
+    }else{
+       getLocations();
+       client = await RemoteApi.getClientList();
+    }
+  }
+
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    subscription.cancel();
+    super.dispose();
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getLocations();
+    }
   }
 
   void handlePageChange() {
@@ -214,308 +227,322 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
     final containers = [
       Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Container(
-            //   height: width / 2 + 10,
-            //   padding: EdgeInsets.all(5),
-            //   // color: Color(0xf2f0f0f0),
-            //   child: AnimationLimiter(
-            //     child: GridView.count(
-            //       crossAxisCount: 2,
-            //       physics: NeverScrollableScrollPhysics(),
-            //       childAspectRatio: 1,
-            //       children: List.generate(
-            //         2,
-            //         (int index) {
-            //           return AnimationConfiguration.staggeredGrid(
-            //             position: index,
-            //             duration: const Duration(milliseconds: 500),
-            //             columnCount: 1,
-            //             child: ScaleAnimation(
-            //               child: FadeInAnimation(
-            //                 child: Container(
-            //                   height: 70,
-            //                   // decoration: BoxDecoration(
-            //                   //   // color: Colors.white.withOpacity(0.9),
-            //                   //   borderRadius: BorderRadius.circular(20),
-            //                   //   boxShadow: [
-            //                   //     BoxShadow(
-            //                   //         color: Colors.grey.withOpacity(0.5),
-            //                   //         spreadRadius: 1,
-            //                   //         blurRadius: 3,
-            //                   //         offset: Offset(0, 2))
-            //                   //   ],
-            //                   //   color: Colors.white,
-            //                   // ),
-            //                   margin: EdgeInsets.all(5),
-            //                   padding: EdgeInsets.all(10),
-            //                   // color: Colors.white,
-            //                   child: Stack(
-            //                     // crossAxisAlignment: CrossAxisAlignment.center,
-            //                     children: [
-            //                       Align(
-            //                         alignment: Alignment.topCenter,
-            //                         child: Text(
-            //                           elem[index],
-            //                           textAlign: TextAlign.center,
-            //                           style: TextStyle(
-            //                               fontSize: 14, color: Colors.grey),
-            //                         ),
-            //                       ),
-            //                       Align(
-            //                         alignment: Alignment.center,
-            //                         child: Countup(
-            //                           begin: 0,
-            //                           end: values[index],
-            //                           duration: Duration(seconds: 3),
-            //                           separator: ',',
-            //                           style: TextStyle(
-            //                               fontSize: 50,
-            //                               fontWeight: FontWeight.bold,
-            //                               color: Color(0xff0065a3)),
-            //                         ),
-            //                       ),
-            //                     ],
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           );
-            //         },
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            Container(
-              height: 100,
-              margin: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                // color: Colors.white.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-                color: Colors.white,
-              ),
-              child: Stack(
+        child: RefreshIndicator(
+          onRefresh: getLocations,
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        "Total projects",
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: EdgeInsets.all(0),
-                      child: Countup(
-                        begin: 0,
-                        end: values[2],
-                        duration: Duration(seconds: 2),
-                        separator: ',',
-                        style: TextStyle(
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
-                            color: PrimaryColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            WidgetSize(
-              onChange: (Size size) {
-                setState(() {
-                  radius = (size.height-80 < width) ? size.height-80 : width;
-                });
-              },
-              child: Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 35),
-                  margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                  decoration: BoxDecoration(
-                    // color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
+                  // Container(
+                  //   height: width / 2 + 10,
+                  //   padding: EdgeInsets.all(5),
+                  //   // color: Color(0xf2f0f0f0),
+                  //   child: AnimationLimiter(
+                  //     child: GridView.count(
+                  //       crossAxisCount: 2,
+                  //       physics: NeverScrollableScrollPhysics(),
+                  //       childAspectRatio: 1,
+                  //       children: List.generate(
+                  //         2,
+                  //         (int index) {
+                  //           return AnimationConfiguration.staggeredGrid(
+                  //             position: index,
+                  //             duration: const Duration(milliseconds: 500),
+                  //             columnCount: 1,
+                  //             child: ScaleAnimation(
+                  //               child: FadeInAnimation(
+                  //                 child: Container(
+                  //                   height: 70,
+                  //                   // decoration: BoxDecoration(
+                  //                   //   // color: Colors.white.withOpacity(0.9),
+                  //                   //   borderRadius: BorderRadius.circular(20),
+                  //                   //   boxShadow: [
+                  //                   //     BoxShadow(
+                  //                   //         color: Colors.grey.withOpacity(0.5),
+                  //                   //         spreadRadius: 1,
+                  //                   //         blurRadius: 3,
+                  //                   //         offset: Offset(0, 2))
+                  //                   //   ],
+                  //                   //   color: Colors.white,
+                  //                   // ),
+                  //                   margin: EdgeInsets.all(5),
+                  //                   padding: EdgeInsets.all(10),
+                  //                   // color: Colors.white,
+                  //                   child: Stack(
+                  //                     // crossAxisAlignment: CrossAxisAlignment.center,
+                  //                     children: [
+                  //                       Align(
+                  //                         alignment: Alignment.topCenter,
+                  //                         child: Text(
+                  //                           elem[index],
+                  //                           textAlign: TextAlign.center,
+                  //                           style: TextStyle(
+                  //                               fontSize: 14, color: Colors.grey),
+                  //                         ),
+                  //                       ),
+                  //                       Align(
+                  //                         alignment: Alignment.center,
+                  //                         child: Countup(
+                  //                           begin: 0,
+                  //                           end: values[index],
+                  //                           duration: Duration(seconds: 3),
+                  //                           separator: ',',
+                  //                           style: TextStyle(
+                  //                               fontSize: 50,
+                  //                               fontWeight: FontWeight.bold,
+                  //                               color: Color(0xff0065a3)),
+                  //                         ),
+                  //                       ),
+                  //                     ],
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           );
+                  //         },
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  Container(
+                    height: 100,
+                    margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      // color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 1,
                           blurRadius: 3,
-                          offset: Offset(0, 2))
-                    ],
-                    color: Colors.white,
-                  ),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            "Active & Inactive projects",
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black54),
-                          ),
+                          offset: Offset(0, 2),
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          Container(
-                            padding: EdgeInsets.only(bottom: 30, top: 50),
-                            height: radius,
-                            width: radius,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: CircularPercentIndicator(
-                                radius: radius - 80,
-                                animation: true,
-                                animationDuration: 2000,
-                                lineWidth: 20.0,
-                                percent: values[0] / values[2],
-                                center: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Spacer(),
-                                    Countup(
-                                      begin: 0,
-                                      end: values[0],
-                                      duration: Duration(seconds: 2),
-                                      separator: ',',
-                                      style: TextStyle(
-                                          fontSize: 50,
-                                          fontWeight: FontWeight.bold,
-                                          color: PrimaryColor),
-                                    ),
-                                    Countup(
-                                      begin: values[2],
-                                      end: values[1],
-                                      duration: Duration(seconds: 2),
-                                      separator: ',',
-                                      style: TextStyle(
-                                          fontSize: 45,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey),
-                                    ),
-                                    Spacer(),
-                                  ],
-                                ),
-                                circularStrokeCap: CircularStrokeCap.butt,
-                                backgroundColor: Colors.grey,
-                                progressColor: PrimaryColor,
-                              ),
+                      ],
+                      color: Colors.white,
+                    ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              "Total projects",
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.black54),
                             ),
                           ),
-                          Container(
-                            child: Row(
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.all(0),
+                            child: Countup(
+                              begin: 0,
+                              end: values[2],
+                              duration: Duration(seconds: 2),
+                              separator: ',',
+                              style: TextStyle(
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.bold,
+                                  color: PrimaryColor),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  WidgetSize(
+                    onChange: (Size size) {
+                      setState(() {
+                        radius = (size.height - 80 < width)
+                            ? size.height - 80
+                            : width;
+                      });
+                    },
+                    child: Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(bottom: 35),
+                        margin:
+                            EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                        decoration: BoxDecoration(
+                          // color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset: Offset(0, 2))
+                          ],
+                          color: Colors.white,
+                        ),
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  "Active & Inactive projects",
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.black54),
+                                ),
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Spacer(),
-                                Column(
-                                  children: [
-                                    // Container(
-                                    //   width: 20,
-                                    //   height: 15,
-                                    //   child: Align(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     child: CircleAvatar(
-                                    //       backgroundColor: Colors.purple,
-                                    //       radius: 5,
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    Container(
-                                      width: 20,
-                                      height: 15,
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: CircleAvatar(
-                                          backgroundColor: Color(0xff0065a3),
-                                          radius: 5,
-                                        ),
+                                Container(
+                                  padding: EdgeInsets.only(bottom: 30, top: 50),
+                                  height: radius,
+                                  width: radius,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: CircularPercentIndicator(
+                                      radius: radius - 80,
+                                      animation: true,
+                                      animationDuration: 2000,
+                                      lineWidth: 20.0,
+                                      percent: values[0] / values[2],
+                                      center: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Spacer(),
+                                          Countup(
+                                            begin: 0,
+                                            end: values[0],
+                                            duration: Duration(seconds: 2),
+                                            separator: ',',
+                                            style: TextStyle(
+                                                fontSize: 50,
+                                                fontWeight: FontWeight.bold,
+                                                color: PrimaryColor),
+                                          ),
+                                          Countup(
+                                            begin: values[2],
+                                            end: values[1],
+                                            duration: Duration(seconds: 2),
+                                            separator: ',',
+                                            style: TextStyle(
+                                                fontSize: 45,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.grey),
+                                          ),
+                                          Spacer(),
+                                        ],
                                       ),
+                                      circularStrokeCap: CircularStrokeCap.butt,
+                                      backgroundColor: Colors.grey,
+                                      progressColor: PrimaryColor,
                                     ),
-                                    Container(
-                                      width: 20,
-                                      height: 15,
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.grey,
-                                          radius: 5,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    // Container(
-                                    //   height: 15,
-                                    //   child: Align(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     child: Text(
-                                    //       "Total devices",
-                                    //       style: TextStyle(fontSize: 14, color: Colors.grey),
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    Container(
-                                      height: 15,
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          "Active projects last 72 hours",
-                                          style: TextStyle(
-                                              // height: 15,
-                                              fontSize: 14,
-                                              color: Colors.grey),
-                                        ),
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Spacer(),
+                                      Column(
+                                        children: [
+                                          // Container(
+                                          //   width: 20,
+                                          //   height: 15,
+                                          //   child: Align(
+                                          //     alignment: Alignment.centerLeft,
+                                          //     child: CircleAvatar(
+                                          //       backgroundColor: Colors.purple,
+                                          //       radius: 5,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          Container(
+                                            width: 20,
+                                            height: 15,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    Color(0xff0065a3),
+                                                radius: 5,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 20,
+                                            height: 15,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.grey,
+                                                radius: 5,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    Container(
-                                      height: 15,
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          "Inactive projects last 72 hours",
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              // height: 15,
-                                              fontSize: 14,
-                                              color: Colors.grey),
-                                        ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Container(
+                                          //   height: 15,
+                                          //   child: Align(
+                                          //     alignment: Alignment.centerLeft,
+                                          //     child: Text(
+                                          //       "Total devices",
+                                          //       style: TextStyle(fontSize: 14, color: Colors.grey),
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          Container(
+                                            height: 15,
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "Active projects last 72 hours",
+                                                style: TextStyle(
+                                                    // height: 15,
+                                                    fontSize: 14,
+                                                    color: Colors.grey),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 15,
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "Inactive projects last 72 hours",
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(
+                                                    // height: 15,
+                                                    fontSize: 14,
+                                                    color: Colors.grey),
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
+                                      Spacer(),
+                                    ],
+                                  ),
                                 ),
                                 Spacer(),
                               ],
                             ),
-                          ),
-                          Spacer(),
-                        ],
+                          ],
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
+              ListView(),
+            ],
+          ),
         ),
       ),
       Container(
@@ -525,167 +552,179 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             WidgetSize(
               onChange: (Size size) {
                 setState(() {
-                  radius2 = (size.height-50 < width) ? size.height -50: width;
+                  radius2 =
+                      (size.height - 50 < width) ? size.height - 50 : width;
                 });
               },
               child: Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 20),
-                  margin: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    // color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 3,
-                          offset: Offset(0, 2))
-                    ],
-                    color: Colors.white,
-                  ),
+                child: RefreshIndicator(
+                  onRefresh: getLocations,
                   child: Stack(
                     children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            "Active projects",
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black54),
-                          ),
+                      Container(
+                        padding: EdgeInsets.only(bottom: 20),
+                        margin: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          // color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 3,
+                                offset: Offset(0, 2))
+                          ],
+                          color: Colors.white,
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Spacer(),
-                          Container(
-                            padding: EdgeInsets.only(bottom: 20, top: 40),
-                            height: radius2 - 20,
-                            width: radius2,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: CircularPercentIndicator(
-                                radius: radius2 - 80,
-                                animation: true,
-                                animationDuration: 2000,
-                                lineWidth: 20.0,
-                                animateFromLastPercent: true,
-                                percent: values[4] / values[2],
-                                center: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Spacer(),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Spacer(),
-                                        Text(
-                                          "% ",
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              // fontWeight: FontWeight.bold,
-                                              color: Colors.transparent),
-                                        ),
-                                        Countup(
-                                          begin: values[3] / values[2] * 100,
-                                          end: values[4] / values[2] * 100,
-                                          duration: Duration(seconds: 2),
-                                          separator: ',',
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              // fontWeight: FontWeight.bold,
-                                              color: PrimaryColor),
-                                        ),
-                                        Text(
-                                          " %",
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              // fontWeight: FontWeight.bold,
-                                              color: Colors.grey),
-                                        ),
-                                        Spacer(),
-                                      ],
-                                    ),
-                                    Countup(
-                                      begin: values[3],
-                                      end: values[4],
-                                      duration: Duration(seconds: 2),
-                                      separator: ',',
-                                      style: TextStyle(
-                                          fontSize: 50,
-                                          fontWeight: FontWeight.bold,
-                                          color: PrimaryColor),
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Spacer(),
-                                        Text(
-                                          "% ",
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              color: Colors.transparent),
-                                        ),
-                                        Spacer(),
-                                      ],
-                                    ),
-                                    Spacer(),
-                                  ],
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  "Active projects",
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.black54),
                                 ),
-                                circularStrokeCap: CircularStrokeCap.butt,
-                                backgroundColor: Colors.grey,
-                                progressColor: PrimaryColor,
                               ),
                             ),
-                          ),
-                          Container(
-                            child: Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Spacer(),
                                 Container(
-                                  width: 20,
+                                  padding: EdgeInsets.only(bottom: 20, top: 40),
+                                  height: radius2 - 20,
+                                  width: radius2,
                                   child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: CircleAvatar(
-                                      backgroundColor: Color(0xff0065a3),
-                                      radius: 5,
+                                    alignment: Alignment.center,
+                                    child: CircularPercentIndicator(
+                                      radius: radius2 - 80,
+                                      animation: true,
+                                      animationDuration: 2000,
+                                      lineWidth: 20.0,
+                                      animateFromLastPercent: true,
+                                      percent: values[4] / values[2],
+                                      center: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Spacer(),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Spacer(),
+                                              Text(
+                                                "% ",
+                                                style: TextStyle(
+                                                    fontSize: 25,
+                                                    // fontWeight: FontWeight.bold,
+                                                    color: Colors.transparent),
+                                              ),
+                                              Countup(
+                                                begin:
+                                                    values[3] / values[2] * 100,
+                                                end:
+                                                    values[4] / values[2] * 100,
+                                                duration: Duration(seconds: 2),
+                                                separator: ',',
+                                                style: TextStyle(
+                                                    fontSize: 25,
+                                                    // fontWeight: FontWeight.bold,
+                                                    color: PrimaryColor),
+                                              ),
+                                              Text(
+                                                " %",
+                                                style: TextStyle(
+                                                    fontSize: 25,
+                                                    // fontWeight: FontWeight.bold,
+                                                    color: Colors.grey),
+                                              ),
+                                              Spacer(),
+                                            ],
+                                          ),
+                                          Countup(
+                                            begin: values[3],
+                                            end: values[4],
+                                            duration: Duration(seconds: 2),
+                                            separator: ',',
+                                            style: TextStyle(
+                                                fontSize: 50,
+                                                fontWeight: FontWeight.bold,
+                                                color: PrimaryColor),
+                                          ),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Spacer(),
+                                              Text(
+                                                "% ",
+                                                style: TextStyle(
+                                                    fontSize: 25,
+                                                    color: Colors.transparent),
+                                              ),
+                                              Spacer(),
+                                            ],
+                                          ),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                      circularStrokeCap: CircularStrokeCap.butt,
+                                      backgroundColor: Colors.grey,
+                                      progressColor: PrimaryColor,
                                     ),
                                   ),
                                 ),
-                                Text(
-                                  "Active projects last ",
-                                  style: TextStyle(
-                                      // height: 15,
-                                      fontSize: 14,
-                                      color: Colors.grey),
-                                ),
-                                Text(
-                                  activeHours.toString(),
-                                  style: TextStyle(
-                                      // height: 15,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: PrimaryColor),
-                                ),
-                                Text(
-                                  " hours",
-                                  style: TextStyle(
-                                      // height: 15,
-                                      fontSize: 14,
-                                      color: Colors.grey),
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      Spacer(),
+                                      Container(
+                                        width: 20,
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: CircleAvatar(
+                                            backgroundColor: Color(0xff0065a3),
+                                            radius: 5,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Active projects last ",
+                                        style: TextStyle(
+                                            // height: 15,
+                                            fontSize: 14,
+                                            color: Colors.grey),
+                                      ),
+                                      Text(
+                                        activeHours.toString(),
+                                        style: TextStyle(
+                                            // height: 15,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: PrimaryColor),
+                                      ),
+                                      Text(
+                                        " hours",
+                                        style: TextStyle(
+                                            // height: 15,
+                                            fontSize: 14,
+                                            color: Colors.grey),
+                                      ),
+                                      Spacer(),
+                                    ],
+                                  ),
                                 ),
                                 Spacer(),
                               ],
                             ),
-                          ),
-                          Spacer(),
-                        ],
+                          ],
+                        ),
                       ),
+                      ListView(),
                     ],
                   ),
                 ),
@@ -1038,7 +1077,9 @@ class _DashBoardTest1 extends State<DashBoardTest1>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Container(
+              child: RefreshIndicator(
+                onRefresh: getLocations,
+                child: Stack(children: [Container(
                 padding: EdgeInsets.only(bottom: 20),
                 margin: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -1197,7 +1238,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                     ),
                   ],
                 ),
-              ),
+              ),ListView(),],),),
             ),
             Container(
               height: 150,
@@ -1575,7 +1616,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                 },
               ),
               Bubble(
-                title: "Reset",
+                title: "Refresh",
                 iconColor: Colors.white,
                 bubbleColor: PrimaryColor,
                 icon: Icons.refresh,
@@ -1729,6 +1770,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                     child: PreloadPageView.builder(
                       // controller: _pageController,
                       // children: containers.map((Container c) => c).toList(),
+                      // physics: NeverScrollableScrollPhysics(), // add this
                       controller: _pageController,
                       preloadPagesCount: 4,
                       itemCount: 4,
@@ -1750,6 +1792,8 @@ class _DashBoardTest1 extends State<DashBoardTest1>
       ),
     );
   }
+
+  // Future<void> refresh() async {}
 
   void isOpen(bool isOpen) {
     drawerOpen = isOpen;
@@ -1929,14 +1973,14 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     );
   }
 
-  void getLocations() {
+  Future<void> getLocations() async {
+    if(loading) return;
     setState(() {
       loading = true;
     });
-    http
-        .get(Uri.parse(
-            'http://103.18.247.174:8080/AmitProject/getLocations.php'))
-        .then((value) {
+    try {
+      final value = await http.get(
+          Uri.parse('http://103.18.247.174:8080/AmitProject/getLocations.php'));
       List<String> id = [];
       List<String> locationName = [];
       if (value.statusCode == 200) {
@@ -1951,26 +1995,23 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             }
           }
         }
-        getDevices(id, locationName);
+        await getDevices(id, locationName);
       } else {
-        setState(() {
-          loading = false;
-        });
         throw Exception("Unable to get locations");
       }
-    }).onError((error, stackTrace) {
-      setState(() {
-        loading = false;
-      });
+    } catch (error) {
       toast('Error: ' + error.message);
+    }
+
+    setState(() {
+      loading = false;
     });
   }
 
-  void getDevices(List<String> id, List<String> locationName) {
-    http
-        .get(Uri.parse(
-            'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'))
-        .then((value) {
+  Future<void> getDevices(List<String> id, List<String> locationName) async {
+    try {
+      final value = await http.get(Uri.parse(
+          'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'));
       if (value.statusCode == 200) {
         List<DeviceJason> devices = [];
         List<dynamic> values = [];
@@ -1979,10 +2020,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
           setState(() {
             markers.clear();
             positions.clear();
-            double total = 0,
-                // activeLastHour = 0,
-                // inActiveLastHour = 0,
-                inActiveLast72 = 0;
+            double total = 0, inActiveLast72 = 0;
             for (int i = 0; i < values.length; i++) {
               if (values[i] != null) {
                 Map<String, dynamic> map = values[i];
@@ -1992,12 +2030,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                         .elementAt(id.indexOf(map['location_id'].toString())));
                 devices.add(device);
                 total++;
-                // if (device.activeLastHour()) {
-                //   activeLastHour++;
-                // }
-                // if (device.inActiveLast14()) {
-                //   inActiveLastHour++;
-                // }
                 if (device.inActiveLast72()) {
                   inActiveLast72++;
                 }
@@ -2009,9 +2041,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                 }
               }
             }
-            // advancedSearchBool = false;
-            // String str= total.toString();
-            // toast(total.toString());
             this.values[0] = (total - inActiveLast72);
             this.values[1] = inActiveLast72;
             this.values[2] = total;
@@ -2019,7 +2048,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             this.duplicatedDevices.addAll(devices);
             getActive();
             getInactive();
-
             if (positions.isNotEmpty) {
               mapController.animateCamera(
                   CameraUpdate.newLatLngBounds(_bounds(positions), 20));
@@ -2028,26 +2056,17 @@ class _DashBoardTest1 extends State<DashBoardTest1>
               mapController
                   .animateCamera(CameraUpdate.newLatLngZoom(_center, 4));
             }
-            loading = false;
+            // loading = false;
           });
         } else {
-          setState(() {
-            loading = false;
-          });
+          toast("No devices found in the server");
         }
-        // showDevices(devices);
       } else {
-        setState(() {
-          loading = false;
-        });
         throw Exception("Unable to get device list");
       }
-    }).onError((error, stackTrace) {
-      setState(() {
-        loading = false;
-      });
+    } catch (error) {
       toast('Error: ' + error.message);
-    });
+    }
   }
 
   void getActive() {
