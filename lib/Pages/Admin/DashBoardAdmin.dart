@@ -136,7 +136,8 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   @override
   void initState() {
     focusNode = FocusNode();
-    subscription =Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+    subscription =
+        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 260),
@@ -157,14 +158,13 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   }
 
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    if(result==ConnectivityResult.none){
+    if (result == ConnectivityResult.none) {
       toast("internet disconnected");
-    }else{
-       getLocations();
-       client = await RemoteApi.getClientList();
+    } else {
+      getLocations();
+      client = await RemoteApi.getClientList();
     }
   }
-
 
   @override
   void dispose() {
@@ -172,7 +172,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     subscription.cancel();
     super.dispose();
   }
-
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -533,6 +532,9 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                                 Spacer(),
                               ],
                             ),
+                            Loading(
+                              loading: loading,
+                            ),
                           ],
                         ),
                       ),
@@ -720,6 +722,9 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                                 ),
                                 Spacer(),
                               ],
+                            ),
+                            Loading(
+                              loading: loading,
                             ),
                           ],
                         ),
@@ -1079,166 +1084,178 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             Expanded(
               child: RefreshIndicator(
                 onRefresh: getLocations,
-                child: Stack(children: [Container(
-                padding: EdgeInsets.only(bottom: 20),
-                margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  // color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2))
-                  ],
-                  color: Colors.white,
-                ),
                 child: Stack(
                   children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          "Inactive projects",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20),
+                      margin: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        // color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: Offset(0, 2))
+                        ],
+                        color: Colors.white,
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Spacer(),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 20, top: 40),
-                          height: radius2 - 20,
-                          width: radius2,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: CircularPercentIndicator(
-                              radius: radius2 - 80,
-                              animation: true,
-                              animationDuration: 2000,
-                              lineWidth: 20.0,
-                              // startAngle: 180,
-                              animateFromLastPercent: true,
-                              percent: values[6] / values[2],
-                              center: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Spacer(),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Spacer(),
-                                      Text(
-                                        "% ",
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            // fontWeight: FontWeight.bold,
-                                            color: Colors.transparent),
-                                      ),
-                                      Countup(
-                                        begin: values[5] / values[2] * 100,
-                                        end: values[6] / values[2] * 100,
-                                        duration: Duration(seconds: 2),
-                                        separator: ',',
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            // fontWeight: FontWeight.bold,
-                                            color: PrimaryColor),
-                                      ),
-                                      Text(
-                                        " %",
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            // fontWeight: FontWeight.bold,
-                                            color: Colors.grey),
-                                      ),
-                                      Spacer(),
-                                    ],
-                                  ),
-                                  Countup(
-                                    begin: values[5],
-                                    end: values[6],
-                                    duration: Duration(seconds: 2),
-                                    separator: ',',
-                                    style: TextStyle(
-                                        fontSize: 50,
-                                        fontWeight: FontWeight.bold,
-                                        color: PrimaryColor),
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Spacer(),
-                                      Text(
-                                        "% ",
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            color: Colors.transparent),
-                                      ),
-                                      Spacer(),
-                                    ],
-                                  ),
-                                  Spacer(),
-                                ],
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                "Inactive projects",
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.black54),
                               ),
-                              circularStrokeCap: CircularStrokeCap.butt,
-                              backgroundColor: Colors.grey,
-                              progressColor: PrimaryColor,
                             ),
                           ),
-                        ),
-                        Container(
-                          child: Row(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Spacer(),
                               Container(
-                                width: 20,
+                                padding: EdgeInsets.only(bottom: 20, top: 40),
+                                height: radius2 - 20,
+                                width: radius2,
                                 child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CircleAvatar(
-                                    backgroundColor: Color(0xff0065a3),
-                                    radius: 5,
+                                  alignment: Alignment.center,
+                                  child: CircularPercentIndicator(
+                                    radius: radius2 - 80,
+                                    animation: true,
+                                    animationDuration: 2000,
+                                    lineWidth: 20.0,
+                                    // startAngle: 180,
+                                    animateFromLastPercent: true,
+                                    percent: values[6] / values[2],
+                                    center: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Spacer(),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Spacer(),
+                                            Text(
+                                              "% ",
+                                              style: TextStyle(
+                                                  fontSize: 25,
+                                                  // fontWeight: FontWeight.bold,
+                                                  color: Colors.transparent),
+                                            ),
+                                            Countup(
+                                              begin:
+                                                  values[5] / values[2] * 100,
+                                              end: values[6] / values[2] * 100,
+                                              duration: Duration(seconds: 2),
+                                              separator: ',',
+                                              style: TextStyle(
+                                                  fontSize: 25,
+                                                  // fontWeight: FontWeight.bold,
+                                                  color: PrimaryColor),
+                                            ),
+                                            Text(
+                                              " %",
+                                              style: TextStyle(
+                                                  fontSize: 25,
+                                                  // fontWeight: FontWeight.bold,
+                                                  color: Colors.grey),
+                                            ),
+                                            Spacer(),
+                                          ],
+                                        ),
+                                        Countup(
+                                          begin: values[5],
+                                          end: values[6],
+                                          duration: Duration(seconds: 2),
+                                          separator: ',',
+                                          style: TextStyle(
+                                              fontSize: 50,
+                                              fontWeight: FontWeight.bold,
+                                              color: PrimaryColor),
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Spacer(),
+                                            Text(
+                                              "% ",
+                                              style: TextStyle(
+                                                  fontSize: 25,
+                                                  color: Colors.transparent),
+                                            ),
+                                            Spacer(),
+                                          ],
+                                        ),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                    circularStrokeCap: CircularStrokeCap.butt,
+                                    backgroundColor: Colors.grey,
+                                    progressColor: PrimaryColor,
                                   ),
                                 ),
                               ),
-                              Text(
-                                "Inactive projects last ",
-                                style: TextStyle(
-                                    // height: 15,
-                                    fontSize: 14,
-                                    color: Colors.grey),
-                              ),
-                              Text(
-                                inActiveHours.toString(),
-                                style: TextStyle(
-                                    // height: 15,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: PrimaryColor),
-                              ),
-                              Text(
-                                " hours",
-                                style: TextStyle(
-                                    // height: 15,
-                                    fontSize: 14,
-                                    color: Colors.grey),
+                              Container(
+                                child: Row(
+                                  children: [
+                                    Spacer(),
+                                    Container(
+                                      width: 20,
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: CircleAvatar(
+                                          backgroundColor: Color(0xff0065a3),
+                                          radius: 5,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      "Inactive projects last ",
+                                      style: TextStyle(
+                                          // height: 15,
+                                          fontSize: 14,
+                                          color: Colors.grey),
+                                    ),
+                                    Text(
+                                      inActiveHours.toString(),
+                                      style: TextStyle(
+                                          // height: 15,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: PrimaryColor),
+                                    ),
+                                    Text(
+                                      " hours",
+                                      style: TextStyle(
+                                          // height: 15,
+                                          fontSize: 14,
+                                          color: Colors.grey),
+                                    ),
+                                    Spacer(),
+                                  ],
+                                ),
                               ),
                               Spacer(),
                             ],
                           ),
-                        ),
-                        Spacer(),
-                      ],
+                          Loading(
+                            loading: loading,
+                          ),
+                        ],
+                      ),
                     ),
+                    ListView(),
                   ],
                 ),
-              ),ListView(),],),),
+              ),
             ),
             Container(
               height: 150,
@@ -1678,23 +1695,32 @@ class _DashBoardTest1 extends State<DashBoardTest1>
             iconColor: PrimaryColor,
             icon: AnimatedIcons.menu_close,
           ),
-          body: GoogleMap(
-            onTap: (v) => _animationController.reverse(),
-            onMapCreated: _onMapCreated,
-            gestureRecognizers: Set()
-              ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()))
-              ..add(Factory<HorizontalDragGestureRecognizer>(
-                  () => HorizontalDragGestureRecognizer())),
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            rotateGesturesEnabled: false,
-            mapType: mapType,
-            initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: 4,
-            ),
-            markers: Set<Marker>.of(markers.values), // YOUR
+          body: Stack(
+            children: [
+              GoogleMap(
+                onTap: (v) => _animationController.reverse(),
+                onMapCreated: _onMapCreated,
+                gestureRecognizers: Set()
+                  ..add(Factory<PanGestureRecognizer>(
+                      () => PanGestureRecognizer()))
+                  ..add(Factory<HorizontalDragGestureRecognizer>(
+                      () => HorizontalDragGestureRecognizer())),
+                myLocationButtonEnabled: false,
+                mapToolbarEnabled: false,
+                zoomControlsEnabled: false,
+                rotateGesturesEnabled: false,
+                mapType: mapType,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 4,
+                ),
+                markers: Set<Marker>.of(markers.values), // YOUR
+              ),
+              Loading(
+                loading: loading,
+                color: Color(0xFFFFFFFF),
+              ),
+            ],
           ),
         ),
       ),
@@ -1760,34 +1786,36 @@ class _DashBoardTest1 extends State<DashBoardTest1>
           appBar: CostumeAppBar('DASHBOARD'),
           drawer: SideDrawerAdmin(setOpen: isOpen),
           body: WillPopScope(
-              child: Stack(
-                children: [
-                  NotificationListener<ScrollNotification>(
-                    onNotification: (scrollNotification) {
-                      checkUserDragging(scrollNotification);
-                      return;
-                    },
-                    child: PreloadPageView.builder(
-                      // controller: _pageController,
-                      // children: containers.map((Container c) => c).toList(),
-                      // physics: NeverScrollableScrollPhysics(), // add this
-                      controller: _pageController,
-                      preloadPagesCount: 4,
-                      itemCount: 4,
-                      onPageChanged: (page) {
-                        _animationController.reverse();
-                      },
-                      itemBuilder: (BuildContext context, int index) {
-                        return containers[index];
-                      },
-                    ),
-                  ),
-                  Loading(
-                    loading: loading,
-                  ),
-                ],
+            // child: Stack(
+            //   children: [
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                checkUserDragging(scrollNotification);
+                return;
+              },
+              child: PreloadPageView.builder(
+                // controller: _pageController,
+                // children: containers.map((Container c) => c).toList(),
+                // physics: NeverScrollableScrollPhysics(), // add this
+                controller: _pageController,
+                preloadPagesCount: 4,
+                itemCount: 4,
+                onPageChanged: (page) {
+                  _animationController.reverse();
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return containers[index];
+                },
               ),
-              onWillPop: onWillPop),
+            ),
+            // Loading(
+            //   loading: loading,
+            //   color: color,
+            // ),
+            // ],
+            // ),
+            onWillPop: onWillPop,
+          ),
         ),
       ),
     );
@@ -1974,7 +2002,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   }
 
   Future<void> getLocations() async {
-    if(loading) return;
+    if (loading) return;
     setState(() {
       loading = true;
     });

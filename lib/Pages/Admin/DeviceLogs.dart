@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/services.dart';
-
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';

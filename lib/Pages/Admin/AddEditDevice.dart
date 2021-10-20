@@ -123,13 +123,13 @@ class _AddDevice extends State<AddDevice> {
                                 text: 'Quantity',
                                 style: TextStyle(
                                     fontSize: 16.0, color: Colors.black),
-                                children: [
-                                  TextSpan(
-                                    text: ' *',
-                                    style: TextStyle(
-                                        color: Colors.red, fontSize: 16.0),
-                                  ),
-                                ],
+                                // children: [
+                                //   TextSpan(
+                                //     text: ' *',
+                                //     style: TextStyle(
+                                //         color: Colors.red, fontSize: 16.0),
+                                //   ),
+                                // ],
                               ),
                             ),
                             SizedBox(height: 5),
@@ -246,189 +246,221 @@ class _AddDevice extends State<AddDevice> {
                       ),
                       visible: widget.title.contains("Add"),
                     ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Client',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: ' *',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    ModalFilter(clientValue, "Client", client, (val) {
-                      clientValue = val;
-                      setState(() => errorClient = false);
-                    }, 'Please enter Client', errorClient),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Location',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: ' *',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    ModalFilter(locationValue, "Location", location, (val) {
-                      locationValue = val;
-                      setState(() => errorLocation = false);
-                    }, 'Please enter Location', errorLocation),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Device Name',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: ' *',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Client',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: ' *',
+                    //         style: TextStyle(color: Colors.red, fontSize: 16.0),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                        value: clientValue,
+                        title: "Client",
+                        options: client,
+                        passVal: (val) => setState(() {
+                              clientValue = val;
+                              errorClient = false;
+                            }),
+                        errorText: 'Please enter Client',
+                        error: errorClient),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Location',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: ' *',
+                    //         style: TextStyle(color: Colors.red, fontSize: 16.0),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                        value: locationValue,
+                        title: "Location",
+                        options: location,
+                        passVal: (val) => setState(() {
+                              locationValue = val;
+                              errorLocation = false;
+                            }),
+                        errorText: 'Please enter Location',
+                        error: errorLocation),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Device Name',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: ' *',
+                    //         style: TextStyle(color: Colors.red, fontSize: 16.0),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: deviceName,
-                      hintText: 'Device Name',
+                      title: 'Device Name',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Device Detail',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Device Detail',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: deviceDetail,
-                      hintText: 'Device Detail',
+                      title: 'Device Detail',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Latitude',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Latitude',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: latitude,
-                      hintText: 'Latitude',
+                      title: 'Latitude',
                       keyboardType: TextInputType.number,
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Longitude',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Longitude',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: longitude,
-                      hintText: 'Longitude',
+                      title: 'Longitude',
                       keyboardType: TextInputType.number,
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Height',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: ' *',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Height',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: ' *',
+                    //         style: TextStyle(color: Colors.red, fontSize: 16.0),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: heightValue,
+                      title: "Height",
+                      options: height,
+                      passVal: (val) => setState(() => heightValue = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(heightValue, "Height", height,
-                        (val) => heightValue = val, '', false),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Activation Date',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Activation Date',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartDate(
                       controller: activationDate,
                       hintText: 'Activation Date',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Site Region',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Site Region',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: siteRegionValue,
+                      title: "Site Region",
+                      options: siteRegion,
+                      passVal: (val) => setState(() => siteRegionValue = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(siteRegionValue, "Site Region", siteRegion,
-                        (val) => siteRegionValue = val, '', false),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Client Batch Number',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Client Batch Number',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: batchNum,
-                      hintText: 'Client Batch Number',
+                      title: 'Client Batch Number',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Sim serial Number',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Sim serial Number',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: serialNum,
-                      hintText: 'Sim serial Number',
+                      title: 'Sim serial Number',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Sim Provider',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Sim Provider',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: simProvider,
+                      title: "Sim Provider",
+                      options: simCardProvider,
+                      passVal: (val) => setState(() => simProvider = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(simProvider, "Sim Provider", simCardProvider,
-                        (val) => simProvider = val, '', false),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Battery Status',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Battery Status',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: batteryStatus,
+                      title: "Battery Status",
+                      options: status,
+                      passVal: (val) => setState(() => batteryStatus = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(batteryStatus, "Battery Status", status,
-                        (val) => batteryStatus = val, '', false),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'RSSI Status',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'RSSI Status',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: rssiStatus,
+                      title: "RSSI Status",
+                      options: status,
+                      passVal: (val) => setState(() => rssiStatus = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(rssiStatus, "RSSI Status", status,
-                        (val) => rssiStatus = val, '', false),
                     SizedBox(height: 70),
                   ],
                 ),

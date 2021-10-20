@@ -8,13 +8,8 @@ import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:path_provider/path_provider.dart';
-
-// import 'package:pdf/pdf.dart';
 import 'dart:io';
 import 'package:open_file/open_file.dart';
-
-// import 'package:pdf/widgets.dart' as pw;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -29,17 +24,17 @@ import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
-
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-// import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:math' as math;
 
+// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
+// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
+// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
+// import 'package:permission_handler/permission_handler.dart';
+// import 'package:pdf/widgets.dart' as pw;
+// import 'package:pdf/pdf.dart';
 // import '../../Choices.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
@@ -48,6 +43,7 @@ class ManageDevice extends StatefulWidget {
   @override
   _ManageDevice createState() => _ManageDevice();
 }
+
 //
 // var spanUp = WidgetSpan(
 //       child: Padding(
@@ -78,8 +74,6 @@ class ManageDevice extends StatefulWidget {
 //             color: Colors.grey,
 //           )),
 //     );
-
-
 class SpanUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -127,6 +121,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   bool loading = true, validate = false;
   int sortState = 1;
   Snack deleteSnack;
+  String resNum="0";
+  int index = 0;
+  var title = ["All Devices", "Failed Devices", "Filtered Devices"];
 
   AdvancedSearch advancedSearch;
 
@@ -135,63 +132,65 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   //     activationFromAd = new TextEditingController(),
   //     activationToAd = new TextEditingController(),
   //     lastSignalAd = new TextEditingController();
-
   // var span1 = SpanUp, span2 = SpanDefault, span3 = SpanDefault;
-  var spans = [
-  Span.up,
-  Span.def,
-  Span.def
-  ];
+
+  var spans = [Span.up, Span.def, Span.def];
 
   final PagingController<int, DeviceJason> _pagingController =
-  PagingController(firstPageKey: 0);
+      PagingController(firstPageKey: 0);
 
   // List<DeviceJason> devices = [];
   List<DeviceJason> duplicateDevices = [];
 
-  Future<void> _sort1() async{
+  Future<void> _sort1() async {
     if (spans[0] != Span.down) {
       sortState = 0;
-      _pagingController.itemList.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+      _pagingController.itemList
+          .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
       spans[0] = Span.down;
     } else {
       sortState = 1;
-      _pagingController.itemList.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+      _pagingController.itemList
+          .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
       spans[0] = Span.up;
     }
     spans[1] = Span.def;
     spans[2] = Span.def;
   }
 
-  Future<void> _sort2() async{
+  Future<void> _sort2() async {
     if (spans[1] != Span.down) {
       sortState = 2;
-      _pagingController.itemList.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+      _pagingController.itemList
+          .sort((a, b) => a.deviceName.compareTo(b.deviceName));
       spans[1] = Span.down;
     } else {
       sortState = 3;
-      _pagingController.itemList.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+      _pagingController.itemList
+          .sort((a, b) => b.deviceName.compareTo(a.deviceName));
       spans[1] = Span.up;
     }
     spans[0] = Span.def;
     spans[2] = Span.def;
   }
 
-  Future<void> _sort3() async{
+  Future<void> _sort3() async {
     if (spans[2] != Span.down) {
       sortState = 4;
-      _pagingController.itemList.sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+      _pagingController.itemList
+          .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
       spans[2] = Span.down;
     } else {
       sortState = 5;
-      _pagingController.itemList.sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      _pagingController.itemList
+          .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
       spans[2] = Span.up;
     }
     spans[0] = Span.def;
     spans[1] = Span.def;
   }
 
-  Future<void> filterSearchResults(String query) async{
+  Future<void> filterSearchResults(String query) async {
     bool resultFound = false;
     var dummySearchList = [];
     dummySearchList.addAll(duplicateDevices);
@@ -208,6 +207,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       });
       setState(() {
         validate = !resultFound;
+        resNum = dummyListData.length.toString();
         // devices.clear();
         _pagingController.itemList = dummyListData;
       });
@@ -220,6 +220,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         spans[2] = Span.def;
         duplicateDevices.forEach((element) => element.setHighLight(''));
         _pagingController.itemList = duplicateDevices;
+        resNum = duplicateDevices.length.toString();
         // devices.clear();
         // devices.addAll(duplicateDevices);
         // devices.forEach((item) => item.setHighLight(''));
@@ -244,14 +245,13 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      getLocations();
+      refresh();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (advancedSearch == null)
-      advancedSearch = AdvancedSearch(context, getLocations, searchController);
+    if (advancedSearch == null) advancedSearch = AdvancedSearch(context, getLocations, searchController);
     deleteSnack = new Snack(this.context, "Deleting...", 100);
     return GestureDetector(
       onTap: () {
@@ -265,13 +265,15 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
           child: ManageDevicesAppBar(
-              context,
-              "Manage Device",
-              addDevice,
-              exportPDF,
-              exportExcel,
-              advancedSearch.show,
-              advancedSearch.reset),
+            context,
+            title[index],
+            addDevice,
+            exportPDF,
+            exportExcel,
+            allDevices,
+            failedDevices,
+            advancedSearch.show,
+          ),
           preferredSize: const Size.fromHeight(50),
         ),
         // floatingActionButton: FloatingActionButton(
@@ -282,379 +284,392 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         //   backgroundColor: Color(0xff0065a3),
         // ),
         // drawer: SideDrawerAdmin(),
-        resizeToAvoidBottomInset: false,
+        // resizeToAvoidBottomInset: false,
         body:
-        // Stack(
-        //   children: [
+            // Stack(
+            //   children: [
             Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: TextField(
-                    onChanged: (text) {
-                      filterSearchResults(text);
-                    },
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      errorText: validate ? 'No result was found' : null,
-                      labelText: "Search",
-                      hintText: "Search",
-                      contentPadding: EdgeInsets.all(20.0),
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                onChanged: (text) {
+                  filterSearchResults(text);
+                },
+                controller: searchController,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  errorText: validate ? 'No result was found' : null,
+                  labelText: "Search ("+resNum+" results)",
+                  hintText: "Enter ID or Name or Location",
+                  contentPadding: EdgeInsets.all(10.0),
+                  prefixIcon: Icon(Icons.search),
+                  suffixIcon: searchController.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () => setState(() {
+                            searchController.clear();
+                            filterSearchResults("");
+                            FocusScopeNode currentFocus = FocusScope.of(context);
+                            if (!currentFocus.hasPrimaryFocus &&
+                                currentFocus.focusedChild != null) {
+                              FocusManager.instance.primaryFocus.unfocus();
+                            }
+                          }),
+                        ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(0),
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, bottom: 20.0),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.grey),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 30,
+                      color: Colors.black12,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _sort1();
+                                });
+                              },
+                              child: MiddleLeft(Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(text: 'ID'),
+                                      WidgetSpan(
+                                          child: (spans[0] == Span.def)
+                                              ? SpanDefault()
+                                              : (spans[0] == Span.up)
+                                                  ? SpanUp()
+                                                  : SpanDown()),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                            ),
+                          ),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: Colors.grey,
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _sort2();
+                                });
+                              },
+                              child: MiddleLeft(Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(text: 'Device Name'),
+                                      WidgetSpan(
+                                          child: (spans[1] == Span.def)
+                                              ? SpanDefault()
+                                              : (spans[1] == Span.up)
+                                                  ? SpanUp()
+                                                  : SpanDown()),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                            ),
+                          ),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: Colors.grey,
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _sort3();
+                                });
+                              },
+                              child: MiddleLeft(Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                    children: [
+                                      TextSpan(text: 'Location'),
+                                      WidgetSpan(
+                                          child: (spans[2] == Span.def)
+                                              ? SpanDefault()
+                                              : (spans[2] == Span.up)
+                                                  ? SpanUp()
+                                                  : SpanDown()),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 1,
+                      width: double.infinity,
+                      color: Colors.grey,
+                    ),
+                    Expanded(
+                      child: Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: new BoxDecoration(color: Colors.white),
+                        child: Stack(
+                          children: [
+                            RefreshIndicator(
+                              onRefresh: () => Future.sync(
+                                () => refresh(),
+                              ),
+                              child: PagedListView<int, DeviceJason>(
+                                physics: AlwaysScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                pagingController: _pagingController,
+                                builderDelegate:
+                                    PagedChildBuilderDelegate<DeviceJason>(
+                                  firstPageErrorIndicatorBuilder: (_) =>
+                                      SizedBox(),
+                                  newPageErrorIndicatorBuilder: (_) =>
+                                      SizedBox(),
+                                  firstPageProgressIndicatorBuilder: (_) =>
+                                      SizedBox(),
+                                  newPageProgressIndicatorBuilder: (_) =>
+                                      SizedBox(),
+                                  noItemsFoundIndicatorBuilder: (_) =>
+                                      SizedBox(),
+                                  noMoreItemsIndicatorBuilder: (_) =>
+                                      SizedBox(),
+                                  animateTransitions: true,
+                                  itemBuilder: (context, item, index) =>
+                                      Slidable(
+                                    actionPane: SlidableDrawerActionPane(),
+                                    actionExtentRatio: 0.20,
+                                    child: new Column(
+                                      children: [
+                                        Material(
+                                          color: (index % 2 == 0)
+                                              ? Colors.white
+                                              : Color(0xf1f1f1f1),
+                                          child: InkWell(
+                                            onTap: () {
+                                              ShowDevice(context, item);
+                                            },
+                                            child: Container(
+                                              height: 40,
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 10),
+                                                      child: SubstringHighlight(
+                                                        text: item.id,
+                                                        term: item.highLight,
+                                                        textStyleHighlight:
+                                                            TextStyle(
+                                                          fontSize: 13,
+                                                          color: Colors.red,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        textStyle: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+
+                                                      // Text(
+                                                      //   ID,
+                                                      //   textAlign: TextAlign.left,
+                                                      //   style: TextStyle(fontSize: 12),
+                                                      // ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 40,
+                                                    width: 1,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  Expanded(
+                                                    flex: 4,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 10),
+                                                      child: SubstringHighlight(
+                                                        text: item.deviceName,
+                                                        term: item.highLight,
+                                                        textStyleHighlight:
+                                                            TextStyle(
+                                                          fontSize: 13,
+                                                          color: Colors.red,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        textStyle: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      // Text(
+                                                      //   Details,
+                                                      //   textAlign: TextAlign.left,
+                                                      //   style: TextStyle(fontSize: 12),
+                                                      // ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 40,
+                                                    width: 1,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  Expanded(
+                                                    flex: 2,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 10),
+                                                      child: SubstringHighlight(
+                                                        text:
+                                                            item.deviceLocation,
+                                                        term: item.highLight,
+                                                        textStyleHighlight:
+                                                            TextStyle(
+                                                          fontSize: 13,
+                                                          color: Colors.red,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        textStyle: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      // Text(
+                                                      //   Location,
+                                                      //   textAlign: TextAlign.left,
+                                                      //   style: TextStyle(fontSize: 12),
+                                                      // ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          height: 1,
+                                          width: double.infinity,
+                                          color: Colors.grey,
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      new IconSlideAction(
+                                        caption: 'Logs',
+                                        color: Color(0xffFFB61E),
+                                        icon: Icons.signal_cellular_alt,
+                                        onTap: () => deviceLogs(item),
+                                      ),
+                                      new IconSlideAction(
+                                        caption: 'Download',
+                                        color: Colors.green,
+                                        icon: Icons.download,
+                                        onTap: () => downloadLogs(item.id),
+                                      ),
+                                    ],
+                                    secondaryActions: <Widget>[
+                                      new IconSlideAction(
+                                        caption: 'Edit',
+                                        color: Color(0xff62D0F1),
+                                        icon: Icons.edit,
+                                        onTap: () => editDevice(item),
+                                      ),
+                                      new IconSlideAction(
+                                        caption: 'Delete',
+                                        color: Color(0xffE5343D),
+                                        icon: Icons.delete,
+                                        onTap: () {
+                                          AwesomeDialog(
+                                            context: context,
+                                            dialogType: DialogType.WARNING,
+                                            animType: AnimType.BOTTOMSLIDE,
+                                            title: 'Delete Device',
+                                            desc:
+                                                'Do you really want to delete ' +
+                                                    item.deviceName,
+                                            btnCancelOnPress: () {},
+                                            btnOkOnPress: () {
+                                              deleteSnack.show();
+                                              sendDeleteReq(item.id);
+                                            },
+                                          )..show();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Loading(
+                                loading: loading,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, bottom: 20.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.grey),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 30,
-                          color: Colors.black12,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _sort1();
-                                    });
-                                  },
-                                  child: MiddleLeft(Padding(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                        children: [
-                                          TextSpan(text: 'ID'),
-                                          WidgetSpan(
-                                              child: (spans[0] == Span.def)
-                                                  ? SpanDefault()
-                                                  : (spans[0] == Span.up)
-                                                  ? SpanUp()
-                                                  : SpanDown()),
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-                                ),
-                              ),
-                              Container(
-                                height: 30,
-                                width: 1,
-                                color: Colors.grey,
-                              ),
-                              Expanded(
-                                flex: 4,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _sort2();
-                                    });
-                                  },
-                                  child: MiddleLeft(Padding(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                        children: [
-                                          TextSpan(text: 'Device Name'),
-                                          WidgetSpan(
-                                              child: (spans[1] == Span.def)
-                                                  ? SpanDefault()
-                                                  : (spans[1] == Span.up)
-                                                  ? SpanUp()
-                                                  : SpanDown()),
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-                                ),
-                              ),
-                              Container(
-                                height: 30,
-                                width: 1,
-                                color: Colors.grey,
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _sort3();
-                                    });
-                                  },
-                                  child: MiddleLeft(Padding(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                        children: [
-                                          TextSpan(text: 'Location'),
-                                          WidgetSpan(
-                                              child: (spans[2] == Span.def)
-                                                  ? SpanDefault()
-                                                  : (spans[2] == Span.up)
-                                                  ? SpanUp()
-                                                  : SpanDown()),
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: 1,
-                          width: double.infinity,
-                          color: Colors.grey,
-                        ),
-                        Expanded(
-                          child: Container(
-                            clipBehavior: Clip.hardEdge,
-                            decoration: new BoxDecoration(color: Colors.white),
-                            child:Stack(
-                              children: [
-                                RefreshIndicator(
-                                  onRefresh: () => Future.sync(
-                                        () => getLocations(),
-                                  ),
-                                  child: PagedListView<int, DeviceJason>(
-                                    physics:
-                                    AlwaysScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    pagingController: _pagingController,
-                                    builderDelegate:
-                                    PagedChildBuilderDelegate<
-                                        DeviceJason>(
-                                      firstPageErrorIndicatorBuilder:
-                                          (_) => SizedBox(),
-                                      newPageErrorIndicatorBuilder:
-                                          (_) => SizedBox(),
-                                      firstPageProgressIndicatorBuilder:
-                                          (_) => SizedBox(),
-                                      newPageProgressIndicatorBuilder:
-                                          (_) => SizedBox(),
-                                      noItemsFoundIndicatorBuilder:
-                                          (_) => SizedBox(),
-                                      noMoreItemsIndicatorBuilder:
-                                          (_) => SizedBox(),
-                                      animateTransitions: true,
-                                      itemBuilder:
-                                          (context, item, index) => Slidable(
-                                        actionPane: SlidableDrawerActionPane(),
-                                        actionExtentRatio: 0.20,
-                                        child: new Column(
-                                          children: [
-                                            Material(
-                                              color: (index % 2 == 0)
-                                                  ? Colors.white
-                                                  : Color(0xf1f1f1f1),
-                                              child: InkWell(
-                                                onTap: () {
-                                                  ShowDevice(context, item);
-                                                },
-                                                child: Container(
-                                                  height: 40,
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Padding(
-                                                          padding: EdgeInsets.only(
-                                                              left: 10),
-                                                          child: SubstringHighlight(
-                                                            text: item.id,
-                                                            term: item
-                                                                .highLight,
-                                                            textStyleHighlight:
-                                                            TextStyle(
-                                                              fontSize: 13,
-                                                              color: Colors.red,
-                                                              fontWeight:
-                                                              FontWeight.bold,
-                                                            ),
-                                                            textStyle: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors.black,
-                                                            ),
-                                                          ),
-
-                                                          // Text(
-                                                          //   ID,
-                                                          //   textAlign: TextAlign.left,
-                                                          //   style: TextStyle(fontSize: 12),
-                                                          // ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        height: 40,
-                                                        width: 1,
-                                                        color: Colors.grey,
-                                                      ),
-                                                      Expanded(
-                                                        flex: 4,
-                                                        child: Padding(
-                                                          padding: EdgeInsets.only(
-                                                              left: 10),
-                                                          child: SubstringHighlight(
-                                                            text: item
-                                                                .deviceName,
-                                                            term: item
-                                                                .highLight,
-                                                            textStyleHighlight:
-                                                            TextStyle(
-                                                              fontSize: 13,
-                                                              color: Colors.red,
-                                                              fontWeight:
-                                                              FontWeight.bold,
-                                                            ),
-                                                            textStyle: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors.black,
-                                                            ),
-                                                          ),
-                                                          // Text(
-                                                          //   Details,
-                                                          //   textAlign: TextAlign.left,
-                                                          //   style: TextStyle(fontSize: 12),
-                                                          // ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        height: 40,
-                                                        width: 1,
-                                                        color: Colors.grey,
-                                                      ),
-                                                      Expanded(
-                                                        flex: 2,
-                                                        child: Padding(
-                                                          padding: EdgeInsets.only(
-                                                              left: 10),
-                                                          child: SubstringHighlight(
-                                                            text: item
-                                                                .deviceLocation,
-                                                            term: item
-                                                                .highLight,
-                                                            textStyleHighlight:
-                                                            TextStyle(
-                                                              fontSize: 13,
-                                                              color: Colors.red,
-                                                              fontWeight:
-                                                              FontWeight.bold,
-                                                            ),
-                                                            textStyle: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors.black,
-                                                            ),
-                                                          ),
-                                                          // Text(
-                                                          //   Location,
-                                                          //   textAlign: TextAlign.left,
-                                                          //   style: TextStyle(fontSize: 12),
-                                                          // ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              height: 1,
-                                              width: double.infinity,
-                                              color: Colors.grey,
-                                            ),
-                                          ],
-                                        ),
-                                        actions: [
-                                          new IconSlideAction(
-                                            caption: 'Logs',
-                                            color: Color(0xffFFB61E),
-                                            icon: Icons.signal_cellular_alt,
-                                            onTap: () => deviceLogs(item),
-                                          ),
-                                          new IconSlideAction(
-                                            caption: 'Download',
-                                            color: Colors.green,
-                                            icon: Icons.download,
-                                            onTap: () => downloadLogs(item.id),
-                                          ),
-                                        ],
-                                        secondaryActions: <Widget>[
-                                          new IconSlideAction(
-                                            caption: 'Edit',
-                                            color: Color(0xff62D0F1),
-                                            icon: Icons.edit,
-                                            onTap: () => editDevice(item),
-                                          ),
-                                          new IconSlideAction(
-                                            caption: 'Delete',
-                                            color: Color(0xffE5343D),
-                                            icon: Icons.delete,
-                                            onTap: () {
-                                              AwesomeDialog(
-                                                context: context,
-                                                dialogType: DialogType.WARNING,
-                                                animType: AnimType.BOTTOMSLIDE,
-                                                title: 'Delete Device',
-                                                desc:
-                                                'Do you really want to delete ' +
-                                                    item.deviceName,
-                                                btnCancelOnPress: () {},
-                                                btnOkOnPress: () {
-                                                  deleteSnack.show();
-                                                  sendDeleteReq(item.id);
-                                                },
-                                              )..show();
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      ),
-                                  ),
-                                ),
-                                Center(
-                                  child: Loading(
-                                    loading: loading,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
+          ],
+        ),
         //   ],
         // ),
       ),
@@ -667,7 +682,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       SizeRoute(
         page: AddDevice("Edit Device", deviceJason),
       ),
-    ).then((value) => getLocations());
+    ).then((value) => refresh());
   }
 
   void addDevice() {
@@ -676,7 +691,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
       SizeRoute(
         page: AddDevice("Add Device", null),
       ),
-    ).then((value) => getLocations());
+    ).then((value) => refresh());
   }
 
   void deviceLogs(DeviceJason device) {
@@ -689,7 +704,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   }
 
   Future<void> exportPDF() async {
-    if(loading){
+    if (loading) {
       toast("Loading, Please be patient!");
       return;
     }
@@ -858,24 +873,26 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
             Rect.fromLTWH(
                 40, 40, (width / 7) * 2.181818181818181818182, width / 7));
 
-        graphics.drawString('DEVICE DETAILS – For company purpose', fontTitle,
-            brush: PdfBrushes.black,
-            bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
-            format: PdfStringFormat(
-              alignment: PdfTextAlignment.left,
-            ));
+        graphics.drawString(
+          'DEVICE DETAILS – For company purpose',
+          fontTitle,
+          brush: PdfBrushes.black,
+          bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
+          format: PdfStringFormat(
+            alignment: PdfTextAlignment.left,
+          ),
+        );
 
         graphics.drawString(
-            'Date of generated: ' +
-                DateFormat('dd MMM yyyy').format(DateTime.now()),
-            font,
-            brush: PdfBrushes.black,
-            bounds: Rect.fromLTWH(width - 40, 40 + width / 7 + 10, 0, 0),
-            format: PdfStringFormat(
-              alignment: PdfTextAlignment.right,
-            ));
-
-
+          'Date of generated: ' +
+              DateFormat('dd MMM yyyy').format(DateTime.now()),
+          font,
+          brush: PdfBrushes.black,
+          bounds: Rect.fromLTWH(width - 40, 40 + width / 7 + 10, 0, 0),
+          format: PdfStringFormat(
+            alignment: PdfTextAlignment.right,
+          ),
+        );
 
         saveAndLaunchFile(document, 'Device List.pdf');
       } else if (value.isPermanentlyDenied) {
@@ -892,13 +909,14 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> downloadLogs(String id) async{
+  Future<void> downloadLogs(String id) async {
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
         toast('Downloading');
         progressBar(true);
         http.post(
-            Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
+            Uri.parse(
+                'http://103.18.247.174:8080/AmitProject/admin/getLogs.php'),
             body: {
               'device_id': id,
             }).then((value) {
@@ -911,11 +929,11 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
               for (int i = 0; i < values.length; i++) {
                 if (values[i] != null) {
                   Map<String, dynamic> map = values[i];
-                  logs.add(LogJason.fromJson(map,""));
+                  logs.add(LogJason.fromJson(map, ""));
                 }
               }
             }
-            ExportExcel(id,logs,progressBar);
+            ExportExcel(id, logs, progressBar);
           } else {
             progressBar(false);
             throw Exception("Unable to get Log list");
@@ -939,14 +957,14 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   }
 
   Future<void> exportExcel() async {
-    if(loading){
+    if (loading) {
       toast("Loading, Please be patient!");
       return;
     }
 
     await Permission.storage.request().then((value) async {
       if (value.isGranted) {
-        ExportExcel("Device List",_pagingController.itemList, progressBar);
+        ExportExcel("Device List", _pagingController.itemList, progressBar);
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
         await openAppSettings();
@@ -976,8 +994,9 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     List<int> bytes = document.save();
     document.dispose();
     final String path = (await getApplicationSupportDirectory()).path;
-    final String fileName =
-    Platform.isWindows ? '$path\\'+name.toString() : '$path/'+name.toString();
+    final String fileName = Platform.isWindows
+        ? '$path\\' + name.toString()
+        : '$path/' + name.toString();
     final File file = File(fileName);
     await file.writeAsBytes(bytes, flush: true);
     OpenFile.open(fileName);
@@ -1164,7 +1183,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         String body = json.decode(response.body);
         if (body == '0') {
           toast("Device has been deleted successfully");
-          getLocations();
+          refresh();
         } else {
           toast("Something wrong with the server");
           print(body);
@@ -1174,11 +1193,108 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         print(response.body);
       }
       deleteSnack.hide();
-      getLocations();
+      refresh();
     }).onError((error, stackTrace) {
       deleteSnack.hide();
-      getLocations();
+      refresh();
       toast('Error: ' + error.message);
+    });
+  }
+
+  void refresh(){
+    if(index==1){
+      failedDevices();
+    }else{
+      getLocations();
+    }
+  }
+
+  void allDevices() {
+    advancedSearch.reset();
+    advancedSearch.advancedSearchBool = false;
+    getLocations();
+  }
+
+  Future<void> failedDevices() async {
+    setState(() {
+      loading = true;
+      validate = false;
+    });
+
+    try {
+      final value = await http.get(
+          Uri.parse('http://103.18.247.174:8080/AmitProject/getLocations.php'));
+      List<String> id = [];
+      List<String> locationName = [];
+      if (value.statusCode == 200) {
+        List<dynamic> values = [];
+        values = json.decode(value.body);
+        if (values.length > 0) {
+          for (int i = 0; i < values.length; i++) {
+            if (values[i] != null) {
+              Map<String, dynamic> map = values[i];
+              id.add(map['location_id'].toString());
+              locationName.add(map['location_name'].toString());
+            }
+          }
+        }
+
+        final value2 = await http.get(Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'));
+
+        if (value2.statusCode == 200) {
+          List<DeviceJason> devices = [];
+          this.duplicateDevices.clear();
+
+          List<dynamic> values = [];
+          values = json.decode(value2.body);
+          setState(() {
+            index = 1;
+          });
+
+          if (values.length > 0) {
+            for (int i = 0; i < values.length; i++) {
+              if (values[i] != null) {
+                Map<String, dynamic> map = values[i];
+                String query = searchController.text;
+                DeviceJason device = DeviceJason.fromJson(
+                    map,
+                    locationName
+                        .elementAt(id.indexOf(map['location_id'].toString())));
+
+                if (device.inActiveLast72()) {
+                  if (query.isNotEmpty) {
+                    if (device.id.toLowerCase().contains(query.toLowerCase()) ||
+                        device.deviceName
+                            .toLowerCase()
+                            .contains(query.toLowerCase()) ||
+                        device.deviceLocation
+                            .toLowerCase()
+                            .contains(query.toLowerCase())) {
+                      device.setHighLight(query);
+                      devices.add(device);
+                    }
+                    this.duplicateDevices.add(device);
+                  } else {
+                    devices.add(device);
+                    this.duplicateDevices.add(device);
+                  }
+                }
+              }
+            }
+          }
+          showDevices(devices);
+        } else {
+          toast("Unable to get device list");
+        }
+      } else {
+        toast("Unable to get locations");
+      }
+    } catch (error) {
+      toast(error);
+    }
+    setState(() {
+      loading = false;
     });
   }
 
@@ -1231,6 +1347,13 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
         List<dynamic> values = [];
         values = json.decode(value.body);
+        setState(() {
+          if (advancedSearch.advancedSearchBool) {
+            index = 2;
+          } else {
+            index = 0;
+          }
+        });
 
         if (values.length > 0) {
           for (int i = 0; i < values.length; i++) {
@@ -1254,7 +1377,6 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                     device.setHighLight(query);
                     devices.add(device);
                   }
-
                   this.duplicateDevices.add(device);
                 } else {
                   devices.add(device);
@@ -1281,25 +1403,29 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   void showDevices(List<DeviceJason> devices) {
     setState(() {
-      // this.devices.clear();
-      _pagingController.itemList=devices;
+      resNum=devices.length.toString();
+      _pagingController.itemList = devices;
       if (sortState == 0) {
-        _pagingController.itemList.sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+        _pagingController.itemList
+            .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
         this
             .duplicateDevices
             .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
       } else if (sortState == 1) {
-        _pagingController.itemList.sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+        _pagingController.itemList
+            .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
         this
             .duplicateDevices
             .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
       } else if (sortState == 2) {
-        _pagingController.itemList.sort((a, b) => a.deviceName.compareTo(b.deviceName));
+        _pagingController.itemList
+            .sort((a, b) => a.deviceName.compareTo(b.deviceName));
         this
             .duplicateDevices
             .sort((a, b) => a.deviceName.compareTo(b.deviceName));
       } else if (sortState == 3) {
-        _pagingController.itemList.sort((a, b) => b.deviceName.compareTo(a.deviceName));
+        _pagingController.itemList
+            .sort((a, b) => b.deviceName.compareTo(a.deviceName));
         this
             .duplicateDevices
             .sort((a, b) => b.deviceName.compareTo(a.deviceName));

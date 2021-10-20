@@ -90,12 +90,17 @@ List<S2Choice<String>> siteRegion = [
 List<S2Choice<String>> simCardProvider = [
   S2Choice<String>(value: 'Celcom', title: 'Celcom'),
   S2Choice<String>(value: 'Maxis', title: 'Maxis'),
-  S2Choice<String>(value: 'Things Mobile', title: 'Things Mobile'),
+  S2Choice<String>(value: 'ThingsMobile', title: 'ThingsMobile'),
 ];
 
 List<S2Choice<String>> status = [
   S2Choice<String>(value: 'Inactive', title: 'Inactive'),
   S2Choice<String>(value: 'Active', title: 'Active'),
+];
+
+List<S2Choice<String>> deviceStatus = [
+  S2Choice<String>(value: 'Inactive Devices', title: 'Inactive'),
+  S2Choice<String>(value: 'Active Devices', title: 'Active'),
 ];
 
 Map<int, Color> customColors = {

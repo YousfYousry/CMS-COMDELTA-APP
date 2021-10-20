@@ -85,19 +85,19 @@ class _AddClient extends State<AddClient> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        text: 'Client Name',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: ' *',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Client Name',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //     children: [
+                    //       TextSpan(
+                    //         text: ' *',
+                    //         style: TextStyle(color: Colors.red, fontSize: 16.0),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: clientName,
                       onChanged: (text) {
@@ -108,65 +108,73 @@ class _AddClient extends State<AddClient> {
                         }
                       },
                       errorText: validate ? validateText : null,
-                      hintText: 'Client Name',
+                      title: 'Client Name',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Address',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Address',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: address,
-                      hintText: 'Address',
+                      title: 'Address',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Contact No',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Contact No',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: contactNum,
-                      hintText: 'Contact No',
+                      title: 'Contact No',
                       keyboardType: TextInputType.number,
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Email',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(height: 5),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Email',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
                     SmartField(
                       controller: email,
-                      hintText: 'Email',
+                      title: 'Email',
                     ),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Active Device Last 72 Hours\n(Dashboard)',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Active Device Last 72 Hours\n(Dashboard)',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: statTwo,
+                      title: "Active Device Last 72 Hours\n(Dashboard)",
+                      options: clientStatus,
+                      passVal: (val) => setState(()=> statTwo = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(statTwo, "Active Device", clientStatus,
-                        (val) => statTwo = val, '', false),
-                    SizedBox(height: 20),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Inactive Device Last 72 Hours\n(Dashboard)',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      ),
+                    // SizedBox(height: 20),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     text: 'Inactive Device Last 72 Hours\n(Dashboard)',
+                    //     style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 5),
+                    ModalFilter(
+                      value: statThree,
+                      title: "Inactive Device Last 72 Hours\n(Dashboard)",
+                      options: clientStatus,
+                      passVal: (val) => setState(()=> statThree = val),
                     ),
-                    SizedBox(height: 5),
-                    ModalFilter(statThree, "Inactive Device", clientStatus,
-                        (val) => statThree = val, '', false),
                     SizedBox(height: 70),
                   ],
                 ),

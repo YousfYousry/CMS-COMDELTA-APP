@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
-
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextFieldHor.dart';
 import '../../Choices.dart';
 
 class AdvancedSearch {
   final context;
   final getLocations;
   TextEditingController searchController;
-
   bool advancedSearchBool = false;
   bool startIdError = false;
   bool endIdError = false;
-  String clientAd = "", simProviderAd = "";
+  String clientAd = "", simProviderAd = "", deviceStatusAd = "";
   TextEditingController batchNumAd = new TextEditingController(),
+      deviceDetailsAd = new TextEditingController(),
       activationFromAd = new TextEditingController(),
       activationToAd = new TextEditingController(),
-      lastSignalAd = new TextEditingController(),
+      lastSignalFromAd = new TextEditingController(),
+      lastSignalToAd = new TextEditingController(),
       startingId = new TextEditingController(),
       endingId = new TextEditingController();
 
@@ -36,31 +37,77 @@ class AdvancedSearch {
                 backgroundColor: Color(0xfafafafa),
                 appBar: new AppBar(
                   centerTitle: true,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(this.context),
+                  ),
                   backgroundColor: Color(0xff0065a3),
                   title: const Text('Advanced Search'),
                   actions: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.restart_alt,
-                        color: Colors.white,
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        dividerColor: Colors.white,
+                        iconTheme: IconThemeData(color: Colors.white),
+                        textTheme: TextTheme().apply(bodyColor: Colors.white),
                       ),
-                      onPressed: () {
-                        // clientAd = "";
-                        // simProviderAd = "";
-                        // batchNumAd.text = "";
-                        // activationFromAd.text = "";
-                        // activationToAd.text = "";
-                        // lastSignalAd.text = "";
-                        // searchController.text = "";
-                        // startingId.text = "";
-                        // endingId.text = "";
-                        // startIdError = false;
-                        // endIdError = false;
-                        reset();
-                        Navigator.pop(this.context);
-                        // getLocations();
-                      },
-                    )
+                      child: PopupMenuButton<int>(
+                        color: Color(0xff0065a3),
+                        onSelected: (item) {
+                          setState(() {
+                            reset();
+                          });
+                          if (item == 1) {
+                            advancedSearchBool = false;
+                            getLocations();
+                            Navigator.pop(this.context);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem<int>(
+                            value: 0,
+                            child: Row(
+                              children: [
+                                Icon(Icons.clear),
+                                const SizedBox(width: 8),
+                                Text('Clear all fields'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<int>(
+                            value: 1,
+                            child: Row(
+                              children: [
+                                Icon(Icons.library_add_check_outlined),
+                                const SizedBox(width: 8),
+                                Text('All Devices'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // IconButton(
+                    //   icon: Icon(
+                    //     Icons.restart_alt,
+                    //     color: Colors.white,
+                    //   ),
+                    //   onPressed: () {
+                    //     // clientAd = "";
+                    //     // simProviderAd = "";
+                    //     // batchNumAd.text = "";
+                    //     // activationFromAd.text = "";
+                    //     // activationToAd.text = "";
+                    //     // lastSignalAd.text = "";
+                    //     // searchController.text = "";
+                    //     // startingId.text = "";
+                    //     // endingId.text = "";
+                    //     // startIdError = false;
+                    //     // endIdError = false;
+                    //     reset();
+                    //     Navigator.pop(this.context);
+                    //     // getLocations();
+                    //   },
+                    // )
                   ],
                 ),
                 body: GestureDetector(
@@ -80,108 +127,60 @@ class AdvancedSearch {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Client',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          ModalFilter(clientAd, "Client", client,
-                              (val) => clientAd = val, "", false),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Client Batch Number',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          SmartField(
-                            controller: batchNumAd,
-                            hintText: "Client Batch Number",
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Activation Date From',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          SmartDate(
-                            controller: activationFromAd,
-                            hintText: "Activation Date From",
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Activation Date To',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          SmartDate(
-                            controller: activationToAd,
-                            hintText: "Activation Date To",
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Sim Provider',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
+                          ModalFilter(
+                            value: clientAd,
+                            title: "Client",
+                            options: client,
+                            passVal: (val) => setState(() => clientAd = val),
                           ),
                           ModalFilter(
-                              simProviderAd,
-                              "Sim Provider",
-                              simCardProvider,
-                              (val) => simProviderAd = val,
-                              "",
-                              false),
-                          SizedBox(
-                            height: 20,
+                            value: simProviderAd,
+                            title: "Sim Provider",
+                            options: simCardProvider,
+                            passVal: (val) =>
+                                setState(() => simProviderAd = val),
                           ),
-                          Text(
-                            'Last Signal From',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
+                          ModalFilter(
+                            value: deviceStatusAd,
+                            title: "Device Status",
+                            options: deviceStatus,
+                            passVal: (val) =>
+                                setState(() => deviceStatusAd = val),
+                            initial: true,
+                            initialValue: "All Devices",
                           ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          SmartDate(
-                            controller: lastSignalAd,
-                            hintText: "Last Signal From",
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Starting Id',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
+
                           SmartField(
+                            controller: deviceDetailsAd,
+                            title: "Device Detail",
+                          ),
+
+                          SmartField(
+                            controller: batchNumAd,
+                            title: "Client Batch Number",
+                          ),
+
+                          SmartDateH(
+                            controller: activationFromAd,
+                            controller2: activationToAd,
+                            title: "Activation (Date)",
+                            hintText: "From",
+                            hintText2: "To",
+                          ),
+
+                          SmartDateH(
+                            controller: lastSignalFromAd,
+                            controller2: lastSignalToAd,
+                            title: "Last Signal (Date)",
+                            hintText: "From",
+                            hintText2: "To",
+                          ),
+
+                          SmartFieldH(
                             controller: startingId,
-                            hintText: "Starting Id",
+                            title: "ID",
+                            hint1: "From",
+                            hint2: "To",
                             keyboardType: TextInputType.numberWithOptions(
                               decimal: true,
                               signed: false,
@@ -196,29 +195,15 @@ class AdvancedSearch {
                                 });
                               }
                             },
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Ending Id',
-                            style:
-                                TextStyle(fontSize: 16.0, color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          SmartField(
-                            controller: endingId,
-                            hintText: "Ending Id",
-                            keyboardType: TextInputType.numberWithOptions(
+                            controller2: endingId,
+                            keyboardType2: TextInputType.numberWithOptions(
                               decimal: true,
                               signed: false,
                             ),
-                            errorText: endIdError
+                            errorText2: endIdError
                                 ? "Please enter integer value"
                                 : null,
-                            onChanged: (value) {
+                            onChanged2: (value) {
                               if (isInt(value)) {
                                 setState(() {
                                   endIdError = false;
@@ -226,8 +211,14 @@ class AdvancedSearch {
                               }
                             },
                           ),
+
+                          // SmartDate(
+                          //   controller: lastSignalAd,
+                          //   hintText: "Last Signal From",
+                          // ),
+
                           SizedBox(
-                            height: 70,
+                            height: 50,
                           ),
                         ],
                       ),
@@ -236,29 +227,12 @@ class AdvancedSearch {
                 ),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
-                    if (clientAd == "" &&
-                        simProviderAd == "" &&
-                        batchNumAd.text == "" &&
-                        activationFromAd.text == "" &&
-                        activationToAd.text == "" &&
-                        lastSignalAd.text == "" &&
-                        startingId.text == "" &&
-                        endingId.text == "") {
+                    if (allEmpty()) {
                       toast("Please fill in any field to search");
                       return;
                     }
-
-                    setState(() {
-                      startIdError =
-                          startingId.text.isNotEmpty && !isInt(startingId.text);
-                      endIdError =
-                          endingId.text.isNotEmpty && !isInt(endingId.text);
-                    });
-
-                    if (startIdError || endIdError) {
-                      toast("Please enter integer value");
-                      return;
-                    }
+                    setState(() => errorSetters());
+                    if (hasError()) return;
                     advancedSearchBool = true;
                     Navigator.pop(this.context);
                     getLocations();
@@ -273,12 +247,65 @@ class AdvancedSearch {
     );
   }
 
+  void errorSetters() {
+    startIdError = startingId.text.isNotEmpty && !isInt(startingId.text);
+    endIdError = endingId.text.isNotEmpty && !isInt(endingId.text);
+  }
+
+  bool hasError() {
+    if (startIdError || endIdError) {
+      toast("Please enter integer value");
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool allEmpty() {
+    return clientAd == "" &&
+        simProviderAd == "" &&
+        deviceStatusAd == "" &&
+        deviceDetailsAd.text == "" &&
+        batchNumAd.text == "" &&
+        activationFromAd.text == "" &&
+        activationToAd.text == "" &&
+        lastSignalFromAd.text == "" &&
+        lastSignalToAd.text == "" &&
+        startingId.text == "" &&
+        endingId.text == "";
+  }
+
+  void reset() {
+    clientAd = "";
+    simProviderAd = "";
+    deviceStatusAd = "";
+    deviceDetailsAd.text = "";
+    batchNumAd.text = "";
+    activationFromAd.text = "";
+    activationToAd.text = "";
+    lastSignalFromAd.text = "";
+    lastSignalToAd.text = "";
+    searchController.text = "";
+    startingId.text = "";
+    endingId.text = "";
+    startIdError = false;
+    endIdError = false;
+  }
+
   bool filterDevice(DeviceJason device) {
     if (advancedSearchBool) {
       bool clientBool = (clientAd.isEmpty ||
           client[getInt(device.client) - 1].contains(clientAd));
+
+      bool statusBool = (deviceStatusAd.isEmpty ||
+          deviceStatusAd.toLowerCase().contains("inactive")?device.inActiveLast72():!device.inActiveLast72());
+
       bool batchBool = (batchNumAd.text.isEmpty ||
           device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
+      bool detailsBool = (deviceDetailsAd.text.isEmpty ||
+          device.deviceDetails.toLowerCase().contains(deviceDetailsAd.text.toString()));
+
+
       bool activationFromBool;
       try {
         activationFromBool = (activationFromAd.text.isEmpty ||
@@ -303,22 +330,50 @@ class AdvancedSearch {
       } catch (Exception) {
         activationToBool = false;
       }
-      bool simBool =
-          (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
 
-      bool lastSignalBool;
+
+
+      bool lastSignalFromBool;
       try {
-        lastSignalBool = (lastSignalAd.text.isEmpty ||
-            DateFormat('yyyy-MM-dd HH:mm:ss')
-                .parse(device.lastSignal)
-                .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
+        lastSignalFromBool = (lastSignalFromAd.text.isEmpty ||
+            DateFormat('yyyy-MM-dd HH:mm:ss').parse(device.lastSignal).isAfter(
+                DateFormat('dd-MM-yyyy').parse(lastSignalFromAd.text)) ||
             DateFormat('yyyy-MM-dd HH:mm:ss')
                 .parse(device.lastSignal)
                 .isAtSameMomentAs(
-                    DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
+                DateFormat('dd-MM-yyyy').parse(lastSignalFromAd.text)));
       } catch (Exception) {
-        lastSignalBool = false;
+        lastSignalFromBool = false;
       }
+      bool lastSignalToBool;
+      try {
+        lastSignalToBool = (lastSignalToAd.text.isEmpty ||
+            DateFormat('yyyy-MM-dd HH:mm:ss').parse(device.lastSignal).isBefore(
+                DateFormat('dd-MM-yyyy').parse(lastSignalToAd.text)) ||
+            DateFormat('yyyy-MM-dd HH:mm:ss')
+                .parse(device.lastSignal)
+                .isAtSameMomentAs(
+                DateFormat('dd-MM-yyyy').parse(lastSignalToAd.text)));
+      } catch (Exception) {
+        lastSignalToBool = false;
+      }
+
+      bool simBool =
+          (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
+
+      // bool lastSignalBool;
+      // try {
+      //   lastSignalBool = (lastSignalAd.text.isEmpty ||
+      //       DateFormat('yyyy-MM-dd HH:mm:ss')
+      //           .parse(device.lastSignal)
+      //           .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
+      //       DateFormat('yyyy-MM-dd HH:mm:ss')
+      //           .parse(device.lastSignal)
+      //           .isAtSameMomentAs(
+      //               DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
+      // } catch (Exception) {
+      //   lastSignalBool = false;
+      // }
 
       bool startIdBool = startingId.text.isEmpty ||
           getInt(device.id) >= getInt(startingId.text);
@@ -327,10 +382,13 @@ class AdvancedSearch {
 
       if (clientBool &&
           batchBool &&
+          detailsBool &&
+          statusBool &&
           activationFromBool &&
           activationToBool &&
           simBool &&
-          lastSignalBool &&
+          lastSignalFromBool &&
+          lastSignalToBool &&
           startIdBool &&
           endIdBool) {
         return true;
@@ -340,21 +398,6 @@ class AdvancedSearch {
     } else {
       return true;
     }
-  }
-
-  void reset() {
-    clientAd = "";
-    simProviderAd = "";
-    batchNumAd.text = "";
-    activationFromAd.text = "";
-    activationToAd.text = "";
-    lastSignalAd.text = "";
-    searchController.text = "";
-    startingId.text = "";
-    endingId.text = "";
-    startIdError = false;
-    endIdError = false;
-    getLocations();
   }
 
   int getInt(String s) {
