@@ -23,16 +23,10 @@ class ModalFilter extends StatefulWidget {
   });
 
   @override
-  _ModalFilter createState() => _ModalFilter(this.value);
+  _ModalFilter createState() => _ModalFilter();
 }
 
 class _ModalFilter extends State<ModalFilter> {
-  String initialValue;
-
-  _ModalFilter(String value) {
-    initialValue = value;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(

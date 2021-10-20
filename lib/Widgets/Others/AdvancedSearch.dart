@@ -297,8 +297,7 @@ class AdvancedSearch {
       bool clientBool = (clientAd.isEmpty ||
           client[getInt(device.client) - 1].contains(clientAd));
 
-      bool statusBool = (deviceStatusAd.isEmpty ||
-          deviceStatusAd.toLowerCase().contains("inactive")?device.inActiveLast72():!device.inActiveLast72());
+      bool statusBool = deviceStatusAd.isEmpty || (deviceStatusAd.toLowerCase().contains("inactive")?device.inActiveLast72():!device.inActiveLast72());
 
       bool batchBool = (batchNumAd.text.isEmpty ||
           device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));

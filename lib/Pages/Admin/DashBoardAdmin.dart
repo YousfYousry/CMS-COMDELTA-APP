@@ -1641,6 +1641,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                 onPress: () {
                   _animationController.reverse();
                   advancedSearch.reset();
+                  getLocations();
                 },
               ),
               // Bubble(

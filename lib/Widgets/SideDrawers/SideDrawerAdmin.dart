@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
 // import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
@@ -188,7 +189,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   children: [
                     itemChild("Manage Device", ManageDevice()),
                     itemChild("Add Device", AddDevice("Add Device", null)),
-                    // itemChild("Failed Device", FailedDevice()),
+                    itemChild("Device History", DeviceHistory()),
                   ],
                 ),
                 isExpanded: button2,
