@@ -26,7 +26,7 @@ class ManageDevicesAppBar extends StatelessWidget {
             title,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          // Text(
+      // Text(
           //   subTitle,
           //   style: TextStyle(fontSize: 14, color: Color(0xF4FFFFFF)),
           // ),

@@ -74,6 +74,7 @@ class ManageDevice extends StatefulWidget {
 //             color: Colors.grey,
 //           )),
 //     );
+
 class SpanUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -121,7 +122,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   bool loading = true, validate = false;
   int sortState = 1;
   Snack deleteSnack;
-  String resNum="0";
+  String resNum = "0";
   int index = 0;
   var title = ["All Devices", "Failed Devices", "Filtered Devices"];
 
@@ -251,7 +252,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (advancedSearch == null) advancedSearch = AdvancedSearch(context, getLocations, searchController);
+    if (advancedSearch == null)
+      advancedSearch = AdvancedSearch(context, getLocations, searchController);
     deleteSnack = new Snack(this.context, "Deleting...", 100);
     return GestureDetector(
       onTap: () {
@@ -301,7 +303,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                   fillColor: Colors.white,
                   filled: true,
                   errorText: validate ? 'No result was found' : null,
-                  labelText: "Search ("+resNum+" results)",
+                  labelText: "Search (" + resNum + " results)",
                   hintText: "Enter ID or Name or Location",
                   contentPadding: EdgeInsets.all(10.0),
                   prefixIcon: Icon(Icons.search),
@@ -312,7 +314,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                           onPressed: () => setState(() {
                             searchController.clear();
                             filterSearchResults("");
-                            FocusScopeNode currentFocus = FocusScope.of(context);
+                            FocusScopeNode currentFocus =
+                                FocusScope.of(context);
                             if (!currentFocus.hasPrimaryFocus &&
                                 currentFocus.focusedChild != null) {
                               FocusManager.instance.primaryFocus.unfocus();
@@ -1201,10 +1204,10 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     });
   }
 
-  void refresh(){
-    if(index==1){
+  void refresh() {
+    if (index == 1) {
       failedDevices();
-    }else{
+    } else {
       getLocations();
     }
   }
@@ -1403,7 +1406,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   void showDevices(List<DeviceJason> devices) {
     setState(() {
-      resNum=devices.length.toString();
+      resNum = devices.length.toString();
       _pagingController.itemList = devices;
       if (sortState == 0) {
         _pagingController.itemList

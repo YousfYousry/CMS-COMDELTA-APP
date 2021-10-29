@@ -8,7 +8,7 @@ import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
-import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
+// import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 
 class AddClient extends StatefulWidget {
@@ -39,8 +39,8 @@ class _AddClient extends State<AddClient> {
     if (this.title == null || this.title.isEmpty) {
       this.title = "Add Client";
     } else if (this.client != null) {
-      statTwo = (client.statTwo.contains("0")) ? "Shown" : "Hidden";
-      statThree = (client.statThree.contains("0")) ? "Shown" : "Hidden";
+      statTwo = (client.statTwo.contains("0")) ? "Hidden" : "Shown";
+      statThree = (client.statThree.contains("0")) ? "Hidden" : "Shown";
       clientName.text = client.clientName;
       address.text = client.clientAddress;
       contactNum.text = client.clientContact;
@@ -160,6 +160,8 @@ class _AddClient extends State<AddClient> {
                       title: "Active Device Last 72 Hours\n(Dashboard)",
                       options: clientStatus,
                       passVal: (val) => setState(()=> statTwo = val),
+                      initial: true,
+                      initialValue: "Hidden",
                     ),
                     // SizedBox(height: 20),
                     // RichText(
@@ -174,6 +176,8 @@ class _AddClient extends State<AddClient> {
                       title: "Inactive Device Last 72 Hours\n(Dashboard)",
                       options: clientStatus,
                       passVal: (val) => setState(()=> statThree = val),
+                      initial: true,
+                      initialValue: "Hidden",
                     ),
                     SizedBox(height: 70),
                   ],

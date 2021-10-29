@@ -55,6 +55,7 @@ class DeviceJason {
       this._lon,
       this._icon);
 
+  // ÿ
   factory DeviceJason.fromJson(
       Map<String, dynamic> json, String deviceLocation) {
     double getDouble(String str) {

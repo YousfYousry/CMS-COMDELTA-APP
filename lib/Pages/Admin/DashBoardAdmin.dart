@@ -1785,7 +1785,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
               )),
           backgroundColor: Colors.transparent,
           appBar: CostumeAppBar('DASHBOARD'),
-          drawer: SideDrawerAdmin(setOpen: isOpen),
+          drawer: SideDrawerAdmin(setOpen: isOpen,showDevice: showDevice,),
           body: WillPopScope(
             // child: Stack(
             //   children: [
@@ -2231,6 +2231,14 @@ class _DashBoardTest1 extends State<DashBoardTest1>
       draggable: false,
       zIndex: 1,
     );
+  }
+
+  void showDevice(BuildContext context, String deviceId) {
+    ShowDevice(
+        context,
+        duplicatedDevices
+            .firstWhere((device) => device.id==deviceId,
+            orElse: ()=>null));
   }
 
   void showActive() {

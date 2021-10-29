@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
+
 // import 'package:login_cms_comdelta/JasonHolders/ClientNameJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:smart_select/smart_select.dart';
@@ -24,7 +26,7 @@ class RemoteApi {
       ).mapFromResponse<List<LogJason>, List<dynamic>>(
         (jsonArray) => _parseItemListFromJsonArray(
           jsonArray,
-          (jsonObject) => LogJason.fromJson(jsonObject,searchTerm),
+          (jsonObject) => LogJason.fromJson(jsonObject, searchTerm),
         ),
       );
 
@@ -41,27 +43,33 @@ class RemoteApi {
       ).mapFromResponse<List<LogJason>, List<dynamic>>(
         (jsonArray) => _parseItemListFromJsonArray(
           jsonArray,
-          (jsonObject) => LogJason.fromJson(jsonObject,searchTerm),
+          (jsonObject) => LogJason.fromJson(jsonObject, searchTerm),
         ),
       );
 
-
-  static Future<List<S2Choice<String>>> getClientList() async =>
-      http.post(
-        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/getClientList.php'),
+  static Future<List<S2Choice<String>>> getClientList() async => http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/getClientList.php'),
         body: {},
       ).mapFromResponse<List<S2Choice<String>>, List<dynamic>>(
-            (jsonArray) => _parseItemListFromJsonArray(
-          jsonArray,
-              (jsonObject) {
-                var str = jsonObject['client_name'];
-                return (str != null && !str.toString().contains("null"))
-                    ? S2Choice<String>(value: str.toString(), title: str.toString())
-                    : S2Choice<String>(value: '', title: '');
-              }
-        ),
+        (jsonArray) => _parseItemListFromJsonArray(jsonArray, (jsonObject) {
+          var str = jsonObject['client_name'];
+          return (str != null && !str.toString().contains("null"))
+              ? S2Choice<String>(value: str.toString(), title: str.toString())
+              : S2Choice<String>(value: '', title: '');
+        }),
       );
 
+  static Future<List<HistoryJason>> getHistoryList() async => http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/admin/getHistory.php'),
+        body: {},
+      ).mapFromResponse<List<HistoryJason>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(
+          jsonArray,
+          (jsonObject) => HistoryJason.fromJson(jsonObject),
+        ),
+      );
 
   static List<T> _parseItemListFromJsonArray<T>(
     List<dynamic> jsonArray,

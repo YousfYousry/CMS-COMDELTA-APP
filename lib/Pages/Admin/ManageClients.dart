@@ -389,16 +389,16 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver , Ro
                                                       .statTwo
                                                       .toString()
                                                       .contains("1"))
-                                                  ? "Hidden"
-                                                  : "Shown"),
+                                                  ? "Shown"
+                                                  : "Hidden"),
                                           details(
                                               'Inactive Device',
                                               (clients[index]
                                                       .statThree
                                                       .toString()
                                                       .contains("1"))
-                                                  ? "Hidden"
-                                                  : "Shown"),
+                                                  ? "Shown"
+                                                  : "Hidden"),
                                           status(
                                               'Status',
                                               clients[index]
