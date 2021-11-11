@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
+import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
+
+// import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextFieldHor.dart';
@@ -12,9 +16,7 @@ import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextFieldHor.dart';
 import '../../Choices.dart';
 
 class DeviceHistory extends StatefulWidget {
-  final showDevice;
-
-  DeviceHistory({Key key, this.showDevice}) : super(key: key);
+  DeviceHistory({Key key}) : super(key: key);
 
   @override
   _DeviceHistory createState() => _DeviceHistory();
@@ -25,6 +27,7 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   bool loading = false;
   bool startIdError = false;
   bool endIdError = false;
+  String clientAd = "";
   String deviceStatusAd = "";
   TextEditingController activationFromAd = new TextEditingController(),
       activationToAd = new TextEditingController(),
@@ -33,6 +36,8 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   final PagingController<int, HistoryJason> _pagingController =
       PagingController(firstPageKey: 0);
   List<HistoryJason> allHistories = [];
+
+  // List<DeviceJason> devices = [];
 
   @override
   void dispose() {
@@ -277,24 +282,68 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
-                                    onTap: () => widget.showDevice(
-                                        this.context, item.deviceId),
+                                    onTap: () => ShowDevice(
+                                        this.context, item.getDevice()),
                                     child: Row(
                                       children: <Widget>[
                                         Expanded(
                                           flex: 1,
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 16),
-                                            child: Text(
-                                              item.isActive()
-                                                  ? "Active"
-                                                  : "Inactive",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle2
-                                                  .copyWith(
-                                                      color: Colors.white),
+                                                horizontal: 16, vertical: 0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Spacer(),
+                                                Text(
+                                                  item.isActive()
+                                                      ? "Active"
+                                                      : "Inactive",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2
+                                                      .copyWith(
+                                                          color: Colors.white),
+                                                ),
+                                                Visibility(
+                                                  child: Text(
+                                                    "Inactive for: " +
+                                                        getTime(item
+                                                            .inactivePeriod),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle2
+                                                        .copyWith(
+                                                            fontSize: 10,
+                                                            color:
+                                                                Colors.white),
+                                                  ),
+                                                  visible: item.isActive() &&
+                                                      getTime(item
+                                                              .inactivePeriod)
+                                                          .isNotEmpty,
+                                                ),
+                                                Visibility(
+                                                  child: Text(
+                                                    "Device already activated",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle2
+                                                        .copyWith(
+                                                            fontSize: 10,
+                                                            color:
+                                                                Colors.white),
+                                                  ),
+                                                  visible: !item.isActive() &&
+                                                      !item
+                                                          .getDevice()
+                                                          .inActiveLast72(),
+                                                ),
+                                                Spacer(),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -496,10 +545,17 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
                       width: MediaQuery.of(context).size.width,
                       // height: MediaQuery.of(context).size.height,
                       padding: EdgeInsets.all(15),
-                      color: Color(0xfafafafa),
+                      // color: Colors.white,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          ModalFilter(
+                            value: clientAd,
+                            title: "Client",
+                            options: client,
+                            passVal: (val) => setState(() => clientAd = val),
+                          ),
+
                           ModalFilter(
                             value: deviceStatusAd,
                             title: "Device Status",
@@ -513,14 +569,14 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
                           SmartDateH(
                             controller: activationFromAd,
                             controller2: activationToAd,
-                            title: "Activation (Date)",
+                            title: "Filter Date",
                             hintText: "From",
                             hintText2: "To",
                           ),
 
                           SmartFieldH(
                             controller: startingId,
-                            title: "ID",
+                            title: "Filter ID",
                             hint1: "From",
                             hint2: "To",
                             keyboardType: TextInputType.numberWithOptions(
@@ -589,6 +645,58 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
     );
   }
 
+  String getTime(String seconds) {
+    int secondsInt = 0;
+    try {
+      secondsInt = int.parse(seconds);
+      String secondString = "";
+      int years = 0, months = 0, days = 0, hours = 0;
+      while (secondsInt >= 3600) {
+        if (secondsInt >= 31536000) {
+          years++;
+          secondsInt -= 31536000;
+        } else if (secondsInt >= 2628288) {
+          months++;
+          secondsInt -= 2628288;
+        } else if (secondsInt >= 86400) {
+          days++;
+          secondsInt -= 86400;
+        } else if (secondsInt >= 3600) {
+          hours++;
+          secondsInt -= 3600;
+        }
+      }
+
+      if (years > 0) {
+        secondString += years.toString() + " yrs";
+        if (months > 0 || days > 0 || hours > 0) {
+          secondString += ", ";
+        }
+      }
+      if (months > 0) {
+        secondString += months.toString() + " m";
+        if (days > 0 || hours > 0) {
+          secondString += ", ";
+        }
+      }
+      if (days > 0) {
+        secondString += days.toString() + " d";
+        if (hours > 0) {
+          secondString += ", ";
+        }
+      }
+
+      if (hours > 0) {
+        secondString += hours.toString() + " hrs";
+      }
+
+      // return years.toString()+", "+months.toString()+", "+days.toString()+", "+hours.toString();
+      return secondString;
+    } catch (error) {
+      return "";
+    }
+  }
+
   void errorSetters() {
     startIdError = startingId.text.isNotEmpty && !isInt(startingId.text);
     endIdError = endingId.text.isNotEmpty && !isInt(endingId.text);
@@ -604,7 +712,8 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   }
 
   bool allEmpty() {
-    return deviceStatusAd == "" &&
+    return clientAd == "" &&
+        deviceStatusAd == "" &&
         activationFromAd.text == "" &&
         activationToAd.text == "" &&
         startingId.text == "" &&
@@ -623,6 +732,7 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   }
 
   void reset() {
+    clientAd = "";
     deviceStatusAd = "";
     activationFromAd.text = "";
     activationToAd.text = "";
@@ -655,6 +765,15 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   }
 
   bool filterElement(HistoryJason element) {
+    bool filterClient;
+
+    if (clientAd.isEmpty) {
+      filterClient = true;
+    } else {
+      DeviceJason device = element.getDevice();
+      filterClient = client[getInt(device.client) - 1].contains(clientAd);
+    }
+
     bool filterStatus = (deviceStatusAd.isEmpty)
         ? true
         : ((element.isActive() && deviceStatusAd == "Active Devices") ||
@@ -663,34 +782,40 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
     bool filterDateFrom;
     try {
       filterDateFrom = (activationFromAd.text.isEmpty ||
-          DateFormat('yyyy-MM-dd HH:mm:ss').parse(element.changeDate).isAfter(
-              DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
+          DateFormat('yyyy-MM-dd HH:mm:ss')
+              .parse(element.changeDate)
+              .isAfter(DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
           DateFormat('yyyy-MM-dd HH:mm:ss')
               .parse(element.changeDate)
               .isAtSameMomentAs(
-              DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
+                  DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
     } catch (Exception) {
       filterDateFrom = false;
     }
     bool filterDateTo;
     try {
       filterDateTo = (activationToAd.text.isEmpty ||
-          DateFormat('yyyy-MM-dd HH:mm:ss').parse(element.changeDate).isBefore(
-              DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
+          DateFormat('yyyy-MM-dd HH:mm:ss')
+              .parse(element.changeDate)
+              .isBefore(DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
           DateFormat('yyyy-MM-dd HH:mm:ss')
               .parse(element.changeDate)
               .isAtSameMomentAs(
-              DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
+                  DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
     } catch (Exception) {
       filterDateTo = false;
     }
 
-
-
     bool filterIdFrom = startingId.text.isEmpty ||
         getInt(element.deviceId) >= getInt(startingId.text);
-    bool filterIdTo = endingId.text.isEmpty || getInt(element.deviceId) <= getInt(endingId.text);
-    return filterStatus && filterDateFrom && filterDateTo && filterIdFrom&&filterIdTo;
+    bool filterIdTo = endingId.text.isEmpty ||
+        getInt(element.deviceId) <= getInt(endingId.text);
+    return filterClient &&
+        filterStatus &&
+        filterDateFrom &&
+        filterDateTo &&
+        filterIdFrom &&
+        filterIdTo;
   }
 
   int getInt(String s) {
@@ -712,6 +837,7 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
 
   Future<List<HistoryJason>> _fetchPage() async {
     try {
+      // devices = await RemoteApi.getDevicesList();
       return await RemoteApi.getHistoryList();
     } catch (error) {
       _pagingController.error = error;

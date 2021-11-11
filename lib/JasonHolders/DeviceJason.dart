@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../Choices.dart';
+
 class DeviceJason {
   String _id = "";
   String _client = "";
@@ -56,6 +58,97 @@ class DeviceJason {
       this._icon);
 
   // ÿ
+  factory DeviceJason.fromJsonOnly(Map<String, dynamic> json) {
+    double getDouble(String str) {
+      try {
+        return double.parse(str);
+      } catch (e) {
+        return 500;
+      }
+    }
+    String getStr(Object str) {
+      return (str != null && !str.toString().contains("null"))
+          ? str.toString()
+          : "";
+    }
+    String getBattery(String battery) {
+      double batteryDouble = getDouble(battery);
+      if (500 > batteryDouble && batteryDouble >= 3.23) {
+        return "0";
+      } else if (3.23 > batteryDouble && batteryDouble >= 3.02) {
+        return "1";
+      } else if (3.02 > batteryDouble && batteryDouble >= 2.81) {
+        return "2";
+      } else if (2.81 > batteryDouble && batteryDouble >= 2.60) {
+        return "3";
+      } else {
+        return "4";
+      }
+    }
+    String getRssi(String rssi) {
+      double rssiDouble = getDouble(rssi);
+      if (500 > rssiDouble && rssiDouble >= 20) {
+        return "0";
+      } else if (20 > rssiDouble && rssiDouble >= 15) {
+        return "1";
+      } else if (15 > rssiDouble && rssiDouble >= 10) {
+        return "2";
+      } else if (10 > rssiDouble && rssiDouble >= 2) {
+        return "3";
+      } else {
+        return "4";
+      }
+    }
+    int getIcon(String str, bool allOn) {
+      DateTime date = DateTime.now();
+      if (DateFormat('yyyy-MM-dd HH:mm:ss').parse(str).isBefore(DateTime(
+          date.year,
+          date.month,
+          date.day - 3,
+          date.hour,
+          date.minute,
+          date.second))) {
+        return 2;
+      }
+      if (!allOn) {
+        return 1;
+      }
+      return 0;
+    }
+    return DeviceJason(
+      getStr(json['device_id']),
+      getStr(json['client_id']),
+      getStr(json['device_name']),
+      getStr(json['site_region']),
+      getStr(json['sim_provider']),
+      getStr(json['battery_status']),
+      getStr(json['rssi_status']),
+      getStr(json['client_batch_number']),
+      getStr(json['sim_serial_number']),
+      location
+          .firstWhere((element) => element.value == getStr(json['location_id']))
+          .title,
+      getStr(json['device_detail']),
+      ((getStr(json['device_height']).contains("0")) ? "Below" : "Above") +
+          " 45m",
+      getStr(json['device_activation']),
+      getStr(json['LatestUpdateDate']),
+      getStr(json['LS1']).contains("1"),
+      getStr(json['LS2']).contains("1"),
+      getStr(json['LS3']).contains("1"),
+      getBattery(json['battery_value']),
+      getRssi(json['rssi_value']),
+      (getStr(json['status']).contains("1")),
+      getDouble(getStr(json['device_longitud'])),
+      getDouble(getStr(json['device_latitud'])),
+      getIcon(
+          getStr(json['LatestUpdateDate']),
+          (getStr(json['LS1']).contains("1") &&
+              getStr(json['LS2']).contains("1") &&
+              getStr(json['LS3']).contains("1"))),
+    );
+  }
+
   factory DeviceJason.fromJson(
       Map<String, dynamic> json, String deviceLocation) {
     double getDouble(String str) {
@@ -153,14 +246,11 @@ class DeviceJason {
 
   bool inActiveSince(int since) {
     DateTime date = DateTime.now();
-    return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(DateTime(
-        date.year,
-        date.month,
-        date.day,
-        date.hour-since,
-        date.minute,
-        date.second));
+    return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(
+        DateTime(date.year, date.month, date.day, date.hour - since,
+            date.minute, date.second));
   }
+
   //
   // bool activeLastHour() {
   //   DateTime date = DateTime.now();
@@ -186,13 +276,9 @@ class DeviceJason {
 
   bool inActiveLast72() {
     DateTime date = DateTime.now();
-    return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(DateTime(
-        date.year,
-        date.month,
-        date.day,
-        date.hour-72,
-        date.minute,
-        date.second));
+    return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(
+        DateTime(date.year, date.month, date.day, date.hour - 72, date.minute,
+            date.second));
   }
 
   String get id => _id;

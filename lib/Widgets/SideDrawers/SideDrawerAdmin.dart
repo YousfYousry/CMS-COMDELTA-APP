@@ -16,9 +16,8 @@ import '../../main.dart';
 
 class SideDrawerAdmin extends StatefulWidget {
   final setOpen;
-  final showDevice;
 
-  SideDrawerAdmin({this.setOpen=isOpen,this.showDevice});
+  SideDrawerAdmin({this.setOpen=isOpen});
 
 
   @override
@@ -191,7 +190,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   children: [
                     itemChild("Manage Device", ManageDevice()),
                     itemChild("Add Device", AddDevice("Add Device", null)),
-                    itemChild("Device History", DeviceHistory(showDevice: widget.showDevice,)),
+                    itemChild("Device History", DeviceHistory()),
                   ],
                 ),
                 isExpanded: button2,

@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
+
+// import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:countup/countup.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter_spinbox/flutter_spinbox.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:bubbled_navigation_bar/bubbled_navigation_bar.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,6 +25,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:login_cms_comdelta/Choices.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
+
+// import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/NewDashBoard.dart';
 
 // import 'package:login_cms_comdelta/Widgets/Functions/NewUpdateChecker.dart';
@@ -31,6 +35,9 @@ import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
+import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+
+// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
 
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
@@ -40,6 +47,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 import '../../Choices.dart';
+import 'DeviceHistory.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -50,6 +58,7 @@ const PrimaryColor = const Color(0xff0065a3);
 //   'Inactive Device Last 72 Hours'
 // ];
 double width, height;
+var dashBoardContext;
 
 class DashBoardTest1 extends StatefulWidget {
   DashBoardTest1({Key key, this.title}) : super(key: key);
@@ -61,6 +70,9 @@ class DashBoardTest1 extends StatefulWidget {
     CupertinoIcons.map, //map
   ];
   final String title;
+
+
+
 
   @override
   _DashBoardTest1 createState() => _DashBoardTest1();
@@ -203,6 +215,8 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
   @override
   Widget build(BuildContext context) {
+    dashBoardContext =context;
+
     if (advancedSearch == null)
       advancedSearch =
           AdvancedSearch(context, getLocations, new TextEditingController());
@@ -1785,7 +1799,9 @@ class _DashBoardTest1 extends State<DashBoardTest1>
               )),
           backgroundColor: Colors.transparent,
           appBar: CostumeAppBar('DASHBOARD'),
-          drawer: SideDrawerAdmin(setOpen: isOpen,showDevice: showDevice,),
+          drawer: SideDrawerAdmin(
+            setOpen: isOpen,
+          ),
           body: WillPopScope(
             // child: Stack(
             //   children: [
@@ -2007,94 +2023,61 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     setState(() {
       loading = true;
     });
-    try {
-      final value = await http.get(
-          Uri.parse('http://103.18.247.174:8080/AmitProject/getLocations.php'));
-      List<String> id = [];
-      List<String> locationName = [];
-      if (value.statusCode == 200) {
-        List<dynamic> values = [];
-        values = json.decode(value.body);
-        if (values.length > 0) {
-          for (int i = 0; i < values.length; i++) {
-            if (values[i] != null) {
-              Map<String, dynamic> map = values[i];
-              id.add(map['location_id'].toString());
-              locationName.add(map['location_name'].toString());
-            }
-          }
-        }
-        await getDevices(id, locationName);
-      } else {
-        throw Exception("Unable to get locations");
-      }
-    } catch (error) {
-      toast('Error: ' + error.message);
-    }
-
+    await getDevices();
     setState(() {
       loading = false;
     });
   }
 
-  Future<void> getDevices(List<String> id, List<String> locationName) async {
+
+  Future<void> getDevices() async {
     try {
-      final value = await http.get(Uri.parse(
-          'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'));
-      if (value.statusCode == 200) {
-        List<DeviceJason> devices = [];
-        List<dynamic> values = [];
-        values = json.decode(value.body);
-        if (values.length > 0) {
-          setState(() {
-            markers.clear();
-            positions.clear();
-            double total = 0, inActiveLast72 = 0;
-            for (int i = 0; i < values.length; i++) {
-              if (values[i] != null) {
-                Map<String, dynamic> map = values[i];
-                DeviceJason device = DeviceJason.fromJson(
-                    map,
-                    locationName
-                        .elementAt(id.indexOf(map['location_id'].toString())));
-                devices.add(device);
-                total++;
-                if (device.inActiveLast72()) {
-                  inActiveLast72++;
-                }
-                if (advancedSearch.filterDevice(device)) {
-                  if (device.lat != 500 && device.lon != 500) {
-                    addMarker(device);
-                    positions.add(new LatLng(device.lat, device.lon));
-                  }
-                }
-              }
-            }
-            this.values[0] = (total - inActiveLast72);
-            this.values[1] = inActiveLast72;
-            this.values[2] = total;
-            this.duplicatedDevices.clear();
-            this.duplicatedDevices.addAll(devices);
-            getActive();
-            getInactive();
-            if (positions.isNotEmpty) {
-              mapController.animateCamera(
-                  CameraUpdate.newLatLngBounds(_bounds(positions), 20));
-            } else {
-              toast("No device was found!");
-              mapController
-                  .animateCamera(CameraUpdate.newLatLngZoom(_center, 4));
-            }
-            // loading = false;
-          });
-        } else {
-          toast("No devices found in the server");
+      devices = await RemoteApi.getDevicesList();
+      FirebaseMessaging.instance
+          .getInitialMessage()
+          .then((RemoteMessage message) {
+        if (message != null) {
+          Navigator.push(
+            context,
+            SizeRoute(
+              page: DeviceHistory(),
+            ),
+          );
         }
-      } else {
-        throw Exception("Unable to get device list");
-      }
+      });
+      setState(() {
+        markers.clear();
+        positions.clear();
+        double total = 0, inActiveLast72 = 0;
+        devices.forEach((device) {
+          total++;
+          if (device.inActiveLast72()) {
+            inActiveLast72++;
+          }
+          if (advancedSearch.filterDevice(device)) {
+            if (device.lat != 500 && device.lon != 500) {
+              addMarker(device);
+              positions.add(new LatLng(device.lat, device.lon));
+            }
+          }
+        });
+        this.values[0] = (total - inActiveLast72);
+        this.values[1] = inActiveLast72;
+        this.values[2] = total;
+        this.duplicatedDevices.clear();
+        this.duplicatedDevices.addAll(devices);
+        getActive();
+        getInactive();
+        if (positions.isNotEmpty) {
+          mapController.animateCamera(
+              CameraUpdate.newLatLngBounds(_bounds(positions), 20));
+        } else {
+          toast("No device was found!");
+          mapController.animateCamera(CameraUpdate.newLatLngZoom(_center, 4));
+        }
+      });
     } catch (error) {
-      toast('Error: ' + error.message);
+      // toast('Error: ' + error.message);
     }
   }
 
@@ -2235,10 +2218,10 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
   void showDevice(BuildContext context, String deviceId) {
     ShowDevice(
-        context,
-        duplicatedDevices
-            .firstWhere((device) => device.id==deviceId,
-            orElse: ()=>null));
+      context,
+      duplicatedDevices.firstWhere((device) => device.id == deviceId,
+          orElse: () => null),
+    );
   }
 
   void showActive() {

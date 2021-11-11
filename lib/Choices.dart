@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_select/smart_select.dart';
 
+import 'JasonHolders/DeviceJason.dart';
+
 // import 'JasonHolders/RemoteApi.dart';
 
 // const PrimaryColor = const Color(0xff0065a3);
@@ -55,23 +57,31 @@ List<S2Choice<String>> client = [
 //   S2Choice<String>(value: 'Comdelta Test', title: 'Comdelta Test'),
 // ];
 
+// var route;
+bool openHis=false;
+
+String deviceIdentifier = "";
+String model="";
+
+List<DeviceJason> devices = [];
+
 List<S2Choice<String>> location = [
-  S2Choice<String>(value: 'Kuala Lumpur', title: 'Kuala Lumpur'),
-  S2Choice<String>(value: 'Labuan', title: 'Labuan'),
-  S2Choice<String>(value: 'Putrajaya', title: 'Putrajaya'),
-  S2Choice<String>(value: 'Johor', title: 'Johor'),
-  S2Choice<String>(value: 'Kedah', title: 'Kedah'),
-  S2Choice<String>(value: 'Kelantan', title: 'Kelantan'),
-  S2Choice<String>(value: 'Melaka', title: 'Melaka'),
-  S2Choice<String>(value: 'Negeri Sembilan', title: 'Negeri Sembilan'),
-  S2Choice<String>(value: 'pahang', title: 'pahang'),
-  S2Choice<String>(value: 'Perak', title: 'Perak'),
-  S2Choice<String>(value: 'Perlis', title: 'Perlis'),
-  S2Choice<String>(value: 'Pulau Pinang', title: 'Pulau Pinang'),
-  S2Choice<String>(value: 'Sabah', title: 'Sabah'),
-  S2Choice<String>(value: 'Sarawak', title: 'Sarawak'),
-  S2Choice<String>(value: 'Selangor', title: 'Selangor'),
-  S2Choice<String>(value: 'Terengganu', title: 'Terengganu'),
+  S2Choice<String>(value: '1', title: 'Kuala Lumpur'),
+  S2Choice<String>(value: '2', title: 'Labuan'),
+  S2Choice<String>(value: '3', title: 'Putrajaya'),
+  S2Choice<String>(value: '4', title: 'Johor'),
+  S2Choice<String>(value: '5', title: 'Kedah'),
+  S2Choice<String>(value: '6', title: 'Kelantan'),
+  S2Choice<String>(value: '7', title: 'Melaka'),
+  S2Choice<String>(value: '8', title: 'Negeri Sembilan'),
+  S2Choice<String>(value: '9', title: 'pahang'),
+  S2Choice<String>(value: '10', title: 'Perak'),
+  S2Choice<String>(value: '11', title: 'Perlis'),
+  S2Choice<String>(value: '12', title: 'Pulau Pinang'),
+  S2Choice<String>(value: '13', title: 'Sabah'),
+  S2Choice<String>(value: '14', title: 'Sarawak'),
+  S2Choice<String>(value: '15', title: 'Selangor'),
+  S2Choice<String>(value: '16', title: 'Terengganu'),
 ];
 
 List<S2Choice<String>> height = [

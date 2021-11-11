@@ -1,162 +1,168 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+
+import 'SizeTransition.dart';
 
 class ShowDevice {
   final primaryColor = const Color(0xff0065a3);
 
-  ShowDevice(BuildContext context,DeviceJason device){
+  ShowDevice(BuildContext context, DeviceJason device) {
     AwesomeDialog(
-      dialogBackgroundColor:
-      Color(0xfafafafa),
+      dialogBackgroundColor: Color(0xfafafafa),
       context: context,
-      animType: AnimType.SCALE,
+      animType: AnimType.TOPSLIDE,
       dialogType: DialogType.NO_HEADER,
-      body: Padding(
-        padding: EdgeInsets.only(
-            left: 15, right: 15),
-        child: Column(
-          mainAxisAlignment:
-          MainAxisAlignment.center,
-          crossAxisAlignment:
-          CrossAxisAlignment.center,
-          children: [
-            details('ID',
-                device.id),
-            details(
-                'Device Name',
-                device.deviceName),
-            details(
-                'Device Detail',
-                device.deviceDetails),
-            details(
-                'Height',
-                device.deviceHeight),
-            details(
-                'Activation Date',
-                device.activationDate),
-            details(
-                'Location',
-                device.deviceLocation),
-            details(
-                'Batch Number',
-                device.batchNum),
-            details(
-                'Sim Number',
-                device.serialNum),
-            details(
-                'Sim Provider',
-                device.simProvider),
-            details(
-                'Last Signal',
-                device.lastSignal),
-            l123('L1#',
-                device.l1),
-            l123('L2#',
-                device.l2),
-            l123('L3#',
-                device.l3),
-            battery('Battery',
-                device.battery),
-            rssi('Rssi',
-                device.rssi),
-            status('Status',
-                device.status),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<
-                    Color>((device.lat !=
-                    500 &&
-                    device.lon !=
-                        500 &&
-                    device.deviceName
-                        .isNotEmpty)
-                    ? primaryColor
-                    : Colors.grey),
-                shape: MaterialStateProperty
-                    .all<
-                    RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius
-                        .circular(
-                        10),
-                    side: BorderSide(
-                        color: Colors
-                            .black12),
-                  ),
-                ),
-              ),
-
-              onPressed: () => (device.lat !=
-                  500 &&
-                  device.lon !=
-                      500 &&
-                  device.deviceName
-                      .isNotEmpty)
-                  ? MapsLauncher
-                  .launchCoordinates(
-                  device.lat,
-                  device.lon,
-                  device.deviceName)
-                  : toast(
-                  "Location is unavailable")
-              // if (lat != 500 && lon != 500 && title.isNotEmpty) {
-              //   MapsLauncher.launchCoordinates(lat, lon, title);
-              // }
-              ,
-              // tooltip: 'Google maps',
-              child: Center(
-                child: Container(
-                  height: 30,
-                  child: Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        "Show on google maps",
-                        style: TextStyle(
-                            color: (device.lat != 500 &&
-                                device.lon !=
-                                    500 &&
-                                device.deviceName
-                                    .isNotEmpty)
-                                ? null
-                                : Colors
-                                .black54,
-                            fontSize:
-                            15,
-                            fontWeight:
-                            FontWeight
-                                .bold),
-                      ),
-                      Padding(
-                        padding:
-                        EdgeInsets
-                            .all(5),
-                        child: Image(
-                          color: (device.lat != 500 &&
-                              device.lon !=
-                                  500 &&
-                              device.deviceName
-                                  .isNotEmpty)
-                              ? null
-                              : Colors
-                              .black54,
-                          image: AssetImage(
-                              'assets/image/google_maps.png'),
+      showCloseIcon: true,
+      // closeIcon:  Icon(Icons.close, color: Colors.red),
+      // dialogBorderRadius: BorderRadiusGeometry.lerp(BorderRadiusDirectional.circular(10), BorderRadiusDirectional.circular(10), 0),
+      body:
+        Padding(
+          padding: EdgeInsets.only(left: 15, right: 15),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              details('ID', device.id),
+              details('Device Name', device.deviceName),
+              details('Device Detail', device.deviceDetails),
+              details('Height', device.deviceHeight),
+              details('Activation Date', device.activationDate),
+              details('Location', device.deviceLocation),
+              details('Batch Number', device.batchNum),
+              details('Sim Number', device.serialNum),
+              details('Sim Provider', device.simProvider),
+              details('Last Signal', device.lastSignal),
+              l123('L1#', device.l1),
+              l123('L2#', device.l2),
+              l123('L3#', device.l3),
+              battery('Battery', device.battery),
+              rssi('Rssi', device.rssi),
+              status('Status', device.status),
+              Row(
+                children: [
+                  Expanded(child:
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          (device.lat != 500 &&
+                              device.lon != 500 &&
+                              device.deviceName.isNotEmpty)
+                              ? primaryColor
+                              : Colors.grey),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(color: Colors.black12),
                         ),
                       ),
-                      Spacer(),
-                    ],
-                  ),
-                ),
+                    ),
+                    onPressed: () => (device.lat != 500 &&
+                        device.lon != 500 &&
+                        device.deviceName.isNotEmpty)
+                        ? MapsLauncher.launchCoordinates(
+                        device.lat, device.lon, device.deviceName)
+                        : toast("Location is unavailable")
+                    // if (lat != 500 && lon != 500 && title.isNotEmpty) {
+                    //   MapsLauncher.launchCoordinates(lat, lon, title);
+                    // }
+                    ,
+                    // tooltip: 'Google maps',
+                    child: Center(
+                      child: Container(
+                        height: 30,
+                        child: Row(
+                          children: [
+                            Spacer(),
+                            Text(
+                              "Maps",
+                              style: TextStyle(
+                                  color: (device.lat != 500 &&
+                                      device.lon != 500 &&
+                                      device.deviceName.isNotEmpty)
+                                      ? null
+                                      : Colors.black54,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Image(
+                                height: 15,
+                                width: 15,
+                                color: (device.lat != 500 &&
+                                    device.lon != 500 &&
+                                    device.deviceName.isNotEmpty)
+                                    ? null
+                                    : Colors.black54,
+                                image: AssetImage('assets/image/google_maps.png'),
+                              ),
+                            ),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),),
+                  SizedBox(width: 5,),
+                  Expanded(child:
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(Color(0xffFFB61E)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(color: Colors.black12),
+                        ),
+                      ),
+                    ),
+
+                    onPressed: () => Navigator.push(
+                      context,
+                      SizeRoute(
+                        page: DeviceLogs(device),
+                      ),
+                    )
+                    // if (lat != 500 && lon != 500 && title.isNotEmpty) {
+                    //   MapsLauncher.launchCoordinates(lat, lon, title);
+                    // }
+                    ,
+                    // tooltip: 'Google maps',
+                    child: Center(
+                      child: Container(
+                        height: 30,
+                        child: Row(
+                          children: [
+                            Spacer(),
+                            Text(
+                              "Logs",
+                              style: TextStyle(
+                                  color:  null,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Icon(
+                                Icons.signal_cellular_alt,
+                                size:15,
+                              ),
+                            ),
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       title: 'This is Ignored',
       desc: 'This is also Ignored',
     )..show();

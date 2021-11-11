@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 
 // import 'package:login_cms_comdelta/JasonHolders/ClientNameJason.dart';
@@ -60,6 +61,24 @@ class RemoteApi {
         }),
       );
 
+  static Future<List<S2Choice<String>>> getLocationList() async => http.post(
+    Uri.parse(
+        'http://103.18.247.174:8080/AmitProject/getLocations.php'),
+    body: {},
+  ).mapFromResponse<List<S2Choice<String>>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(jsonArray, (jsonObject) {
+      var id = jsonObject['location_id'];
+      var name = jsonObject['location_name'];
+      return (notNull(id)&&notNull(name))
+          ? S2Choice<String>(value: id.toString(), title: name.toString())
+          : S2Choice<String>(value: '', title: '');
+    }),
+  );
+
+  static bool notNull(var obj){
+    return obj != null && !obj.toString().contains("null");
+  }
+
   static Future<List<HistoryJason>> getHistoryList() async => http.post(
         Uri.parse(
             'http://103.18.247.174:8080/AmitProject/admin/getHistory.php'),
@@ -70,6 +89,17 @@ class RemoteApi {
           (jsonObject) => HistoryJason.fromJson(jsonObject),
         ),
       );
+
+  static Future<List<DeviceJason>> getDevicesList() async => http.post(
+    Uri.parse(
+        'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'),
+    body: {},
+  ).mapFromResponse<List<DeviceJason>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(
+      jsonArray,
+          (jsonObject) => DeviceJason.fromJsonOnly(jsonObject),
+    ),
+  );
 
   static List<T> _parseItemListFromJsonArray<T>(
     List<dynamic> jsonArray,

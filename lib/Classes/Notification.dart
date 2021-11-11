@@ -1,4 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+// import 'package:login_cms_comdelta/Choices.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import '../main.dart';
 
 class NotificationService {
@@ -32,11 +36,6 @@ class NotificationService {
             iOS: initializationSettingsIOS);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        // onSelectNotification: selectNotification
-    );
-  }
-
-  Future selectNotification(String payload) async {
-    // toast(payload);
+        onSelectNotification: selectNotification);
   }
 }

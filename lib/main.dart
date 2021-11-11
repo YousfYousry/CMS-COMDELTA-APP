@@ -1,12 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:device_info/device_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+
+// import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Classes/Notification.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Choices.dart';
 import 'JasonHolders/RemoteApi.dart';
@@ -15,89 +21,186 @@ import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
 import 'Widgets/ProgressBars/ProgressBar.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 const AndroidNotificationDetails androidPlatformChannelSpecifics =
-AndroidNotificationDetails(
-    "high_important_channel",
-    "high important notification",
-    channelDescription: "this channel is used for important notifications.",
-    importance: Importance.max,
-    priority: Priority.max
-);
+    AndroidNotificationDetails(
+        "high_important_channel", "high important notification",
+        channelDescription: "this channel is used for important notifications.",
+        importance: Importance.max,
+        priority: Priority.max);
 const IOSNotificationDetails iOSPlatformChannelSpecifics =
-IOSNotificationDetails(
-  presentAlert: true,  // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-  presentBadge: true,  // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-  presentSound: true,  // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+    IOSNotificationDetails(
+  presentAlert: true,
+  // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+  presentBadge: true,
+  // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+  presentSound:
+      true, // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
   // sound: String?,  // Specifics the file path to play (only from iOS 10 onwards)
   // badgeNumber: int?, // The application's icon badge number
   // attachments: List<IOSNotificationAttachment>?, (only from iOS 10 onwards)
   // subtitle: String?, //Secondary description  (only from iOS 10 onwards)
   // threadIdentifier: String? (only from iOS 10 onwards)
 );
-const NotificationDetails platformChannelSpecifics =
-NotificationDetails(android: androidPlatformChannelSpecifics,iOS:iOSPlatformChannelSpecifics ,macOS: null);
-
+const NotificationDetails platformChannelSpecifics = NotificationDetails(
+    android: androidPlatformChannelSpecifics,
+    iOS: iOSPlatformChannelSpecifics,
+    macOS: null);
 
 Future<void> _messageHandler(RemoteMessage message) async {
   // toast(message.notification.title);
-  await flutterLocalNotificationsPlugin.show(
-      12345,
-      message.notification.title,
-      message.notification.body,
-      platformChannelSpecifics,
+  await flutterLocalNotificationsPlugin.show(12345, message.notification.title,
+      message.notification.body, platformChannelSpecifics,
       payload: 'data');
 }
 
+// bool pressed = false;
+Future selectNotification(String payload) async {
+  // save('notification', 'open');
+  // route();
+  // if (publicContext != null) {
+  //   Navigator.of(publicContext).pushReplacementNamed('/second');
+  // Navigator.of(publicContext).pushNamed('/second');
+  // }
 
+  // initialRoute = '/second';
+
+  // openHis = true;
+
+  if (dashBoardContext != null && devices.isNotEmpty) {
+    Navigator.push(
+      dashBoardContext,
+      SizeRoute(
+        page: DeviceHistory(),
+      ),
+    );
+  }
+}
+
+// BuildContext publicContext;
 
 final routeObserver = RouteObserver<PageRoute>();
+// String initialRoute = '/';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await NotificationService().init(); // <----
 
-  //.timeout(Duration(microseconds: 10000),onTimeout: (){
-  //   toast("Error initializing google services!");
-  //   return;
-  // });
+  // if (initialRoute.isEmpty) {
+  //   initialRoute = '/';
+  // }
 
-  FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  // final NotificationAppLaunchDetails notificationAppLaunchDetails = !kIsWeb &&
+  //     Platform.isLinux
+  //     ? null
+  //     : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  // String initialRoute = HomePage.routeName;
+  // if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+  //   selectedNotificationPayload = notificationAppLaunchDetails.payload;
+  //   initialRoute = SecondPage.routeName;
+  // }
+  await initPlatformState();
+  String value = await load('user_type');
+  runApp(
+    MaterialApp(
+      theme: ThemeData(
+        primarySwatch: MaterialColor(0xff0065a3, customColors),
+      ),
+      // home: MyApp(getRoute(value)),
+      // initialRoute: '/',
+      // routes: {
+      //   '/': (context) {
+      //     // publicContext = context;
+      //     return UpgradeAlert(child: getRoute(value));
+      //   },
+      //   '/second': (context) => DeviceHistory(),
+      // },
+      home: UpgradeAlert(child: getRoute(value)),
+      navigatorObservers: [routeObserver],
+    ),
+  );
 
+  // NotificationSettings settings =
+
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await NotificationService().init();
+  FirebaseMessaging.onMessage.listen(_messageHandler);
+  // FirebaseMessaging.onBackgroundMessage(_messageHandler);
   // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
   //   alert: true,
   //   badge: true,
   //   sound: true,
   // );
-  FirebaseMessaging.instance.getInitialMessage();
-  FirebaseMessaging.onMessage.listen(_messageHandler);
-  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  //   toast("messageOpened");
-  // });
 
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //         AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
-  //
-  // Upgrader().clearSavedSettings(); // REMOVE this for release builds
-  load('user_type').then(
-    (value) => runApp(
-      MaterialApp(
-        theme: ThemeData(
-          primarySwatch: MaterialColor(0xff0065a3, customColors),
-        ),
-        // home: MyApp(getRoute(value)),
-        home: UpgradeAlert(
-            // debugLogging: true,
-            // debugAlwaysUpgrade: true,
-            child: getRoute(value)),
-        navigatorObservers: [routeObserver],
-      ),
-    ),
-  );
   client = await RemoteApi.getClientList();
+  location = await RemoteApi.getLocationList();
+}
+
+final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
+Future<void> initPlatformState() async {
+  try {
+    if (Platform.isAndroid) {
+      _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
+    } else if (Platform.isIOS) {
+      _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
+    }
+  } on PlatformException {}
+}
+
+void _readAndroidBuildData(AndroidDeviceInfo build) {
+  deviceIdentifier = build.androidId.toLowerCase();
+  model = build.manufacturer + ": " + build.model;
+  // return <String, dynamic>{
+  //   'version.securityPatch': build.version.securityPatch,
+  //   'version.sdkInt': build.version.sdkInt,
+  //   'version.release': build.version.release,
+  //   'version.previewSdkInt': build.version.previewSdkInt,
+  //   'version.incremental': build.version.incremental,
+  //   'version.codename': build.version.codename,
+  //   'version.baseOS': build.version.baseOS,
+  //   'board': build.board,
+  //   'bootloader': build.bootloader,
+  //   'brand': build.brand,
+  //   'device': build.device,
+  //   'display': build.display,
+  //   'fingerprint': build.fingerprint,
+  //   'hardware': build.hardware,
+  //   'host': build.host,
+  //   'id': build.id,
+  //   'manufacturer': build.manufacturer,
+  //   'model': build.model,
+  //   'product': build.product,
+  //   'supported32BitAbis': build.supported32BitAbis,
+  //   'supported64BitAbis': build.supported64BitAbis,
+  //   'supportedAbis': build.supportedAbis,
+  //   'tags': build.tags,
+  //   'type': build.type,
+  //   'isPhysicalDevice': build.isPhysicalDevice,
+  //   'androidId': build.androidId,
+  //   'systemFeatures': build.systemFeatures,
+  // };
+}
+
+void _readIosDeviceInfo(IosDeviceInfo data) {
+  deviceIdentifier = data.identifierForVendor.toLowerCase();
+  model = data.localizedModel;
+  // return <String, dynamic>{
+  //   'name': data.name,
+  //   'systemName': data.systemName,
+  //   'systemVersion': data.systemVersion,
+  //   'model': data.model,
+  //   'localizedModel': data.localizedModel,
+  //   'identifierForVendor': data.identifierForVendor,
+  //   'isPhysicalDevice': data.isPhysicalDevice,
+  //   'utsname.sysname:': data.utsname.sysname,
+  //   'utsname.nodename:': data.utsname.nodename,
+  //   'utsname.release:': data.utsname.release,
+  //   'utsname.version:': data.utsname.version,
+  //   'utsname.machine:': data.utsname.machine,
+  // };
 }
 
 Widget getRoute(String str) {
@@ -105,7 +208,7 @@ Widget getRoute(String str) {
     return LoginPage();
   } else if (str.contains("client")) {
     return DashBoard();
-  } else if (str.contains("admin")) {
+  } else if (str.contains("newAdmin")) {
     return DashBoardTest1();
   }
   return LoginPage();
@@ -514,11 +617,15 @@ class _LoginPage extends State<LoginPage> {
         String userType;
         var route;
         if (map["type"].toString().compareTo('3') != 0) {
-          if (!await setNotificationToken(map["clientId"].toString())) {
+          if (!await setNotificationToken() || deviceIdentifier.isEmpty) {
+            if (deviceIdentifier.isEmpty) {
+              toast("Device Identifier is unknown");
+            }
+
             setState(() => loading = false);
             return;
           }
-          userType = "admin";
+          userType = "newAdmin";
           route = DashBoardTest1();
         } else {
           userType = "client";
@@ -559,13 +666,14 @@ class _LoginPage extends State<LoginPage> {
     }
   }
 
-  Future<bool> setNotificationToken(String clientId) async {
+  Future<bool> setNotificationToken() async {
     final token = await FirebaseMessaging.instance.getToken();
     final response = await http.post(
-        Uri.parse('http://103.18.247.174:8080/AmitProject/saveToken.php'),
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/saveToken.php'),
         body: {
+          'identifier': deviceIdentifier,
+          'model': model,
           'token': token,
-          'client_id': clientId,
         });
 
     if (json.decode(response.body).contains("200")) {
@@ -579,18 +687,17 @@ class _LoginPage extends State<LoginPage> {
 }
 
 Future<void> logOut(BuildContext context) async {
-  final token = await load('token');
   final response = await http.post(
-      Uri.parse('http://103.18.247.174:8080/AmitProject/deleteToken.php'),
+      Uri.parse('http://103.18.247.174:8080/AmitProject/admin/deleteToken.php'),
       body: {
-        'token': token,
+        'identifier': deviceIdentifier,
       }).onError((error, stackTrace) {
     toast('Error: ' + error.message);
     return;
   });
   String res = json.decode(response.body);
   if (res == "200" || res == "100") {
-    if (res == "100") toast("Your notification token is not registered!");
+    // if (res == "100") toast("Your notification token is not registered!");
     save('token', '-1');
     save('user_type', '-1');
     save('profile_pic', '-1');
