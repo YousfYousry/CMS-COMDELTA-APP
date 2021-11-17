@@ -1,6 +1,6 @@
 import 'package:countup/countup.dart';
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
+import 'package:login_cms_comdelta/Pages/Admin/AdminDashBoard.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class Indicator extends StatelessWidget {

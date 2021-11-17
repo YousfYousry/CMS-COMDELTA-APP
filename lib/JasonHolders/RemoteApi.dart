@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
-
-// import 'package:login_cms_comdelta/JasonHolders/ClientNameJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:smart_select/smart_select.dart';
 
@@ -94,6 +91,19 @@ class RemoteApi {
     Uri.parse(
         'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'),
     body: {},
+  ).mapFromResponse<List<DeviceJason>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(
+      jsonArray,
+          (jsonObject) => DeviceJason.fromJsonOnly(jsonObject),
+    ),
+  );
+
+  static Future<List<DeviceJason>> getClientDevicesList(String clientId) async => http.post(
+    Uri.parse(
+        'http://103.18.247.174:8080/AmitProject/getDeviceClient.php'),
+    body: {
+      'client_id': clientId,
+    },
   ).mapFromResponse<List<DeviceJason>, List<dynamic>>(
         (jsonArray) => _parseItemListFromJsonArray(
       jsonArray,

@@ -1,15 +1,9 @@
 import 'dart:async';
-
-// import 'dart:convert';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:countup/countup.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
-
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter_spinbox/flutter_spinbox.dart';
-// import 'package:http/http.dart' as http;
 import 'package:bubbled_navigation_bar/bubbled_navigation_bar.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,35 +11,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
-
-// import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-// import 'package:intl/intl.dart';
-// import 'package:login_cms_comdelta/Choices.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
-
-// import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
-import 'package:login_cms_comdelta/Widgets/AppBars/NewDashBoard.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Functions/NewUpdateChecker.dart';
+import 'package:login_cms_comdelta/Widgets/AppBars/AdminAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/WidgetSize.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
-
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:preload_page_view/preload_page_view.dart';
-
 import '../../Choices.dart';
 import 'DeviceHistory.dart';
 
@@ -175,6 +153,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     } else {
       getLocations();
       client = await RemoteApi.getClientList();
+      location = await RemoteApi.getLocationList();
     }
   }
 
@@ -1798,7 +1777,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                 }).toList(),
               )),
           backgroundColor: Colors.transparent,
-          appBar: CostumeAppBar('DASHBOARD'),
+          appBar: AdminAppBar(),
           drawer: SideDrawerAdmin(
             setOpen: isOpen,
           ),

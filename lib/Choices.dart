@@ -5,7 +5,7 @@ import 'JasonHolders/DeviceJason.dart';
 
 // import 'JasonHolders/RemoteApi.dart';
 
-// const PrimaryColor = const Color(0xff0065a3);
+const PrimaryColor = const Color(0xff0065a3);
 
 List<S2Choice<String>> clientStatus = [
   S2Choice<String>(value: 'Hidden', title: 'Hidden'),

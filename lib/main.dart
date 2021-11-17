@@ -4,19 +4,17 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Classes/Notification.dart';
-import 'package:login_cms_comdelta/Pages/Admin/DashBoardAdmin.dart';
+import 'package:login_cms_comdelta/Pages/Admin/AdminDashBoard.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
+import 'package:login_cms_comdelta/Pages/Client/ClientDashBoard.dart';
 import 'package:upgrader/upgrader.dart';
 import 'Choices.dart';
 import 'JasonHolders/RemoteApi.dart';
-import 'Pages/Client/DashBoard.dart';
 import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/SizeTransition.dart';
 import 'Widgets/ProgressBars/ProgressBar.dart';
@@ -206,8 +204,8 @@ void _readIosDeviceInfo(IosDeviceInfo data) {
 Widget getRoute(String str) {
   if (str == "-1") {
     return LoginPage();
-  } else if (str.contains("client")) {
-    return DashBoard();
+  } else if (str.contains("newClient")) {
+    return ClientDashBoard();
   } else if (str.contains("newAdmin")) {
     return DashBoardTest1();
   }
@@ -628,8 +626,8 @@ class _LoginPage extends State<LoginPage> {
           userType = "newAdmin";
           route = DashBoardTest1();
         } else {
-          userType = "client";
-          route = DashBoard();
+          userType = "newClient";
+          route = ClientDashBoard();
         }
 
         save('user_type', userType);
@@ -687,6 +685,7 @@ class _LoginPage extends State<LoginPage> {
 }
 
 Future<void> logOut(BuildContext context) async {
+  devices.clear();
   final response = await http.post(
       Uri.parse('http://103.18.247.174:8080/AmitProject/admin/deleteToken.php'),
       body: {
