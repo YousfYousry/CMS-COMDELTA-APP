@@ -7,7 +7,7 @@
 // import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 // import 'package:login_cms_comdelta/Widgets/AppBars/FailedDevicesAppBar.dart';
 // import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-// import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
+// import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceAdmin.dart';
 // import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
@@ -15,7 +15,7 @@
 // import 'package:substring_highlight/substring_highlight.dart';
 // import 'dart:math' as math;
 //
-// import '../../Choices.dart';
+// import '../../public.dart';
 //
 // const PrimaryColor = const Color(0xff0065a3);
 //

@@ -2,10 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Classes/deviceElement.dart';
+import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Widgets/AppBars/CustomAppBarWithBack.dart';
 import '../../Widgets/Others/DeviceElement.dart';
-import '../../Widgets/ProgressBars/ProgressBar.dart';
+// import '../../Widgets/ProgressBars/ProgressBar.dart';
 import '../../Widgets/SideDrawers/SideDrawer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -342,11 +343,8 @@ class _ActiveDeviceCard extends State<ActiveDeviceCardPage> {
                 ),
               ],
             ),
-            Center(
-              child: Visibility(
-                child: CircularProgressIndicatorApp(),
-                visible: loading,
-              ),
+            Loading(
+              loading: loading,
             ),
           ],
         ));

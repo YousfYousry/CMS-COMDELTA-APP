@@ -1,14 +1,17 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditClient.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageClients.dart';
 import 'package:login_cms_comdelta/Pages/Admin/ManageDevices.dart';
+
 // import 'package:login_cms_comdelta/Pages/Admin/FailedDevices.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
+import '../../public.dart';
 import '../../Pages/ForgotPasswordPage.dart';
 import '../../Pages/UserProfilePage.dart';
 import '../Others/SizeTransition.dart';
@@ -17,17 +20,16 @@ import '../../main.dart';
 class SideDrawerAdmin extends StatefulWidget {
   final setOpen;
 
-  SideDrawerAdmin({this.setOpen=isOpen});
-
+  SideDrawerAdmin({this.setOpen = isOpen});
 
   @override
   _SideDrawer createState() => _SideDrawer();
 }
 
 class _SideDrawer extends State<SideDrawerAdmin> {
-  var profilePic =
-      'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png';
-  var name = '';
+  // var profilePic =
+  //     'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png';
+  // var name = '';
   bool button1 = false, button2 = false;
 
   Widget itemChild(var title, var route) {
@@ -35,8 +37,9 @@ class _SideDrawer extends State<SideDrawerAdmin> {
       child: Container(
         padding: EdgeInsets.only(left: 72),
         height: 30,
-        child: MiddleLeft(
-          Text(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
             title,
             style: TextStyle(fontSize: 14, color: Color(0xff5e5e5e)),
           ),
@@ -80,14 +83,14 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width: 3),
+                      border: Border.all(width: 2,color: Colors.white.withOpacity(0.8)),
                       borderRadius: BorderRadius.circular(50.0),
                     ),
                     child: ClipOval(
                       child: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: NetworkImage(profilePic),
+                            image: user.logo,
                           ),
                         ),
                         width: 80,
@@ -98,18 +101,26 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   SizedBox(
                     height: 5,
                   ),
-                  Text(name),
+                  Text(user.firsName + ' ' + user.lastName,style: TextStyle(color: Colors.white),),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.person_pin_circle,
-                        color: Colors.green,
+                        Icons.circle,
+                        color: user.status.trim() == "1"
+                            ? Colors.green
+                            : Colors.red,
+                        size: 12,
+                      ),
+                      SizedBox(
+                        width: 5,
                       ),
                       Text(
-                        "Online",
+                        user.status.trim() == "1" ? "Online" : "Offline",
                         style: TextStyle(
-                          color: Colors.green,
+                          color: user.status.trim() == "1"
+                              ? Colors.green
+                              : Colors.red,
                         ),
                       ),
                     ],
@@ -159,7 +170,6 @@ class _SideDrawer extends State<SideDrawerAdmin> {
               ),
             ],
           ),
-
           ExpansionPanelList(
             elevation: 0,
             animationDuration: Duration(milliseconds: 500),
@@ -256,48 +266,42 @@ class _SideDrawer extends State<SideDrawerAdmin> {
     );
   }
 
-  Future<void> getInfo() async {
-    load('user_id').then((value) =>
-        value != '-1' ? sendPost(value) : toast('User was not found!'));
-    load('profile_pic').then((value) => value.isNotEmpty && value != '-1'
-        ? setState(() => profilePic = value)
-        : setState(() => profilePic =
-            'http://cmscomdelta.com/assets/dist/img/profile_picture/92a2fb1a7d6a2342b1ccca2b6e5d740d.png'));
-  }
-
-  void sendPost(String userId) {
-    http.post(
-        Uri.parse('http://103.18.247.174:8080/AmitProject/getUserProfile.php'),
-        body: {
-          'user_id': userId,
-        }).then((response) {
-      if (response.statusCode == 200) {
-        // ignore: deprecated_member_use
-        String value = json.decode(response.body);
-        if (value != '-1') {
-          List<String> result = value.split(',');
-          if (result.length > 3) {
-            setState(() {
-              name = result[0] + ' ' + result[1];
-              if (result[3].isNotEmpty) {
-                setState(() => profilePic = result[3]);
-                save('profile_pic', result[3]);
-              }
-            });
-          } else {
-            toast('Something wrong with the server!');
-          }
-        } else {
-          toast('User does not exist');
-        }
-      } else {
-        throw Exception("Unable to get devices list");
-      }
-    }).onError((error, stackTrace) {
-      toast('Error: ' + error.message);
-    });
-  }
+Future<void> getInfo() async {
+  await RemoteApi.getUserInfo().then((value) => setState(()=>user));
+}
+//
+// void sendPost(String userId) {
+//   http.post(
+//       Uri.parse('http://103.18.247.174:8080/AmitProject/getUserProfile.php'),
+//       body: {
+//         'user_id': userId,
+//       }).then((response) {
+//     if (response.statusCode == 200) {
+//       // ignore: deprecated_member_use
+//       String value = json.decode(response.body);
+//       if (value != '-1') {
+//         List<String> result = value.split(',');
+//         if (result.length > 3) {
+//           setState(() {
+//             name = result[0] + ' ' + result[1];
+//             if (result[3].isNotEmpty) {
+//               setState(() => profilePic = result[3]);
+//               save('profile_pic', result[3]);
+//             }
+//           });
+//         } else {
+//           toast('Something wrong with the server!');
+//         }
+//       } else {
+//         toast('User does not exist');
+//       }
+//     } else {
+//       throw Exception("Unable to get devices list");
+//     }
+//   }).onError((error, stackTrace) {
+//     toast('Error: ' + error.message);
+//   });
+// }
 }
 
-void isOpen(bool isOpen){}
-
+void isOpen(bool isOpen) {}

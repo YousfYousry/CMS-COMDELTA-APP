@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../Choices.dart';
+import '../../public.dart';
 import 'dart:math' as math;
 
 class SmartDateH extends StatefulWidget {

@@ -11,6 +11,10 @@ class LogJason {
   String _lg = "";
   String _batteryValue = "";
   String _rssiValue = "";
+  String _simTelcoOptions = "";
+  String _lightBattery1 = "";
+  String _lightBattery2 = "";
+  String _lightBattery3 = "";
   String _highLight = "";
 
   void setHighLight(String value) {
@@ -30,6 +34,10 @@ class LogJason {
     this._lg,
     this._batteryValue,
     this._rssiValue,
+    this._simTelcoOptions,
+    this._lightBattery1,
+    this._lightBattery2,
+    this._lightBattery3,
     this._highLight,
   );
 
@@ -53,12 +61,16 @@ class LogJason {
       getStr(json['lg']),
       getStr(json['battery_value']),
       getStr(json['rssi_value']),
+      getStr(json['sim_telco_options']),
+      getStr(json['light_battery1']),
+      getStr(json['light_battery2']),
+      getStr(json['light_battery3']),
       getStr(search),
     );
   }
 
   bool isFound(String str) {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 13; i++) {
       if (getE(i).toLowerCase().contains(str.toLowerCase())) {
         return true;
       }
@@ -85,6 +97,14 @@ class LogJason {
       return _batteryValue;
     } else if (index == 8) {
       return _rssiValue;
+    } else if (index == 9) {
+      return _simTelcoOptions;
+    } else if (index == 10) {
+      return _lightBattery1;
+    } else if (index == 11) {
+      return _lightBattery2;
+    } else if (index == 12) {
+      return _lightBattery3;
     } else {
       return "";
     }
@@ -115,4 +135,12 @@ class LogJason {
   String get createDate => _createDate;
 
   String get id => _id;
+
+  String get lightBattery3 => _lightBattery3;
+
+  String get lightBattery2 => _lightBattery2;
+
+  String get lightBattery1 => _lightBattery1;
+
+  String get simTelcoOptions => _simTelcoOptions;
 }

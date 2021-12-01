@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
+import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,24 +19,18 @@ import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
-import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
+
+// import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:math' as math;
-
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
-// import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
-// import 'package:permission_handler/permission_handler.dart';
-// import 'package:pdf/widgets.dart' as pw;
-// import 'package:pdf/pdf.dart';
-// import '../../Choices.dart';
+import '../../public.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 
@@ -119,7 +114,7 @@ class SpanDefault extends StatelessWidget {
 
 class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   TextEditingController searchController = new TextEditingController();
-  bool loading = true, validate = false;
+  bool loading = false, validate = false;
   int sortState = 1;
   Snack deleteSnack;
   String resNum = "0";
@@ -231,7 +226,20 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    getLocations();
+    List<DeviceJason> tempDevices = [];
+    devices.forEach((device) {
+      if (device.isUniKl()) {
+        tempDevices.add(device);
+        this.duplicateDevices.add(device);
+      }
+    });
+
+    setState(() {
+      this._pagingController.itemList = tempDevices;
+      resNum = tempDevices.length.toString();
+      sort();
+    });
+
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
@@ -359,26 +367,29 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                   _sort1();
                                 });
                               },
-                              child: MiddleLeft(Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(text: 'ID'),
+                                        WidgetSpan(
+                                            child: (spans[0] == Span.def)
+                                                ? SpanDefault()
+                                                : (spans[0] == Span.up)
+                                                    ? SpanUp()
+                                                    : SpanDown()),
+                                      ],
                                     ),
-                                    children: [
-                                      TextSpan(text: 'ID'),
-                                      WidgetSpan(
-                                          child: (spans[0] == Span.def)
-                                              ? SpanDefault()
-                                              : (spans[0] == Span.up)
-                                                  ? SpanUp()
-                                                  : SpanDown()),
-                                    ],
                                   ),
                                 ),
-                              )),
+                              ),
                             ),
                           ),
                           Container(
@@ -394,26 +405,29 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                   _sort2();
                                 });
                               },
-                              child: MiddleLeft(Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(text: 'Device Name'),
+                                        WidgetSpan(
+                                            child: (spans[1] == Span.def)
+                                                ? SpanDefault()
+                                                : (spans[1] == Span.up)
+                                                    ? SpanUp()
+                                                    : SpanDown()),
+                                      ],
                                     ),
-                                    children: [
-                                      TextSpan(text: 'Device Name'),
-                                      WidgetSpan(
-                                          child: (spans[1] == Span.def)
-                                              ? SpanDefault()
-                                              : (spans[1] == Span.up)
-                                                  ? SpanUp()
-                                                  : SpanDown()),
-                                    ],
                                   ),
                                 ),
-                              )),
+                              ),
                             ),
                           ),
                           Container(
@@ -429,26 +443,29 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                   _sort3();
                                 });
                               },
-                              child: MiddleLeft(Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(text: 'Location'),
+                                        WidgetSpan(
+                                            child: (spans[2] == Span.def)
+                                                ? SpanDefault()
+                                                : (spans[2] == Span.up)
+                                                    ? SpanUp()
+                                                    : SpanDown()),
+                                      ],
                                     ),
-                                    children: [
-                                      TextSpan(text: 'Location'),
-                                      WidgetSpan(
-                                          child: (spans[2] == Span.def)
-                                              ? SpanDefault()
-                                              : (spans[2] == Span.up)
-                                                  ? SpanUp()
-                                                  : SpanDown()),
-                                    ],
                                   ),
                                 ),
-                              )),
+                              ),
                             ),
                           ),
                         ],
@@ -658,10 +675,8 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
                                 ),
                               ),
                             ),
-                            Center(
-                              child: Loading(
-                                loading: loading,
-                              ),
+                            Loading(
+                              loading: loading,
                             ),
                           ],
                         ),
@@ -1225,300 +1240,290 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     });
 
     try {
-      final value = await http.get(
-          Uri.parse('http://103.18.247.174:8080/AmitProject/getLocations.php'));
-      List<String> id = [];
-      List<String> locationName = [];
-      if (value.statusCode == 200) {
-        List<dynamic> values = [];
-        values = json.decode(value.body);
-        if (values.length > 0) {
-          for (int i = 0; i < values.length; i++) {
-            if (values[i] != null) {
-              Map<String, dynamic> map = values[i];
-              id.add(map['location_id'].toString());
-              locationName.add(map['location_name'].toString());
-            }
-          }
-        }
+      location = await RemoteApi.getLocationList();
+      devices = await RemoteApi.getDevicesList();
+      List<DeviceJason> tempDevices = [];
+      this.duplicateDevices.clear();
+      devices.forEach((device) {
+        if (device.isUniKl()&&device.inActiveLast72()) {
+          String query = searchController.text;
 
-        final value2 = await http.get(Uri.parse(
-            'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'));
-
-        if (value2.statusCode == 200) {
-          List<DeviceJason> devices = [];
-          this.duplicateDevices.clear();
-
-          List<dynamic> values = [];
-          values = json.decode(value2.body);
-          setState(() {
-            index = 1;
-          });
-
-          if (values.length > 0) {
-            for (int i = 0; i < values.length; i++) {
-              if (values[i] != null) {
-                Map<String, dynamic> map = values[i];
-                String query = searchController.text;
-                DeviceJason device = DeviceJason.fromJson(
-                    map,
-                    locationName
-                        .elementAt(id.indexOf(map['location_id'].toString())));
-
-                if (device.inActiveLast72()) {
-                  if (query.isNotEmpty) {
-                    if (device.id.toLowerCase().contains(query.toLowerCase()) ||
-                        device.deviceName
-                            .toLowerCase()
-                            .contains(query.toLowerCase()) ||
-                        device.deviceLocation
-                            .toLowerCase()
-                            .contains(query.toLowerCase())) {
-                      device.setHighLight(query);
-                      devices.add(device);
-                    }
-                    this.duplicateDevices.add(device);
-                  } else {
-                    devices.add(device);
-                    this.duplicateDevices.add(device);
-                  }
-                }
+          if (advancedSearch.filterDevice(device)) {
+            if (query.isNotEmpty) {
+              if (device.id.toLowerCase().contains(query.toLowerCase()) ||
+                  device.deviceName
+                      .toLowerCase()
+                      .contains(query.toLowerCase()) ||
+                  device.deviceLocation
+                      .toLowerCase()
+                      .contains(query.toLowerCase())) {
+                device.setHighLight(query);
+                tempDevices.add(device);
               }
+              this.duplicateDevices.add(device);
+            } else {
+              tempDevices.add(device);
+              this.duplicateDevices.add(device);
             }
           }
-          showDevices(devices);
-        } else {
-          toast("Unable to get device list");
         }
-      } else {
-        toast("Unable to get locations");
-      }
+      });
+
+      setState(() {
+        if (advancedSearch.advancedSearchBool) {
+          index = 2;
+        } else {
+          index = 0;
+        }
+        this._pagingController.itemList = tempDevices;
+        resNum = tempDevices.length.toString();
+        sort();
+      });
     } catch (error) {
-      toast(error);
+      toast("Something wrong happened!");
+      print(error.toString());
     }
     setState(() {
       loading = false;
     });
   }
 
-  void getLocations() {
+  Future<void> getLocations() async {
     setState(() {
       loading = true;
       validate = false;
     });
-    http
-        .get(Uri.parse(
-            'http://103.18.247.174:8080/AmitProject/getLocations.php'))
-        .then((value) {
-      List<String> id = [];
-      List<String> locationName = [];
-      if (value.statusCode == 200) {
-        List<dynamic> values = [];
-        values = json.decode(value.body);
-        if (values.length > 0) {
-          for (int i = 0; i < values.length; i++) {
-            if (values[i] != null) {
-              Map<String, dynamic> map = values[i];
-              id.add(map['location_id'].toString());
-              locationName.add(map['location_name'].toString());
-            }
-          }
-        }
-        getDevices(id, locationName);
-      } else {
-        setState(() {
-          loading = false;
-        });
-        throw Exception("Unable to get locations");
-      }
-    }).onError((error, stackTrace) {
-      setState(() {
-        loading = false;
-      });
-      toast('Error: ' + error.message);
-    });
-  }
 
-  void getDevices(List<String> id, List<String> locationName) {
-    http
-        .get(Uri.parse(
-            'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'))
-        .then((value) {
-      if (value.statusCode == 200) {
-        List<DeviceJason> devices = [];
-        this.duplicateDevices.clear();
+    try {
+      location = await RemoteApi.getLocationList();
+      devices = await RemoteApi.getDevicesList();
+      List<DeviceJason> tempDevices = [];
+      this.duplicateDevices.clear();
+      devices.forEach((device) {
+        if (device.isUniKl()) {
+          String query = searchController.text;
 
-        List<dynamic> values = [];
-        values = json.decode(value.body);
-        setState(() {
-          if (advancedSearch.advancedSearchBool) {
-            index = 2;
-          } else {
-            index = 0;
-          }
-        });
-
-        if (values.length > 0) {
-          for (int i = 0; i < values.length; i++) {
-            if (values[i] != null) {
-              Map<String, dynamic> map = values[i];
-              String query = searchController.text;
-              DeviceJason device = DeviceJason.fromJson(
-                  map,
-                  locationName
-                      .elementAt(id.indexOf(map['location_id'].toString())));
-
-              if (advancedSearch.filterDevice(device)) {
-                if (query.isNotEmpty) {
-                  if (device.id.toLowerCase().contains(query.toLowerCase()) ||
-                      device.deviceName
-                          .toLowerCase()
-                          .contains(query.toLowerCase()) ||
-                      device.deviceLocation
-                          .toLowerCase()
-                          .contains(query.toLowerCase())) {
-                    device.setHighLight(query);
-                    devices.add(device);
-                  }
-                  this.duplicateDevices.add(device);
-                } else {
-                  devices.add(device);
-                  this.duplicateDevices.add(device);
-                }
+          if (advancedSearch.filterDevice(device)) {
+            if (query.isNotEmpty) {
+              if (device.id.toLowerCase().contains(query.toLowerCase()) ||
+                  device.deviceName
+                      .toLowerCase()
+                      .contains(query.toLowerCase()) ||
+                  device.deviceLocation
+                      .toLowerCase()
+                      .contains(query.toLowerCase())) {
+                device.setHighLight(query);
+                tempDevices.add(device);
               }
+              this.duplicateDevices.add(device);
+            } else {
+              tempDevices.add(device);
+              this.duplicateDevices.add(device);
             }
           }
         }
-        showDevices(devices);
-      } else {
-        setState(() {
-          loading = false;
-        });
-        throw Exception("Unable to get device list");
-      }
-    }).onError((error, stackTrace) {
-      setState(() {
-        loading = false;
       });
-      toast('Error: ' + error.message);
-    });
-  }
 
-  void showDevices(List<DeviceJason> devices) {
+      setState(() {
+        if (advancedSearch.advancedSearchBool) {
+          index = 2;
+        } else {
+          index = 0;
+        }
+        this._pagingController.itemList = tempDevices;
+        resNum = tempDevices.length.toString();
+        sort();
+      });
+    } catch (error) {
+      toast("Something wrong happened!");
+      print(error.toString());
+    }
     setState(() {
-      resNum = devices.length.toString();
-      _pagingController.itemList = devices;
-      if (sortState == 0) {
-        _pagingController.itemList
-            .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
-        this
-            .duplicateDevices
-            .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
-      } else if (sortState == 1) {
-        _pagingController.itemList
-            .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
-        this
-            .duplicateDevices
-            .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
-      } else if (sortState == 2) {
-        _pagingController.itemList
-            .sort((a, b) => a.deviceName.compareTo(b.deviceName));
-        this
-            .duplicateDevices
-            .sort((a, b) => a.deviceName.compareTo(b.deviceName));
-      } else if (sortState == 3) {
-        _pagingController.itemList
-            .sort((a, b) => b.deviceName.compareTo(a.deviceName));
-        this
-            .duplicateDevices
-            .sort((a, b) => b.deviceName.compareTo(a.deviceName));
-      } else if (sortState == 4) {
-        _pagingController.itemList
-            .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
-        this
-            .duplicateDevices
-            .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
-      } else if (sortState == 5) {
-        _pagingController.itemList
-            .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
-        this
-            .duplicateDevices
-            .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
-      }
       loading = false;
     });
+
+    // http
+    //     .get(Uri.parse(
+    //         'http://103.18.247.174:8080/AmitProject/getLocations.php'))
+    //     .then((value) {
+    //   List<String> id = [];
+    //   List<String> locationName = [];
+    //   if (value.statusCode == 200) {
+    //     List<dynamic> values = [];
+    //     values = json.decode(value.body);
+    //     if (values.length > 0) {
+    //       for (int i = 0; i < values.length; i++) {
+    //         if (values[i] != null) {
+    //           Map<String, dynamic> map = values[i];
+    //           id.add(map['location_id'].toString());
+    //           locationName.add(map['location_name'].toString());
+    //         }
+    //       }
+    //     }
+    //     getDevices(id, locationName);
+    //   } else {
+    //     setState(() {
+    //       loading = false;
+    //     });
+    //     throw Exception("Unable to get locations");
+    //   }
+    // }).onError((error, stackTrace) {
+    //   setState(() {
+    //     loading = false;
+    //   });
+    //   toast('Error: ' + error.message);
+    // });
   }
 
-  // bool filterDevice(DeviceJason device) {
-  //   bool clientBool = (clientAd.isEmpty ||
-  //       client[getInt(device.client) - 1].contains(clientAd));
-  //   bool batchBool = (batchNumAd.text.isEmpty ||
-  //       device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
-  //   bool activationFromBool;
-  //   try {
-  //     activationFromBool = (activationFromAd.text.isEmpty ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isAfter(DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isAtSameMomentAs(
-  //                 DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
-  //   } catch (Exception) {
-  //     activationFromBool = false;
-  //   }
-  //   bool activationToBool;
-  //   try {
-  //     activationToBool = (activationToAd.text.isEmpty ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isBefore(DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isAtSameMomentAs(
-  //                 DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
-  //   } catch (Exception) {
-  //     activationToBool = false;
-  //   }
-  //   bool simBool =
-  //       (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
+  // void getDevices(List<String> id, List<String> locationName) {
+  //   http
+  //       .get(Uri.parse(
+  //           'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'))
+  //       .then((value) {
+  //     if (value.statusCode == 200) {
+  //       List<DeviceJason> devices = [];
+  //       this.duplicateDevices.clear();
   //
-  //   bool lastSignalBool;
-  //   try {
-  //     lastSignalBool = (lastSignalAd.text.isEmpty ||
-  //         DateFormat('yyyy-MM-dd HH:mm:ss')
-  //             .parse(device.lastSignal)
-  //             .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
-  //         DateFormat('yyyy-MM-dd HH:mm:ss')
-  //             .parse(device.lastSignal)
-  //             .isAtSameMomentAs(
-  //                 DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
-  //   } catch (Exception) {
-  //     lastSignalBool = false;
-  //   }
+  //       List<dynamic> values = [];
+  //       values = json.decode(value.body);
+  //       setState(() {
+  //         if (advancedSearch.advancedSearchBool) {
+  //           index = 2;
+  //         } else {
+  //           index = 0;
+  //         }
+  //       });
   //
-  //   if (clientBool &&
-  //       batchBool &&
-  //       activationFromBool &&
-  //       activationToBool &&
-  //       simBool &&
-  //       lastSignalBool) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
+  //       if (values.length > 0) {
+  //         for (int i = 0; i < values.length; i++) {
+  //           if (values[i] != null) {
+  //             Map<String, dynamic> map = values[i];
+  //             String query = searchController.text;
+  //             DeviceJason device = DeviceJason.fromJson(
+  //                 map,
+  //                 locationName
+  //                     .elementAt(id.indexOf(map['location_id'].toString())));
+  //
+  //             if (advancedSearch.filterDevice(device)) {
+  //               if (query.isNotEmpty) {
+  //                 if (device.id.toLowerCase().contains(query.toLowerCase()) ||
+  //                     device.deviceName
+  //                         .toLowerCase()
+  //                         .contains(query.toLowerCase()) ||
+  //                     device.deviceLocation
+  //                         .toLowerCase()
+  //                         .contains(query.toLowerCase())) {
+  //                   device.setHighLight(query);
+  //                   devices.add(device);
+  //                 }
+  //                 this.duplicateDevices.add(device);
+  //               } else {
+  //                 devices.add(device);
+  //                 this.duplicateDevices.add(device);
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //       showDevices(devices);
+  //     } else {
+  //       setState(() {
+  //         loading = false;
+  //       });
+  //       throw Exception("Unable to get device list");
+  //     }
+  //   }).onError((error, stackTrace) {
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //     toast('Error: ' + error.message);
+  //   });
   // }
   //
-  // void reset() {
-  //   clientAd = "";
-  //   simProviderAd = "";
-  //   batchNumAd.text = "";
-  //   activationFromAd.text = "";
-  //   activationToAd.text = "";
-  //   lastSignalAd.text = "";
-  //   searchController.text = "";
-  //   getLocations();
+  // void showDevices(List<DeviceJason> devices) {
+  //   setState(() {
+  //     resNum = devices.length.toString();
+  //     _pagingController.itemList = devices;
+  //     if (sortState == 0) {
+  //       _pagingController.itemList
+  //           .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+  //       this
+  //           .duplicateDevices
+  //           .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+  //     } else if (sortState == 1) {
+  //       _pagingController.itemList
+  //           .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+  //       this
+  //           .duplicateDevices
+  //           .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+  //     } else if (sortState == 2) {
+  //       _pagingController.itemList
+  //           .sort((a, b) => a.deviceName.compareTo(b.deviceName));
+  //       this
+  //           .duplicateDevices
+  //           .sort((a, b) => a.deviceName.compareTo(b.deviceName));
+  //     } else if (sortState == 3) {
+  //       _pagingController.itemList
+  //           .sort((a, b) => b.deviceName.compareTo(a.deviceName));
+  //       this
+  //           .duplicateDevices
+  //           .sort((a, b) => b.deviceName.compareTo(a.deviceName));
+  //     } else if (sortState == 4) {
+  //       _pagingController.itemList
+  //           .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+  //       this
+  //           .duplicateDevices
+  //           .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+  //     } else if (sortState == 5) {
+  //       _pagingController.itemList
+  //           .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+  //       this
+  //           .duplicateDevices
+  //           .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+  //     }
+  //     loading = false;
+  //   });
   // }
+
+  void sort() {
+    if (sortState == 0) {
+      _pagingController.itemList
+          .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+      this
+          .duplicateDevices
+          .sort((a, b) => getDouble(a.id).compareTo(getDouble(b.id)));
+    } else if (sortState == 1) {
+      _pagingController.itemList
+          .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+      this
+          .duplicateDevices
+          .sort((a, b) => getDouble(b.id).compareTo(getDouble(a.id)));
+    } else if (sortState == 2) {
+      _pagingController.itemList
+          .sort((a, b) => a.deviceName.compareTo(b.deviceName));
+      this
+          .duplicateDevices
+          .sort((a, b) => a.deviceName.compareTo(b.deviceName));
+    } else if (sortState == 3) {
+      _pagingController.itemList
+          .sort((a, b) => b.deviceName.compareTo(a.deviceName));
+      this
+          .duplicateDevices
+          .sort((a, b) => b.deviceName.compareTo(a.deviceName));
+    } else if (sortState == 4) {
+      _pagingController.itemList
+          .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+      this
+          .duplicateDevices
+          .sort((a, b) => a.deviceLocation.compareTo(b.deviceLocation));
+    } else if (sortState == 5) {
+      _pagingController.itemList
+          .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+      this
+          .duplicateDevices
+          .sort((a, b) => b.deviceLocation.compareTo(a.deviceLocation));
+    }
+  }
 
   int getInt(String s) {
     try {

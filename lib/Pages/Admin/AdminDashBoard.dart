@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:connectivity/connectivity.dart';
+// import 'package:connectivity/connectivity.dart';
 import 'package:countup/countup.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
@@ -16,15 +16,16 @@ import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/AdminAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/WidgetSize.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:preload_page_view/preload_page_view.dart';
-import '../../Choices.dart';
+import '../../public.dart';
+// import '../../main.dart';
 import 'DeviceHistory.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
@@ -49,9 +50,6 @@ class DashBoardTest1 extends StatefulWidget {
   ];
   final String title;
 
-
-
-
   @override
   _DashBoardTest1 createState() => _DashBoardTest1();
 }
@@ -59,7 +57,7 @@ class DashBoardTest1 extends StatefulWidget {
 class _DashBoardTest1 extends State<DashBoardTest1>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   double radius = 80, radius2 = 80;
-  StreamSubscription<ConnectivityResult> subscription;
+  // StreamSubscription<ConnectivityResult> subscription;
   int activeHours = 72, inActiveHours = 72;
   List<DeviceJason> duplicatedDevices = [];
   List<DeviceJason> activeDevices = [];
@@ -126,8 +124,8 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   @override
   void initState() {
     focusNode = FocusNode();
-    subscription =
-        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+    // subscription =
+    //     Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 260),
@@ -147,20 +145,22 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     super.initState();
   }
 
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    if (result == ConnectivityResult.none) {
-      toast("internet disconnected");
-    } else {
-      getLocations();
-      client = await RemoteApi.getClientList();
-      location = await RemoteApi.getLocationList();
-    }
-  }
+  // Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+  //   if (result == ConnectivityResult.none) {
+  //     toast("internet disconnected");
+  //   } else {
+  //     String value = await load('user_type');
+  //     await init(value);
+  //     getLocations();
+  //     // client = await RemoteApi.getClientList();
+  //     // location = await RemoteApi.getLocationList();
+  //   }
+  // }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    subscription.cancel();
+    // subscription.cancel();
     super.dispose();
   }
 
@@ -194,7 +194,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
   @override
   Widget build(BuildContext context) {
-    dashBoardContext =context;
+    dashBoardContext = context;
 
     if (advancedSearch == null)
       advancedSearch =
@@ -1483,7 +1483,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
                               // toast("msg");
                             },
                           ),
-
                           // RawMaterialButton(
                           //   onLongPress: () {},
                           //   onPressed: () {
@@ -1817,7 +1816,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     );
   }
 
-  // Future<void> refresh() async {}
+// Future<void> refresh() async {}
 
   void isOpen(bool isOpen) {
     drawerOpen = isOpen;
@@ -1836,159 +1835,159 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     return Future.value(true);
   }
 
-  // void advancedSearch() {
-  //   Navigator.of(context).push(
-  //     new MaterialPageRoute<String>(
-  //         builder: (BuildContext context) {
-  //           return new Scaffold(
-  //             backgroundColor: Color(0xfafafafa),
-  //             appBar: new AppBar(
-  //               centerTitle: true,
-  //               backgroundColor: Color(0xff0065a3),
-  //               title: const Text('Search'),
-  //               actions: [
-  //                 IconButton(
-  //                   icon: Icon(
-  //                     Icons.restart_alt,
-  //                     color: Colors.white,
-  //                   ),
-  //                   onPressed: () {
-  //                     Navigator.pop(this.context);
-  //                     reset();
-  //                   },
-  //                 )
-  //               ],
-  //             ),
-  //             body: GestureDetector(
-  //               onTap: () {
-  //                 FocusScopeNode currentFocus = FocusScope.of(context);
-  //                 if (!currentFocus.hasPrimaryFocus &&
-  //                     currentFocus.focusedChild != null) {
-  //                   FocusManager.instance.primaryFocus.unfocus();
-  //                 }
-  //               },
-  //               child: SingleChildScrollView(
-  //                 child: Container(
-  //                   width: MediaQuery.of(context).size.width,
-  //                   height: MediaQuery.of(context).size.height,
-  //                   padding: EdgeInsets.all(15),
-  //                   color: Color(0xfafafafa),
-  //                   child: Column(
-  //                     crossAxisAlignment: CrossAxisAlignment.start,
-  //                     children: [
-  //                       Text(
-  //                         'Client',
-  //                         style: TextStyle(fontSize: 16.0, color: Colors.black),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5,
-  //                       ),
-  //                       ModalFilter(clientAd, "Client", client,
-  //                           (val) => clientAd = val, "", false),
-  //                       SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Text(
-  //                         'Client Batch Number',
-  //                         style: TextStyle(fontSize: 16.0, color: Colors.black),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5,
-  //                       ),
-  //                       SmartField(
-  //                         controller: batchNumAd,
-  //                         hintText: "Client Batch Number",
-  //                       ),
-  //                       SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Text(
-  //                         'Activation Date From',
-  //                         style: TextStyle(fontSize: 16.0, color: Colors.black),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5,
-  //                       ),
-  //                       SmartDate(
-  //                         controller: activationFromAd,
-  //                         hintText: "Activation Date From",
-  //                       ),
-  //                       SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Text(
-  //                         'Activation Date To',
-  //                         style: TextStyle(fontSize: 16.0, color: Colors.black),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5,
-  //                       ),
-  //                       SmartDate(
-  //                         controller: activationToAd,
-  //                         hintText: "Activation Date To",
-  //                       ),
-  //                       SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Text(
-  //                         'Sim Provider',
-  //                         style: TextStyle(fontSize: 16.0, color: Colors.black),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5,
-  //                       ),
-  //                       ModalFilter(
-  //                           simProviderAd,
-  //                           "Sim Provider",
-  //                           simCardProvider,
-  //                           (val) => simProviderAd = val,
-  //                           "",
-  //                           false),
-  //                       SizedBox(
-  //                         height: 20,
-  //                       ),
-  //                       Text(
-  //                         'Last Signal From',
-  //                         style: TextStyle(fontSize: 16.0, color: Colors.black),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5,
-  //                       ),
-  //                       SmartDate(
-  //                         controller: lastSignalAd,
-  //                         hintText: "Last Signal From",
-  //                       ),
-  //                       SizedBox(
-  //                         height: 70,
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //             floatingActionButton: FloatingActionButton(
-  //               onPressed: () {
-  //                 if (clientAd == "" &&
-  //                     simProviderAd == "" &&
-  //                     batchNumAd.text == "" &&
-  //                     activationFromAd.text == "" &&
-  //                     activationToAd.text == "" &&
-  //                     lastSignalAd.text == "") {
-  //                   toast("Please fill in any field to search");
-  //                   return;
-  //                 }
-  //                 advancedSearchBool = true;
-  //                 Navigator.pop(this.context);
-  //                 getLocations();
-  //               },
-  //               child: const Icon(Icons.search),
-  //               backgroundColor: Color(0xff0065a3),
-  //             ),
-  //           );
-  //         },
-  //         fullscreenDialog: true),
-  //   );
-  // }
+// void advancedSearch() {
+//   Navigator.of(context).push(
+//     new MaterialPageRoute<String>(
+//         builder: (BuildContext context) {
+//           return new Scaffold(
+//             backgroundColor: Color(0xfafafafa),
+//             appBar: new AppBar(
+//               centerTitle: true,
+//               backgroundColor: Color(0xff0065a3),
+//               title: const Text('Search'),
+//               actions: [
+//                 IconButton(
+//                   icon: Icon(
+//                     Icons.restart_alt,
+//                     color: Colors.white,
+//                   ),
+//                   onPressed: () {
+//                     Navigator.pop(this.context);
+//                     reset();
+//                   },
+//                 )
+//               ],
+//             ),
+//             body: GestureDetector(
+//               onTap: () {
+//                 FocusScopeNode currentFocus = FocusScope.of(context);
+//                 if (!currentFocus.hasPrimaryFocus &&
+//                     currentFocus.focusedChild != null) {
+//                   FocusManager.instance.primaryFocus.unfocus();
+//                 }
+//               },
+//               child: SingleChildScrollView(
+//                 child: Container(
+//                   width: MediaQuery.of(context).size.width,
+//                   height: MediaQuery.of(context).size.height,
+//                   padding: EdgeInsets.all(15),
+//                   color: Color(0xfafafafa),
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         'Client',
+//                         style: TextStyle(fontSize: 16.0, color: Colors.black),
+//                       ),
+//                       SizedBox(
+//                         height: 5,
+//                       ),
+//                       ModalFilter(clientAd, "Client", client,
+//                           (val) => clientAd = val, "", false),
+//                       SizedBox(
+//                         height: 20,
+//                       ),
+//                       Text(
+//                         'Client Batch Number',
+//                         style: TextStyle(fontSize: 16.0, color: Colors.black),
+//                       ),
+//                       SizedBox(
+//                         height: 5,
+//                       ),
+//                       SmartField(
+//                         controller: batchNumAd,
+//                         hintText: "Client Batch Number",
+//                       ),
+//                       SizedBox(
+//                         height: 20,
+//                       ),
+//                       Text(
+//                         'Activation Date From',
+//                         style: TextStyle(fontSize: 16.0, color: Colors.black),
+//                       ),
+//                       SizedBox(
+//                         height: 5,
+//                       ),
+//                       SmartDate(
+//                         controller: activationFromAd,
+//                         hintText: "Activation Date From",
+//                       ),
+//                       SizedBox(
+//                         height: 20,
+//                       ),
+//                       Text(
+//                         'Activation Date To',
+//                         style: TextStyle(fontSize: 16.0, color: Colors.black),
+//                       ),
+//                       SizedBox(
+//                         height: 5,
+//                       ),
+//                       SmartDate(
+//                         controller: activationToAd,
+//                         hintText: "Activation Date To",
+//                       ),
+//                       SizedBox(
+//                         height: 20,
+//                       ),
+//                       Text(
+//                         'Sim Provider',
+//                         style: TextStyle(fontSize: 16.0, color: Colors.black),
+//                       ),
+//                       SizedBox(
+//                         height: 5,
+//                       ),
+//                       ModalFilter(
+//                           simProviderAd,
+//                           "Sim Provider",
+//                           simCardProvider,
+//                           (val) => simProviderAd = val,
+//                           "",
+//                           false),
+//                       SizedBox(
+//                         height: 20,
+//                       ),
+//                       Text(
+//                         'Last Signal From',
+//                         style: TextStyle(fontSize: 16.0, color: Colors.black),
+//                       ),
+//                       SizedBox(
+//                         height: 5,
+//                       ),
+//                       SmartDate(
+//                         controller: lastSignalAd,
+//                         hintText: "Last Signal From",
+//                       ),
+//                       SizedBox(
+//                         height: 70,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             floatingActionButton: FloatingActionButton(
+//               onPressed: () {
+//                 if (clientAd == "" &&
+//                     simProviderAd == "" &&
+//                     batchNumAd.text == "" &&
+//                     activationFromAd.text == "" &&
+//                     activationToAd.text == "" &&
+//                     lastSignalAd.text == "") {
+//                   toast("Please fill in any field to search");
+//                   return;
+//                 }
+//                 advancedSearchBool = true;
+//                 Navigator.pop(this.context);
+//                 getLocations();
+//               },
+//               child: const Icon(Icons.search),
+//               backgroundColor: Color(0xff0065a3),
+//             ),
+//           );
+//         },
+//         fullscreenDialog: true),
+//   );
+// }
 
   Padding getIcon(int index, Color color) {
     return Padding(
@@ -2008,7 +2007,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     });
   }
 
-
   Future<void> getDevices() async {
     try {
       devices = await RemoteApi.getDevicesList();
@@ -2025,26 +2023,28 @@ class _DashBoardTest1 extends State<DashBoardTest1>
         }
       });
       setState(() {
-        markers.clear();
-        positions.clear();
+        this.markers.clear();
+        this.positions.clear();
+        this.duplicatedDevices.clear();
         double total = 0, inActiveLast72 = 0;
         devices.forEach((device) {
-          total++;
-          if (device.inActiveLast72()) {
-            inActiveLast72++;
-          }
-          if (advancedSearch.filterDevice(device)) {
-            if (device.lat != 500 && device.lon != 500) {
-              addMarker(device);
-              positions.add(new LatLng(device.lat, device.lon));
+          if(device.isUniKl()) {
+            this.duplicatedDevices.add(device);
+            total++;
+            if (device.inActiveLast72()) {
+              inActiveLast72++;
+            }
+            if (advancedSearch.filterDevice(device)) {
+              if (device.lat != 500 && device.lon != 500) {
+                addMarker(device);
+                positions.add(new LatLng(device.lat, device.lon));
+              }
             }
           }
         });
         this.values[0] = (total - inActiveLast72);
         this.values[1] = inActiveLast72;
         this.values[2] = total;
-        this.duplicatedDevices.clear();
-        this.duplicatedDevices.addAll(devices);
         getActive();
         getInactive();
         if (positions.isNotEmpty) {
@@ -2090,65 +2090,65 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     });
   }
 
-  // bool filter(DeviceJason device) {
-  //   bool clientBool = (clientAd.isEmpty ||
-  //       client[getInt(device.client) - 1].contains(clientAd));
-  //   bool batchBool = (batchNumAd.text.isEmpty ||
-  //       device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
-  //   bool activationFromBool;
-  //   try {
-  //     activationFromBool = (activationFromAd.text.isEmpty ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isAfter(DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isAtSameMomentAs(
-  //                 DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
-  //   } catch (Exception) {
-  //     activationFromBool = false;
-  //   }
-  //   bool activationToBool;
-  //   try {
-  //     activationToBool = (activationToAd.text.isEmpty ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isBefore(DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
-  //         DateFormat('dd-MM-yyyy')
-  //             .parse(device.activationDate)
-  //             .isAtSameMomentAs(
-  //                 DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
-  //   } catch (Exception) {
-  //     activationToBool = false;
-  //   }
-  //   bool simBool =
-  //       (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
-  //
-  //   bool lastSignalBool;
-  //   try {
-  //     lastSignalBool = (lastSignalAd.text.isEmpty ||
-  //         DateFormat('yyyy-MM-dd HH:mm:ss')
-  //             .parse(device.lastSignal)
-  //             .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
-  //         DateFormat('yyyy-MM-dd HH:mm:ss')
-  //             .parse(device.lastSignal)
-  //             .isAtSameMomentAs(
-  //                 DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
-  //   } catch (Exception) {
-  //     lastSignalBool = false;
-  //   }
-  //
-  //   if (clientBool &&
-  //       batchBool &&
-  //       activationFromBool &&
-  //       activationToBool &&
-  //       simBool &&
-  //       lastSignalBool) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+// bool filter(DeviceJason device) {
+//   bool clientBool = (clientAd.isEmpty ||
+//       client[getInt(device.client) - 1].contains(clientAd));
+//   bool batchBool = (batchNumAd.text.isEmpty ||
+//       device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
+//   bool activationFromBool;
+//   try {
+//     activationFromBool = (activationFromAd.text.isEmpty ||
+//         DateFormat('dd-MM-yyyy')
+//             .parse(device.activationDate)
+//             .isAfter(DateFormat('dd-MM-yyyy').parse(activationFromAd.text)) ||
+//         DateFormat('dd-MM-yyyy')
+//             .parse(device.activationDate)
+//             .isAtSameMomentAs(
+//                 DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
+//   } catch (Exception) {
+//     activationFromBool = false;
+//   }
+//   bool activationToBool;
+//   try {
+//     activationToBool = (activationToAd.text.isEmpty ||
+//         DateFormat('dd-MM-yyyy')
+//             .parse(device.activationDate)
+//             .isBefore(DateFormat('dd-MM-yyyy').parse(activationToAd.text)) ||
+//         DateFormat('dd-MM-yyyy')
+//             .parse(device.activationDate)
+//             .isAtSameMomentAs(
+//                 DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
+//   } catch (Exception) {
+//     activationToBool = false;
+//   }
+//   bool simBool =
+//       (simProviderAd.isEmpty || device.simProvider.contains(simProviderAd));
+//
+//   bool lastSignalBool;
+//   try {
+//     lastSignalBool = (lastSignalAd.text.isEmpty ||
+//         DateFormat('yyyy-MM-dd HH:mm:ss')
+//             .parse(device.lastSignal)
+//             .isAfter(DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)) ||
+//         DateFormat('yyyy-MM-dd HH:mm:ss')
+//             .parse(device.lastSignal)
+//             .isAtSameMomentAs(
+//                 DateFormat('dd-MM-yyyy').parse(lastSignalAd.text)));
+//   } catch (Exception) {
+//     lastSignalBool = false;
+//   }
+//
+//   if (clientBool &&
+//       batchBool &&
+//       activationFromBool &&
+//       activationToBool &&
+//       simBool &&
+//       lastSignalBool) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
 
   int getInteger(String str) {
     String intString = "";
@@ -2263,15 +2263,15 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     });
   }
 
-  // void reset() {
-  //   clientAd = "";
-  //   simProviderAd = "";
-  //   batchNumAd.text = "";
-  //   activationFromAd.text = "";
-  //   activationToAd.text = "";
-  //   lastSignalAd.text = "";
-  //   getLocations();
-  // }
+// void reset() {
+//   clientAd = "";
+//   simProviderAd = "";
+//   batchNumAd.text = "";
+//   activationFromAd.text = "";
+//   activationToAd.text = "";
+//   lastSignalAd.text = "";
+//   getLocations();
+// }
 
   LatLngBounds _bounds(List<LatLng> positions) {
     final southwestLat = positions.map((p) => p.latitude).reduce(

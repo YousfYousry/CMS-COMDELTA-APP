@@ -4,7 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:smart_select/smart_select.dart';
+
+import '../public.dart';
+import 'UserInfoJason.dart';
 
 class RemoteApi {
   static Future<List<LogJason>> getCharacterList(
@@ -87,6 +91,19 @@ class RemoteApi {
         ),
       );
 
+  static Future<List<HistoryJason>> getClientHistory() async => http.post(
+        Uri.parse(
+            'http://103.18.247.174:8080/AmitProject/getClientHistory.php'),
+        body: {
+          'client_id':user.clientId.trim(),
+        },
+      ).mapFromResponse<List<HistoryJason>, List<dynamic>>(
+        (jsonArray) => _parseItemListFromJsonArray(
+          jsonArray,
+          (jsonObject) => HistoryJason.fromJson(jsonObject),
+        ),
+      );
+
   static Future<List<DeviceJason>> getDevicesList() async => http.post(
     Uri.parse(
         'http://103.18.247.174:8080/AmitProject/admin/getDevices.php'),
@@ -116,6 +133,27 @@ class RemoteApi {
     T Function(dynamic object) mapper,
   ) =>
       jsonArray.map(mapper).toList();
+
+
+  static Future <void> getUserInfo() async{
+    final userId = await load('user_id');
+    if(userId == '-1') {
+      user = UserInfoJason('', '', '', '', '', '');
+      return;
+    }
+    final response = await http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/getUserProfile.php'),
+        body: {
+          'user_id': userId,
+        });
+    if (response.statusCode == 200) {
+      user = UserInfoJason.fromJson(json.decode(response.body));
+      return;
+    } else {
+      user = UserInfoJason('', '', '', '', '', '');
+      return;
+    }
+  }
 }
 
 class GenericHttpException implements Exception {}

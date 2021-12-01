@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
-
-// import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
@@ -15,19 +12,19 @@ import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextFieldHor.dart';
 
 import '../../public.dart';
 
-class DeviceHistory extends StatefulWidget {
-  DeviceHistory({Key key}) : super(key: key);
+class DeviceHistoryClient extends StatefulWidget {
+  DeviceHistoryClient({Key key}) : super(key: key);
 
   @override
   _DeviceHistory createState() => _DeviceHistory();
 }
 
-class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
+class _DeviceHistory extends State<DeviceHistoryClient> with WidgetsBindingObserver {
   bool advancedSearchBool = false;
   bool loading = false;
   bool startIdError = false;
   bool endIdError = false;
-  String clientAd = "";
+  // String clientAd = "";
   String deviceStatusAd = "";
   TextEditingController activationFromAd = new TextEditingController(),
       activationToAd = new TextEditingController(),
@@ -549,12 +546,12 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ModalFilter(
-                            value: clientAd,
-                            title: "Client",
-                            options: client,
-                            passVal: (val) => setState(() => clientAd = val),
-                          ),
+                          // ModalFilter(
+                          //   value: clientAd,
+                          //   title: "Client",
+                          //   options: client,
+                          //   passVal: (val) => setState(() => clientAd = val),
+                          // ),
 
                           ModalFilter(
                             value: deviceStatusAd,
@@ -712,7 +709,8 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   }
 
   bool allEmpty() {
-    return clientAd == "" &&
+    return
+      // clientAd == "" &&
         deviceStatusAd == "" &&
         activationFromAd.text == "" &&
         activationToAd.text == "" &&
@@ -732,7 +730,7 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   }
 
   void reset() {
-    clientAd = "";
+    // clientAd = "";
     deviceStatusAd = "";
     activationFromAd.text = "";
     activationToAd.text = "";
@@ -765,14 +763,14 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   }
 
   bool filterElement(HistoryJason element) {
-    bool filterClient;
+    // bool filterClient;
 
-    if (clientAd.isEmpty) {
-      filterClient = true;
-    } else {
-      DeviceJason device = element.getDevice();
-      filterClient = client[getInt(device.client) - 1].contains(clientAd);
-    }
+    // if (clientAd.isEmpty) {
+    //   filterClient = true;
+    // } else {
+    //   DeviceJason device = element.getDevice();
+    //   filterClient = client[getInt(device.client) - 1].contains(clientAd);
+    // }
 
     bool filterStatus = (deviceStatusAd.isEmpty)
         ? true
@@ -810,7 +808,8 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
         getInt(element.deviceId) >= getInt(startingId.text);
     bool filterIdTo = endingId.text.isEmpty ||
         getInt(element.deviceId) <= getInt(endingId.text);
-    return filterClient &&
+    return
+      // filterClient &&
         filterStatus &&
         filterDateFrom &&
         filterDateTo &&
@@ -838,7 +837,7 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
   Future<List<HistoryJason>> _fetchPage() async {
     try {
       // devices = await RemoteApi.getDevicesList();
-      return await RemoteApi.getHistoryList();
+      return await RemoteApi.getClientHistory();
     } catch (error) {
       _pagingController.error = error;
       print(error);

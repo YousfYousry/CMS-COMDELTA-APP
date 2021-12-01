@@ -1,9 +1,10 @@
 import 'package:intl/intl.dart';
 
-import '../Choices.dart';
+import '../public.dart';
 
 class DeviceJason {
   String _id = "";
+  String _unikl = "";
   String _client = "";
   String _deviceName = "";
   String _siteRegion = "";
@@ -34,6 +35,7 @@ class DeviceJason {
 
   DeviceJason(
       this._id,
+      this._unikl,
       this._client,
       this._deviceName,
       this._siteRegion,
@@ -66,11 +68,13 @@ class DeviceJason {
         return 500;
       }
     }
+
     String getStr(Object str) {
       return (str != null && !str.toString().contains("null"))
           ? str.toString()
           : "";
     }
+
     String getBattery(String battery) {
       double batteryDouble = getDouble(battery);
       if (500 > batteryDouble && batteryDouble >= 3.23) {
@@ -85,6 +89,7 @@ class DeviceJason {
         return "4";
       }
     }
+
     String getRssi(String rssi) {
       double rssiDouble = getDouble(rssi);
       if (500 > rssiDouble && rssiDouble >= 20) {
@@ -99,6 +104,7 @@ class DeviceJason {
         return "4";
       }
     }
+
     int getIcon(String str, bool allOn) {
       DateTime date = DateTime.now();
       if (DateFormat('yyyy-MM-dd HH:mm:ss').parse(str).isBefore(DateTime(
@@ -115,8 +121,10 @@ class DeviceJason {
       }
       return 0;
     }
+
     return DeviceJason(
       getStr(json['device_id']),
+      getStr(json['unikl']),
       getStr(json['client_id']),
       getStr(json['device_name']),
       getStr(json['site_region']),
@@ -214,6 +222,7 @@ class DeviceJason {
 
     return DeviceJason(
       getStr(json['device_id']),
+      getStr(json['unikl']),
       getStr(json['client_id']),
       getStr(json['device_name']),
       getStr(json['site_region']),
@@ -242,6 +251,14 @@ class DeviceJason {
               getStr(json['LS2']).contains("1") &&
               getStr(json['LS3']).contains("1"))),
     );
+  }
+
+  bool isUniKl() {
+    if (user.clientId.trim() == "13") {
+      return _unikl.trim() == "1" || _client.trim() == "13";
+    } else {
+      return true;
+    }
   }
 
   bool inActiveSince(int since) {
@@ -277,7 +294,12 @@ class DeviceJason {
   bool inActiveLast72() {
     DateTime date = DateTime.now();
     return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(
-        DateTime(date.year, date.month, date.day, date.hour - 72, date.minute,
+        DateTime(
+            date.year,
+            date.month,
+            date.day,
+            date.hour - ((userType == clientKeyWord) ? 120 : 72),
+            date.minute,
             date.second));
   }
 

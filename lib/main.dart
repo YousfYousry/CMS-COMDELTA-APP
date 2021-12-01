@@ -13,11 +13,25 @@ import 'package:login_cms_comdelta/Pages/Admin/AdminDashBoard.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:login_cms_comdelta/Pages/Client/ClientDashBoard.dart';
 import 'package:upgrader/upgrader.dart';
-import 'Choices.dart';
+import 'public.dart';
 import 'JasonHolders/RemoteApi.dart';
-import 'Widgets/Functions/random.dart';
+// import 'JasonHolders/UserInfoJason.dart';
+// import 'Widgets/Functions/random.dart';
+import 'Widgets/Others/Loading.dart';
 import 'Widgets/Others/SizeTransition.dart';
-import 'Widgets/ProgressBars/ProgressBar.dart';
+// import 'Widgets/ProgressBars/ProgressBar.dart';
+
+bool isInit = false;
+
+Future<void> init(String user) async {
+  await RemoteApi.getUserInfo();
+  location = await RemoteApi.getLocationList();
+  // devices = await RemoteApi.getDevicesList();
+  client = await RemoteApi.getClientList();
+  await NotificationService().init();
+  FirebaseMessaging.onMessage.listen(_messageHandler);
+  isInit = true;
+}
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -80,10 +94,58 @@ Future selectNotification(String payload) async {
 
 final routeObserver = RouteObserver<PageRoute>();
 // String initialRoute = '/';
+// var page;
+
+class LoadingPage extends StatefulWidget {
+  @override
+  _LoadingPage createState() => _LoadingPage();
+}
+
+class _LoadingPage extends State<LoadingPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage("assets/image/loading.gif"), fit: BoxFit.fill),
+      ),
+      child: Loading(
+        loading: false,
+        color: Colors.white,
+      ),
+    );
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  userType = await load('user_type');
+
+  // if(value.contains("newClient")||value.contains("newAdmin")) {
+  //   runApp(
+  //     MaterialApp(
+  //       home: LoadingPage(), //getRoute(value)
+  //     ),
+  //   );
+  // }
+
   await Firebase.initializeApp();
+  await initPlatformState();
+  try {
+    await init(userType);
+    runApp(
+      MaterialApp(
+        theme: ThemeData(
+          primarySwatch: MaterialColor(0xff0065a3, customColors),
+        ),
+        home: UpgradeAlert(child: getRoute()), //
+        navigatorObservers: [routeObserver],
+      ),
+    );
+  } catch (error) {
+    toast("No internet connection!");
+  }
 
   // if (initialRoute.isEmpty) {
   //   initialRoute = '/';
@@ -98,42 +160,16 @@ Future<void> main() async {
   //   selectedNotificationPayload = notificationAppLaunchDetails.payload;
   //   initialRoute = SecondPage.routeName;
   // }
-  await initPlatformState();
-  String value = await load('user_type');
-  runApp(
-    MaterialApp(
-      theme: ThemeData(
-        primarySwatch: MaterialColor(0xff0065a3, customColors),
-      ),
-      // home: MyApp(getRoute(value)),
-      // initialRoute: '/',
-      // routes: {
-      //   '/': (context) {
-      //     // publicContext = context;
-      //     return UpgradeAlert(child: getRoute(value));
-      //   },
-      //   '/second': (context) => DeviceHistory(),
-      // },
-      home: UpgradeAlert(child: getRoute(value)),
-      navigatorObservers: [routeObserver],
-    ),
-  );
-
   // NotificationSettings settings =
 
   // FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  await NotificationService().init();
-  FirebaseMessaging.onMessage.listen(_messageHandler);
   // FirebaseMessaging.onBackgroundMessage(_messageHandler);
   // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
   //   alert: true,
   //   badge: true,
   //   sound: true,
   // );
-
-  client = await RemoteApi.getClientList();
-  location = await RemoteApi.getLocationList();
 }
 
 final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -201,12 +237,12 @@ void _readIosDeviceInfo(IosDeviceInfo data) {
   // };
 }
 
-Widget getRoute(String str) {
-  if (str == "-1") {
+Widget getRoute() {
+  if (userType == "-1") {
     return LoginPage();
-  } else if (str.contains("newClient")) {
+  } else if (userType.contains(clientKeyWord)) {
     return ClientDashBoard();
-  } else if (str.contains("newAdmin")) {
+  } else if (userType.contains(adminKeyWord)) {
     return DashBoardTest1();
   }
   return LoginPage();
@@ -566,12 +602,15 @@ class _LoginPage extends State<LoginPage> {
                         ), // Setting for Text Field, Password Field and Login Button
                       ),
                     ),
-                    Center(
-                      child: Visibility(
-                        child: CircularProgressIndicatorApp(),
-                        visible: loading,
-                      ),
+                    Loading(
+                      loading: loading,
                     ),
+                    // Center(
+                    //   child: Visibility(
+                    //     child: CircularProgressIndicatorApp(),
+                    //     visible: loading,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -601,7 +640,7 @@ class _LoginPage extends State<LoginPage> {
     final response = await http.post(
         Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
         body: {
-          'email': emailFieldController.text,
+          'email': emailFieldController.text.trim(),
           'password': passFieldController.text
         }).onError((error, stackTrace) {
       toast('Error: ' + error.message);
@@ -612,66 +651,60 @@ class _LoginPage extends State<LoginPage> {
     if (response.statusCode == 200) {
       Map<String, dynamic> map = json.decode(response.body);
       if (map["res"] == "0") {
-        String userType;
         var route;
-        if (map["type"].toString().compareTo('3') != 0) {
-          if (!await setNotificationToken() || deviceIdentifier.isEmpty) {
-            if (deviceIdentifier.isEmpty) {
-              toast("Device Identifier is unknown");
-            }
-
-            setState(() => loading = false);
-            return;
+        if (map["type"].toString().isEmpty ||
+            map["clientId"].toString().isEmpty ||
+            deviceIdentifier.isEmpty ||
+            !await setNotificationToken(
+                map["type"].toString(), map["clientId"].toString())) {
+          if (deviceIdentifier.isEmpty) {
+            toast("Device Identifier is unknown");
           }
-          userType = "newAdmin";
+          if (map["clientId"].toString().isEmpty) {
+            toast("Client Id is unknown");
+          }
+          if (map["type"].toString().isEmpty) {
+            toast("User Type is unknown");
+          }
+          setState(() => loading = false);
+          return;
+        }
+
+        if (map["type"].toString().compareTo('3') != 0) {
+          userType = adminKeyWord;
           route = DashBoardTest1();
         } else {
-          userType = "newClient";
+          userType = clientKeyWord;
           route = ClientDashBoard();
         }
 
         save('user_type', userType);
         save('profile_pic', '-1');
         save('client_id', map["clientId"].toString());
-        save('user_id', map["userId"].toString());
+        await save('user_id', map["userId"].toString())
+            .then((value) => RemoteApi.getUserInfo());
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => route));
         toast('Logged in successfully');
       } else {
-        toast('Email or password is incorrect');
+        print(response.body);
       }
     } else {
       toast(getResponseError(response));
     }
-
     setState(() => loading = false);
   }
 
-  String getResponseError(http.Response response) {
-    switch (response.statusCode) {
-      case 200:
-        var responseJson = json.decode(response.body.toString());
-        return responseJson;
-      case 400:
-        return (response.body.toString());
-      case 401:
-        return (response.body.toString());
-      case 403:
-        return (response.body.toString());
-      case 500:
-      default:
-        return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
-    }
-  }
-
-  Future<bool> setNotificationToken() async {
+  Future<bool> setNotificationToken(String type, String clientId) async {
     final token = await FirebaseMessaging.instance.getToken();
     final response = await http.post(
-        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/saveToken.php'),
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/setToken.php'),
         body: {
           'identifier': deviceIdentifier,
           'model': model,
           'token': token,
+          'type': type,
+          'client_id': clientId,
         });
 
     if (json.decode(response.body).contains("200")) {

@@ -2,15 +2,16 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:maps_launcher/maps_launcher.dart';
-
-import 'SizeTransition.dart';
+import '../../public.dart';
+import '../Others/SizeTransition.dart';
 
 class ShowDevice {
   final primaryColor = const Color(0xff0065a3);
 
   ShowDevice(BuildContext context, DeviceJason device) {
+    bool isAdmin = userType != clientKeyWord;
     AwesomeDialog(
       dialogBackgroundColor: Color(0xfafafafa),
       context: context,
@@ -19,38 +20,38 @@ class ShowDevice {
       showCloseIcon: true,
       // closeIcon:  Icon(Icons.close, color: Colors.red),
       // dialogBorderRadius: BorderRadiusGeometry.lerp(BorderRadiusDirectional.circular(10), BorderRadiusDirectional.circular(10), 0),
-      body:
-        Padding(
-          padding: EdgeInsets.only(left: 15, right: 15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              details('ID', device.id),
-              details('Device Name', device.deviceName),
-              details('Device Detail', device.deviceDetails),
-              details('Height', device.deviceHeight),
-              details('Activation Date', device.activationDate),
-              details('Location', device.deviceLocation),
-              details('Batch Number', device.batchNum),
-              details('Sim Number', device.serialNum),
-              details('Sim Provider', device.simProvider),
-              details('Last Signal', device.lastSignal),
-              l123('L1#', device.l1),
-              l123('L2#', device.l2),
-              l123('L3#', device.l3),
-              battery('Battery', device.battery),
-              rssi('Rssi', device.rssi),
-              status('Status', device.status),
-              Row(
-                children: [
-                  Expanded(child:
-                  ElevatedButton(
+      body: Padding(
+        padding: EdgeInsets.only(left: 15, right: 15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            details('Client', client[int.parse(device.client) - 1].value),
+            details('Device ID', device.id),
+            isAdmin ?details('Device Name', device.deviceName):SizedBox(height: 0,),
+            details('Device Detail', device.deviceDetails),
+            details('Height', device.deviceHeight),
+            details('Activation Date', device.activationDate),
+            details('Location', device.deviceLocation),
+            isAdmin ?details('Batch Number', device.batchNum):SizedBox(height: 0,),
+            isAdmin ?details('Sim Number', device.serialNum):SizedBox(height: 0,),
+            isAdmin ?details('Sim Provider', device.simProvider):SizedBox(height: 0,),
+            details('Last Signal', device.lastSignal),
+            isAdmin ?l123('L1#', device.l1):SizedBox(height: 0,),
+            isAdmin ?l123('L2#', device.l2):SizedBox(height: 0,),
+            isAdmin ?l123('L3#', device.l3):SizedBox(height: 0,),
+            isAdmin ?battery('Battery', device.battery):SizedBox(height: 0,),
+            isAdmin ?rssi('Rssi', device.rssi):SizedBox(height: 0,),
+            status('Status', device.status),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                           (device.lat != 500 &&
-                              device.lon != 500 &&
-                              device.deviceName.isNotEmpty)
+                                  device.lon != 500 &&
+                                  device.deviceName.isNotEmpty)
                               ? primaryColor
                               : Colors.grey),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -61,10 +62,10 @@ class ShowDevice {
                       ),
                     ),
                     onPressed: () => (device.lat != 500 &&
-                        device.lon != 500 &&
-                        device.deviceName.isNotEmpty)
+                            device.lon != 500 &&
+                            device.deviceName.isNotEmpty)
                         ? MapsLauncher.launchCoordinates(
-                        device.lat, device.lon, device.deviceName)
+                            device.lat, device.lon, device.deviceName)
                         : toast("Location is unavailable")
                     // if (lat != 500 && lon != 500 && title.isNotEmpty) {
                     //   MapsLauncher.launchCoordinates(lat, lon, title);
@@ -81,8 +82,8 @@ class ShowDevice {
                               "Maps",
                               style: TextStyle(
                                   color: (device.lat != 500 &&
-                                      device.lon != 500 &&
-                                      device.deviceName.isNotEmpty)
+                                          device.lon != 500 &&
+                                          device.deviceName.isNotEmpty)
                                       ? null
                                       : Colors.black54,
                                   fontSize: 12,
@@ -94,11 +95,12 @@ class ShowDevice {
                                 height: 15,
                                 width: 15,
                                 color: (device.lat != 500 &&
-                                    device.lon != 500 &&
-                                    device.deviceName.isNotEmpty)
+                                        device.lon != 500 &&
+                                        device.deviceName.isNotEmpty)
                                     ? null
                                     : Colors.black54,
-                                image: AssetImage('assets/image/google_maps.png'),
+                                image:
+                                    AssetImage('assets/image/google_maps.png'),
                               ),
                             ),
                             Spacer(),
@@ -106,13 +108,16 @@ class ShowDevice {
                         ),
                       ),
                     ),
-                  ),),
-                  SizedBox(width: 5,),
-                  Expanded(child:
-                  ElevatedButton(
+                  ),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Expanded(
+                  child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xffFFB61E)),
+                          MaterialStateProperty.all<Color>(Color(0xffFFB61E)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
@@ -141,7 +146,7 @@ class ShowDevice {
                             Text(
                               "Logs",
                               style: TextStyle(
-                                  color:  null,
+                                  color: null,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -149,7 +154,7 @@ class ShowDevice {
                               padding: EdgeInsets.all(5),
                               child: Icon(
                                 Icons.signal_cellular_alt,
-                                size:15,
+                                size: 15,
                               ),
                             ),
                             Spacer(),
@@ -157,12 +162,13 @@ class ShowDevice {
                         ),
                       ),
                     ),
-                  ),),
-                ],
-              ),
-            ],
-          ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
+      ),
       title: 'This is Ignored',
       desc: 'This is also Ignored',
     )..show();

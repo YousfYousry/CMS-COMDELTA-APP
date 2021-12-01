@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'package:connectivity/connectivity.dart';
-
+// import 'package:connectivity/connectivity.dart';
 // import 'package:countup/countup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ClientAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawer.dart';
 
 // import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../../Choices.dart';
+import '../../public.dart';
 
 class ClientDashBoard extends StatefulWidget {
   ClientDashBoard({Key key}) : super(key: key);
@@ -24,7 +24,7 @@ class ClientDashBoard extends StatefulWidget {
 class _ClientDashBoard extends State<ClientDashBoard>
     with WidgetsBindingObserver {
   double activeNum = 0, inActiveNum = 0, totalNum = 0;
-  StreamSubscription<ConnectivityResult> subscription;
+  // StreamSubscription<ConnectivityResult> subscription;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   final LatLng _center = const LatLng(2.944590144570856, 101.60274569735296);
   GoogleMapController mapController;
@@ -39,7 +39,7 @@ class _ClientDashBoard extends State<ClientDashBoard>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    subscription.cancel();
+    // subscription.cancel();
     super.dispose();
   }
 
@@ -66,217 +66,220 @@ class _ClientDashBoard extends State<ClientDashBoard>
     });
   }
 
-  @override
-  void initState() {
-    subscription =
-        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
-    super.initState();
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    if (result == ConnectivityResult.none) {
-      toast("internet disconnected");
-    } else {
-      getLocations();
-    }
-  }
+  // @override
+  // void initState() {
+  //   subscription =
+  //       Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+  //   super.initState();
+  // }
+  //
+  // Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+  //   if (result == ConnectivityResult.none) {
+  //     toast("internet disconnected");
+  //   } else {
+  //     getLocations();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: ClientAppBar(
-        totalDevices: totalNum,
-        activeDevices: activeNum,
-        inActiveDevices: inActiveNum,
-        totalClicked: displayTotal,
-        activeClicked: displayActive,
-        inActiveClicked: displayInactive,
-      ),
-      drawer: SideDrawer(), // sidebar
-      body: Stack(
-        children: [
-          GoogleMap(
-            // onTap: (v) => _animationController.reverse(),
-            onMapCreated: _onMapCreated,
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            rotateGesturesEnabled: false,
-            mapType: mapType,
-            initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: 4,
+    return WillPopScope(
+      child: Scaffold(
+        appBar: ClientAppBar(
+          totalDevices: totalNum,
+          activeDevices: activeNum,
+          inActiveDevices: inActiveNum,
+          totalClicked: displayTotal,
+          activeClicked: displayActive,
+          inActiveClicked: displayInactive,
+        ),
+        drawer: SideDrawer(setOpen: isOpen), // sidebar
+        body: Stack(
+          children: [
+            GoogleMap(
+              // onTap: (v) => _animationController.reverse(),
+              onMapCreated: _onMapCreated,
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
+              zoomControlsEnabled: false,
+              rotateGesturesEnabled: false,
+              mapType: mapType,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 4,
+              ),
+              markers: Set<Marker>.of(markers.values), // YOUR
             ),
-            markers: Set<Marker>.of(markers.values), // YOUR
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: Container(
-              margin: EdgeInsets.all(10),
-              height: 40,
-              width: 40,
-              child: FloatingActionButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return StatefulBuilder(
-                          builder: (BuildContext context, StateSetter setStateBuilder
-                              /*You can rename this!*/) {
-                        return Container(
-                          height: 200,
-                          // color: Colors.white,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    left: 15, top: 10, right: 10),
-                                child: Row(
+            Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                margin: EdgeInsets.all(10),
+                height: 40,
+                width: 40,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setStateBuilder
+                                /*You can rename this!*/) {
+                          return Container(
+                            height: 200,
+                            // color: Colors.white,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 15, top: 10, right: 10),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Map Type"),
+                                      Spacer(),
+                                      InkWell(
+                                        customBorder: CircleBorder(),
+                                        onTap: () => Navigator.pop(context),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Icon(Icons.close),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Container(),
+                                ),
+                                Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("Map Type"),
-                                    Spacer(),
-                                    InkWell(
-                                      customBorder: CircleBorder(),
-                                      onTap: () => Navigator.pop(context),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Icon(Icons.close),
+                                    Expanded(
+                                      child: InkWell(
+                                        customBorder: CircleBorder(),
+                                        onTap: () => setState(() =>
+                                            setStateBuilder(() =>
+                                                mapType = MapType.normal)),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Tab(
+                                              icon: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 3,
+                                                      color: mapType ==
+                                                              MapType.normal
+                                                          ? Colors.blueAccent
+                                                          : Colors.transparent),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(
+                                                          10.0) //                 <--- border radius here
+                                                      ),
+                                                ),
+                                                child: Image.asset(
+                                                    "assets/image/def.png"),
+                                                height: 45,
+                                                width: 45,
+                                              ),
+                                              text: "Default"),
+                                        ),
                                       ),
-                                    )
+                                    ),
+                                    Expanded(
+                                      child: InkWell(
+                                        customBorder: CircleBorder(),
+                                        onTap: () => setState(() =>
+                                            setStateBuilder(() =>
+                                                mapType = MapType.hybrid)),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Tab(
+                                              icon: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 3,
+                                                      color: mapType ==
+                                                              MapType.hybrid
+                                                          ? Colors.blueAccent
+                                                          : Colors.transparent),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(
+                                                          10.0) //                 <--- border radius here
+                                                      ),
+                                                ),
+                                                child: Image.asset(
+                                                    "assets/image/sat.png"),
+                                                height: 45,
+                                                width: 45,
+                                              ),
+                                              text: "Satellite"),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: InkWell(
+                                        customBorder: CircleBorder(),
+                                        onTap: () => setState(() =>
+                                            setStateBuilder(() =>
+                                                mapType = MapType.terrain)),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Tab(
+                                              icon: Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 3,
+                                                      color: mapType ==
+                                                              MapType.terrain
+                                                          ? Colors.blueAccent
+                                                          : Colors.transparent),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(
+                                                          10.0) //                 <--- border radius here
+                                                      ),
+                                                ),
+                                                child: Image.asset(
+                                                    "assets/image/ter.png"),
+                                                height: 45,
+                                                width: 45,
+                                              ),
+                                              text: "Terrain"),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Container(),
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: InkWell(
-                                      customBorder: CircleBorder(),
-                                      onTap: () => setState(
-                                          () => setStateBuilder(
-                                          () =>  mapType = MapType.normal)),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(20),
-                                        child: Tab(
-                                            icon: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 2,
-                                                    color: mapType ==
-                                                        MapType.normal
-                                                        ? Colors.blueAccent
-                                                        : Colors.transparent),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(
-                                                        5.0) //                 <--- border radius here
-                                                ),
-                                              ),
-                                              child: Image.asset(
-                                                  "assets/image/1.png"),
-                                              height: 45,
-                                              width: 45,
-                                            ),
-                                            text: "Default"),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: InkWell(
-                                      customBorder: CircleBorder(),
-                                      onTap: () => setState(
-                                          () => setStateBuilder(
-                            () =>mapType = MapType.hybrid)),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(20),
-                                        child: Tab(
-                                            icon: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 2,
-                                                    color: mapType ==
-                                                            MapType.hybrid
-                                                        ? Colors.blueAccent
-                                                        : Colors.transparent),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(
-                                                        5.0) //                 <--- border radius here
-                                                    ),
-                                              ),
-                                              child: Image.asset(
-                                                  "assets/image/1.png"),
-                                              height: 45,
-                                              width: 45,
-                                            ),
-                                            text: "Satellite"),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: InkWell(
-                                      customBorder: CircleBorder(),
-                                      onTap: () => setState(
-                                          () => setStateBuilder(
-                            () =>mapType = MapType.terrain)),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(20),
-                                        child: Tab(
-                                            icon: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 2,
-                                                    color: mapType ==
-                                                        MapType.terrain
-                                                        ? Colors.blueAccent
-                                                        : Colors.transparent),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(
-                                                        5.0) //                 <--- border radius here
-                                                ),
-                                              ),
-
-                                              child: Image.asset(
-                                                  "assets/image/1.png"),
-                                              height: 45,
-                                              width: 45,
-                                            ),
-                                            text: "Terrain"),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Container(),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                    },
-                  );
-                },
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.layers_outlined,
-                  color: Colors.black,
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(),
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                      },
+                    );
+                  },
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.layers_outlined,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ),
-          ),
-          Loading(
-            loading: loading,
-            color: Colors.white,
-          ),
-        ],
+            Loading(
+              loading: loading,
+              color: Colors.white,
+            ),
+          ],
+        ),
       ),
+      onWillPop: onWillPop,
     );
   }
 
@@ -426,7 +429,7 @@ class _ClientDashBoard extends State<ClientDashBoard>
         selectedLat = device.lat;
         selectedLon = device.lon;
         selectedTitle = device.deviceDetails;
-        // ShowDevice(this.context, device);
+        ShowDevice(this.context, device);
         // _animationController.forward();
       },
       anchor: const Offset(0.5, 0.5),
@@ -455,5 +458,25 @@ class _ClientDashBoard extends State<ClientDashBoard>
     return LatLngBounds(
         southwest: LatLng(southwestLat, southwestLon),
         northeast: LatLng(northeastLat, northeastLon));
+  }
+
+  void isOpen(bool isOpen) {
+    drawerOpen = isOpen;
+  }
+
+  DateTime currentBackPressTime;
+  bool drawerOpen = false;
+
+  Future<bool> onWillPop() {
+    if (!drawerOpen) {
+      DateTime now = DateTime.now();
+      if (currentBackPressTime == null ||
+          now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+        currentBackPressTime = now;
+        toast("Press back again to exit");
+        return Future.value(false);
+      }
+    }
+    return Future.value(true);
   }
 }

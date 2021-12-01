@@ -6,16 +6,21 @@ class SmartField extends StatefulWidget {
   final errorText;
   final title;
   final keyboardType;
-
-  // final passVal;
+  final filled;
+  final opacity;
+  final obscureText;
+  final titled;
 
   SmartField({
     this.controller,
     this.onChanged,
     this.errorText,
     this.title,
-    this.keyboardType,
-    // this.passVal,
+    this.keyboardType = TextInputType.text,
+    this.filled = true,
+    this.opacity = 1.0,
+    this.obscureText = false,
+    this.titled = true,
   });
 
   @override
@@ -28,21 +33,23 @@ class _SmartField extends State<SmartField> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(
-        widget.title,
-        style: TextStyle(fontSize: 16.0, color: Colors.black),
-      ),
+      Visibility(
+          child: Text(
+            widget.title,
+            style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.black.withOpacity(widget.opacity)),
+          ),
+          visible: widget.titled),
       SizedBox(
-        height: 5,
+        height: (widget.titled) ? 5 : 0,
       ),
       // Stack(
       //   alignment: Alignment.center,
       //   children: [
       TextField(
         autofillHints: [AutofillHints.name],
-        keyboardType: widget.keyboardType == null
-            ? TextInputType.text
-            : widget.keyboardType,
+        keyboardType: widget.keyboardType,
         controller: widget.controller,
         onChanged: (text) {
           setState(() {
@@ -52,6 +59,7 @@ class _SmartField extends State<SmartField> {
             widget.onChanged(text);
           } catch (error) {}
         },
+        obscureText: widget.obscureText,
         decoration: InputDecoration(
           suffixIcon: widget.controller.text.isEmpty
               ? null // Show nothing if the text field is empty
@@ -60,18 +68,20 @@ class _SmartField extends State<SmartField> {
                   onPressed: () => setState(() => widget.controller.clear()),
                 ),
           fillColor: Colors.white,
-          filled: true,
+          filled: widget.filled,
           errorText: widget.errorText,
           hintText: widget.title,
           contentPadding:
               EdgeInsets.only(left: 15, top: 18, bottom: 18, right: 15),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1, color: Colors.black),
+            borderSide: BorderSide(
+                width: 1, color: Colors.black.withOpacity(widget.opacity)),
             borderRadius: BorderRadius.circular(5.0),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: Colors.black),
+            borderSide:
+                BorderSide(color: Colors.black.withOpacity(widget.opacity)),
           ),
         ),
       ),

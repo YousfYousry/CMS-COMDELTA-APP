@@ -12,9 +12,9 @@ import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceDetails.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,7 +22,7 @@ import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter/cupertino.dart';
-import '../../Choices.dart';
+import '../../public.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 enum Span { def, up, down }
@@ -106,6 +106,7 @@ class TitleElement extends StatelessWidget {
   final Span span;
   final func;
   final int index;
+  final double textSize;
 
   const TitleElement(
       {Key key,
@@ -114,6 +115,7 @@ class TitleElement extends StatelessWidget {
       this.title,
       this.span,
       this.func,
+        this.textSize=14,
       this.index})
       : super(key: key);
 
@@ -133,6 +135,7 @@ class TitleElement extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
+                  fontSize: textSize,
                 ),
                 children: [
                   TextSpan(text: title),
@@ -251,6 +254,10 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   var spans = [
     Span.up,
+    Span.def,
+    Span.def,
+    Span.def,
+    Span.def,
     Span.def,
     Span.def,
     Span.def,
@@ -480,7 +487,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                   TitleElement(
                                       width: 70,
                                       height: 30,
-                                      title: "L1@",
+                                      title: "LB1",
                                       span: spans[2],
                                       func: setSpans,
                                       index: 2),
@@ -492,7 +499,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                   TitleElement(
                                       width: 70,
                                       height: 30,
-                                      title: "L2#",
+                                      title: "L1@",
                                       span: spans[3],
                                       func: setSpans,
                                       index: 3),
@@ -504,7 +511,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                   TitleElement(
                                       width: 70,
                                       height: 30,
-                                      title: "L2@",
+                                      title: "L2#",
                                       span: spans[4],
                                       func: setSpans,
                                       index: 4),
@@ -516,7 +523,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                   TitleElement(
                                       width: 70,
                                       height: 30,
-                                      title: "L3#",
+                                      title: "LB2",
                                       span: spans[5],
                                       func: setSpans,
                                       index: 5),
@@ -528,7 +535,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                   TitleElement(
                                       width: 70,
                                       height: 30,
-                                      title: "L3@",
+                                      title: "L2@",
                                       span: spans[6],
                                       func: setSpans,
                                       index: 6),
@@ -538,9 +545,9 @@ class _DeviceLogs extends State<DeviceLogs> {
                                     color: Colors.grey,
                                   ),
                                   TitleElement(
-                                      width: 80,
+                                      width: 70,
                                       height: 30,
-                                      title: "Battery",
+                                      title: "L3#",
                                       span: spans[7],
                                       func: setSpans,
                                       index: 7),
@@ -552,10 +559,59 @@ class _DeviceLogs extends State<DeviceLogs> {
                                   TitleElement(
                                       width: 70,
                                       height: 30,
-                                      title: "Rssi",
+                                      title: "LB3",
                                       span: spans[8],
                                       func: setSpans,
                                       index: 8),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "L3@",
+                                      span: spans[9],
+                                      func: setSpans,
+                                      index: 9),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "Battery",
+                                      span: spans[10],
+                                      textSize: 12,
+                                      func: setSpans,
+                                      index: 10),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "Rssi",
+                                      span: spans[11],
+                                      func: setSpans,
+                                      index: 11),
+                                  Container(
+                                    height: 30,
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  TitleElement(
+                                      width: 70,
+                                      height: 30,
+                                      title: "Telco",
+                                      span: spans[12],
+                                      func: setSpans,
+                                      index: 12),
                                 ],
                               ),
                             ),
@@ -667,7 +723,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                       controller: horizontal2,
                                       scrollDirection: Axis.horizontal,
                                       child: SizedBox(
-                                        width: 577,
+                                        width: 851,
                                         child: NotificationListener<
                                             OverscrollIndicatorNotification>(
                                           onNotification:
@@ -720,6 +776,12 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                         title: item.lid1,
                                                         high: item.highLight,
                                                         border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.lightBattery1,
+                                                        high: item.highLight,
+                                                        border: true),
                                                     ValueBulb(
                                                         height: 30,
                                                         width: 71,
@@ -729,6 +791,12 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                         height: 30,
                                                         width: 71,
                                                         title: item.lid2,
+                                                        high: item.highLight,
+                                                        border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.lightBattery2,
                                                         high: item.highLight,
                                                         border: true),
                                                     ValueBulb(
@@ -742,6 +810,12 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                         title: item.lid3,
                                                         high: item.highLight,
                                                         border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 71,
+                                                        title: item.lightBattery3,
+                                                        high: item.highLight,
+                                                        border: true),
                                                     ValueBulb(
                                                         height: 30,
                                                         width: 71,
@@ -749,15 +823,21 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                         border: true),
                                                     Value(
                                                         height: 30,
-                                                        width: 81,
+                                                        width: 71,
                                                         title:
                                                             item.batteryValue,
                                                         high: item.highLight,
                                                         border: true),
                                                     Value(
                                                         height: 30,
-                                                        width: 70,
+                                                        width: 71,
                                                         title: item.rssiValue,
+                                                        high: item.highLight,
+                                                        border: true),
+                                                    Value(
+                                                        height: 30,
+                                                        width: 70,
+                                                        title: item.simTelcoOptions,
                                                         high: item.highLight,
                                                         border: false),
                                                   ],

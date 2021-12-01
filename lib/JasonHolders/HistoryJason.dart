@@ -1,4 +1,4 @@
-import '../Choices.dart';
+import '../public.dart';
 import 'DeviceJason.dart';
 
 class HistoryJason {

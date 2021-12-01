@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:smart_select/smart_select.dart';
-
 import 'JasonHolders/DeviceJason.dart';
-
-// import 'JasonHolders/RemoteApi.dart';
+import 'JasonHolders/UserInfoJason.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
+String userType = "";
+
+const adminKeyWord = "admin2";
+
+const clientKeyWord = "client2";
+
+UserInfoJason user = UserInfoJason('', '', '', '', '', '');
 
 List<S2Choice<String>> clientStatus = [
   S2Choice<String>(value: 'Hidden', title: 'Hidden'),
@@ -58,10 +67,10 @@ List<S2Choice<String>> client = [
 // ];
 
 // var route;
-bool openHis=false;
+bool openHis = false;
 
 String deviceIdentifier = "";
-String model="";
+String model = "";
 
 List<DeviceJason> devices = [];
 
@@ -125,3 +134,56 @@ Map<int, Color> customColors = {
   800: Color.fromRGBO(136, 14, 79, .9),
   900: Color.fromRGBO(136, 14, 79, 1),
 };
+
+
+
+double getDouble(String str) {
+  try {
+    return double.parse(str);
+  } catch (e) {
+    return 0;
+  }
+}
+
+int getInt(String str) {
+  try {
+    return int.parse(str);
+  } catch (e) {
+    return 0;
+  }
+}
+
+void toast(String msg) {
+  Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1);
+}
+
+String getResponseError(http.Response response) {
+  switch (response.statusCode) {
+    case 200:
+      var responseJson = json.decode(response.body.toString());
+      return responseJson;
+    case 400:
+      return (response.body.toString());
+    case 401:
+      return (response.body.toString());
+    case 403:
+      return (response.body.toString());
+    case 500:
+    default:
+      return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
+  }
+}
+
+Future<String> load(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString(key) ?? '-1';
+}
+
+Future<void> save(String key, String data) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString(key, data);
+}

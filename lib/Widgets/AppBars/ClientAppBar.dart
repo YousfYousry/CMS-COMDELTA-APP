@@ -2,7 +2,7 @@ import 'package:countup/countup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:percent_indicator/circular_percent_indicator.dart';
-// import '../../Choices.dart';
+// import '../../public.dart';
 
 class ClientAppBar extends StatelessWidget with PreferredSizeWidget {
   final totalDevices,activeDevices,inActiveDevices;

@@ -6,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
-import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:substring_highlight/substring_highlight.dart';
 import '../../main.dart';
+import '../../public.dart';
 import 'AddEditClient.dart';
 
 class ManageClient extends StatefulWidget {
