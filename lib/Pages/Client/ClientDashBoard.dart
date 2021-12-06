@@ -1,12 +1,17 @@
 import 'dart:async';
+
+// import 'dart:typed_data';
 // import 'package:connectivity/connectivity.dart';
 // import 'package:countup/countup.dart';
 import 'package:flutter/material.dart';
+
+// import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ClientAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawer.dart';
@@ -24,13 +29,14 @@ class ClientDashBoard extends StatefulWidget {
 class _ClientDashBoard extends State<ClientDashBoard>
     with WidgetsBindingObserver {
   double activeNum = 0, inActiveNum = 0, totalNum = 0;
+
   // StreamSubscription<ConnectivityResult> subscription;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   final LatLng _center = const LatLng(2.944590144570856, 101.60274569735296);
   GoogleMapController mapController;
   var icons = [];
   var mapType = MapType.hybrid;
-  bool loading = true;
+  bool loading = false;
   double selectedLon = 500;
   double selectedLat = 500;
   String selectedTitle = '';
@@ -53,11 +59,12 @@ class _ClientDashBoard extends State<ClientDashBoard>
   Future<void> _onMapCreated(GoogleMapController controller) async {
     try {
       mapController = controller;
-      final greenIcon = await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png');
-      icons = [greenIcon];
-      location = await RemoteApi.getLocationList();
-      await getLocations();
+      icons = [
+        BitmapDescriptor.fromBytes(greenIcon),
+        BitmapDescriptor.fromBytes(redIcon)
+      ];
+      // location = await RemoteApi.getLocationList();
+      setLocations();
     } catch (error) {
       toast(error.toString());
     }
@@ -283,6 +290,37 @@ class _ClientDashBoard extends State<ClientDashBoard>
     );
   }
 
+  void setLocations() {
+    try {
+      double total = 0, inActiveLast72 = 0;
+      devices.forEach((device) {
+        total++;
+        if (device.inActiveLast72()) {
+          inActiveLast72++;
+        }
+        if (device.lat != 500 && device.lon != 500) {
+          addMarker(device);
+          positions.add(new LatLng(device.lat, device.lon));
+        }
+      });
+      setState(() {
+        if (positions.isNotEmpty) {
+          activeNum = (total - inActiveLast72);
+          inActiveNum = inActiveLast72;
+          totalNum = total;
+
+          mapController.animateCamera(
+              CameraUpdate.newLatLngBounds(_bounds(positions), 20));
+        } else {
+          toast("No device was found!");
+          mapController.animateCamera(CameraUpdate.newLatLngZoom(_center, 4));
+        }
+      });
+    } catch (error) {
+      print('Error: ' + error.message);
+    }
+  }
+
   Future<void> getLocations() async {
     try {
       // if(loading) return;
@@ -438,7 +476,7 @@ class _ClientDashBoard extends State<ClientDashBoard>
       infoWindow: InfoWindow(
         title: device.deviceName,
       ),
-      icon: icons[0],
+      icon: icons[device.iconClient],
       draggable: false,
       zIndex: 1,
     );

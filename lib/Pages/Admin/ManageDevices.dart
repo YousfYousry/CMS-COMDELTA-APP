@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,7 +22,7 @@ import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
+// import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 
 // import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';

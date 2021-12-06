@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:login_cms_comdelta/Pages/Client/ActiveDeviceCard.dart';
+import '../../public.dart';
 
 class Loading extends StatelessWidget {
   final loading;

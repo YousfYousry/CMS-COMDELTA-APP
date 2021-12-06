@@ -110,7 +110,7 @@ class DeviceJason {
       if (DateFormat('yyyy-MM-dd HH:mm:ss').parse(str).isBefore(DateTime(
           date.year,
           date.month,
-          date.day - 3,
+          date.day - daysInactive(),
           date.hour,
           date.minute,
           date.second))) {
@@ -208,7 +208,7 @@ class DeviceJason {
       if (DateFormat('yyyy-MM-dd HH:mm:ss').parse(str).isBefore(DateTime(
           date.year,
           date.month,
-          date.day - 3,
+          date.day- daysInactive(),
           date.hour,
           date.minute,
           date.second))) {
@@ -297,8 +297,8 @@ class DeviceJason {
         DateTime(
             date.year,
             date.month,
-            date.day,
-            date.hour - ((userType == clientKeyWord) ? 120 : 72),
+            date.day - daysInactive(),
+            date.hour,
             date.minute,
             date.second));
   }
@@ -350,4 +350,6 @@ class DeviceJason {
   String get serialNum => _serialNum;
 
   int get icon => _icon;
+
+  int get iconClient => _icon == 2 ? 1 : 0;
 }

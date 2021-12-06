@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:smart_select/smart_select.dart';
 import 'JasonHolders/DeviceJason.dart';
 import 'JasonHolders/UserInfoJason.dart';
@@ -6,12 +9,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:ui' as ui;
 
 const PrimaryColor = const Color(0xff0065a3);
+Uint8List greenIcon;
+Uint8List yellowIcon;
+Uint8List redIcon;
+int daysInactive() => ((userType == clientKeyWord) ? 5 : 3);
+
+
+//if you want to force logout all users on next updates change these keyWords
 String userType = "";
-
 const adminKeyWord = "admin2";
-
 const clientKeyWord = "client2";
 
 UserInfoJason user = UserInfoJason('', '', '', '', '', '');
@@ -186,4 +195,12 @@ Future<String> load(String key) async {
 Future<void> save(String key, String data) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(key, data);
+}
+
+
+Future<Uint8List> getBytesFromAsset(String path, int width) async {
+  ByteData data = await rootBundle.load(path);
+  ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+  ui.FrameInfo fi = await codec.getNextFrame();
+  return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
 }

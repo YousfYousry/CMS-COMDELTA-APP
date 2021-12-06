@@ -2,7 +2,8 @@
 // import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/JasonHolders/UserInfoJason.dart';
+
+// import 'package:login_cms_comdelta/JasonHolders/UserInfoJason.dart';
 import 'package:login_cms_comdelta/Pages/Client/ActiveDeviceCard.dart';
 import 'package:login_cms_comdelta/Pages/Client/DeviceHistory.dart';
 
@@ -90,7 +91,8 @@ class _SideDrawer extends State<SideDrawer> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width: 2,color: Colors.white.withOpacity(0.8)),
+                      border: Border.all(
+                          width: 2, color: Colors.white.withOpacity(0.8)),
                       borderRadius: BorderRadius.circular(50.0),
                     ),
                     child: ClipOval(
@@ -108,7 +110,10 @@ class _SideDrawer extends State<SideDrawer> {
                   SizedBox(
                     height: 5,
                   ),
-                  Text(user.firsName + ' ' + user.lastName,style: TextStyle(color: Colors.white),),
+                  Text(
+                    user.firsName + ' ' + user.lastName,
+                    style: TextStyle(color: Colors.white),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -191,7 +196,11 @@ class _SideDrawer extends State<SideDrawer> {
                     itemChild("All Devices", TotalDeviceCard()),
                     itemChild("Active Devices", ActiveDeviceCard()),
                     itemChild("Inactive Devices", InactiveDeviceCard()),
-                    itemChild("Device History", DeviceHistoryClient()),
+                    Visibility(
+                      child: itemChild("Device History", DeviceHistoryClient()),
+                      visible: user.userName == "edotco@comdelta.com" ||
+                          user.userName == "caserina_development@comdelta.com",
+                    ),
                   ],
                 ),
                 isExpanded: device,

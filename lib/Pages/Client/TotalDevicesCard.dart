@@ -1,29 +1,14 @@
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-
-// import 'package:login_cms_comdelta/Classes/deviceElement.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/cupertino.dart';
-
-// import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
-// import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceClient.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import '../../public.dart';
-
-// import 'GoogleMap.dart';
 import '../../Widgets/AppBars/CustomAppBarWithBack.dart';
-
-// import '../../Widgets/Others/DeviceElement.dart';
-// import '../../Widgets/ProgressBars/ProgressBar.dart';
 import 'dart:math' as math;
-// import 'dart:convert';
 
 enum Span { def, up, down }
 

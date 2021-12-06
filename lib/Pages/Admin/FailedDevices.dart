@@ -7,7 +7,7 @@
 // import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 // import 'package:login_cms_comdelta/Widgets/AppBars/FailedDevicesAppBar.dart';
 // import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-// import 'package:login_cms_comdelta/Widgets/Others/ShowDeviceAdmin.dart';
+// import 'package:login_cms_comdelta/Widgets/Others/ShowDevice.dart';
 // import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 // import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';

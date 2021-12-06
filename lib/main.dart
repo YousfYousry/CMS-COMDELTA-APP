@@ -15,22 +15,35 @@ import 'package:login_cms_comdelta/Pages/Client/ClientDashBoard.dart';
 import 'package:upgrader/upgrader.dart';
 import 'public.dart';
 import 'JasonHolders/RemoteApi.dart';
-// import 'JasonHolders/UserInfoJason.dart';
-// import 'Widgets/Functions/random.dart';
 import 'Widgets/Others/Loading.dart';
 import 'Widgets/Others/SizeTransition.dart';
-// import 'Widgets/ProgressBars/ProgressBar.dart';
 
-bool isInit = false;
-
-Future<void> init(String user) async {
+Future<void> init() async {
+  await Firebase.initializeApp();
+  await initPlatformState();
   await RemoteApi.getUserInfo();
   location = await RemoteApi.getLocationList();
-  // devices = await RemoteApi.getDevicesList();
   client = await RemoteApi.getClientList();
   await NotificationService().init();
   FirebaseMessaging.onMessage.listen(_messageHandler);
-  isInit = true;
+  greenIcon = await getBytesFromAsset('assets/image/green_marker.png', 30);
+  yellowIcon = await getBytesFromAsset('assets/image/yellow_marker.png', 30);
+  redIcon = await getBytesFromAsset('assets/image/red_marker.png', 30);
+
+
+  //this part happens only when user is logged in
+  if(!isLogged()){
+    return;
+  }
+  final clientId = await load('client_id');
+  if (clientId == '-1') {
+    return;
+  }
+  if (userType == clientKeyWord) {
+    devices = await RemoteApi.getClientDevicesList(clientId);
+  } else {
+    devices = await RemoteApi.getDevicesList();
+  }
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -75,11 +88,8 @@ Future selectNotification(String payload) async {
   //   Navigator.of(publicContext).pushReplacementNamed('/second');
   // Navigator.of(publicContext).pushNamed('/second');
   // }
-
   // initialRoute = '/second';
-
   // openHis = true;
-
   if (dashBoardContext != null && devices.isNotEmpty) {
     Navigator.push(
       dashBoardContext,
@@ -91,7 +101,6 @@ Future selectNotification(String payload) async {
 }
 
 // BuildContext publicContext;
-
 final routeObserver = RouteObserver<PageRoute>();
 // String initialRoute = '/';
 // var page;
@@ -103,54 +112,53 @@ class LoadingPage extends StatefulWidget {
 
 class _LoadingPage extends State<LoadingPage> {
   @override
+  void initState() {
+    super.initState();
+
+    try {
+      init().whenComplete(() => Navigator.pushReplacement(
+          context,
+          SizeRoute(
+            page: getRoute(),
+          )));
+    } catch (error) {
+      toast(error);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage("assets/image/loading.gif"), fit: BoxFit.fill),
+            image: AssetImage("assets/image/loading_page.gif"),
+            fit: BoxFit.cover),
       ),
-      child: Loading(
-        loading: false,
-        color: Colors.white,
-      ),
+      // child: Loading(
+      //   loading: false,
+      //   color: Colors.white,
+      // ),
     );
   }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   userType = await load('user_type');
 
-  // if(value.contains("newClient")||value.contains("newAdmin")) {
-  //   runApp(
-  //     MaterialApp(
-  //       home: LoadingPage(), //getRoute(value)
-  //     ),
-  //   );
-  // }
-
-  await Firebase.initializeApp();
-  await initPlatformState();
-  try {
-    await init(userType);
-    runApp(
-      MaterialApp(
-        theme: ThemeData(
-          primarySwatch: MaterialColor(0xff0065a3, customColors),
-        ),
-        home: UpgradeAlert(child: getRoute()), //
-        navigatorObservers: [routeObserver],
+  runApp(
+    MaterialApp(
+      theme: ThemeData(
+        primarySwatch: MaterialColor(0xff0065a3, customColors),
       ),
-    );
-  } catch (error) {
-    toast("No internet connection!");
-  }
+      home: UpgradeAlert(child: (isLogged()) ? LoadingPage() : LoginPage()), //
+      navigatorObservers: [routeObserver],
+    ),
+  );
 
   // if (initialRoute.isEmpty) {
   //   initialRoute = '/';
   // }
-
   // final NotificationAppLaunchDetails notificationAppLaunchDetails = !kIsWeb &&
   //     Platform.isLinux
   //     ? null
@@ -161,9 +169,7 @@ Future<void> main() async {
   //   initialRoute = SecondPage.routeName;
   // }
   // NotificationSettings settings =
-
   // FirebaseMessaging messaging = FirebaseMessaging.instance;
-
   // FirebaseMessaging.onBackgroundMessage(_messageHandler);
   // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
   //   alert: true,
@@ -238,14 +244,21 @@ void _readIosDeviceInfo(IosDeviceInfo data) {
 }
 
 Widget getRoute() {
-  if (userType == "-1") {
-    return LoginPage();
-  } else if (userType.contains(clientKeyWord)) {
+  if (userType.contains(clientKeyWord)) {
     return ClientDashBoard();
   } else if (userType.contains(adminKeyWord)) {
     return DashBoardTest1();
   }
   return LoginPage();
+}
+
+bool isLogged() {
+  if (userType.contains(clientKeyWord)) {
+    return true;
+  } else if (userType.contains(adminKeyWord)) {
+    return true;
+  }
+  return false;
 }
 
 // class MyApp extends StatelessWidget {
@@ -282,42 +295,48 @@ class _LoginPage extends State<LoginPage> {
 
   // FirebaseMessaging messaging;
 
-  // @override
-  // void initState() {
-  //   super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  // flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-  // var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
-  // var iOS = new IOSInitializationSettings();
-  // var initSetttings = new InitializationSettings(android: android, iOS: iOS);
-  // flutterLocalNotificationsPlugin.initialize(initSetttings,
-  //     onSelectNotification: onSelectNotification);
+    try {
+      init();
+    } catch (error) {
+      toast(error);
+    }
 
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //   notification(message);
-  // });
-  //
-  // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-  //   print("message recieved");
-  //   // showNotification();
-  //   print(event.notification.body);
-  // });
-  // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-  //   print('Message clicked!');
-  // });
-  // }
+    // flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    // var android = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    // var iOS = new IOSInitializationSettings();
+    // var initSetttings = new InitializationSettings(android: android, iOS: iOS);
+    // flutterLocalNotificationsPlugin.initialize(initSetttings,
+    //     onSelectNotification: onSelectNotification);
 
-  // ignore: missing_return
-  // Future onSelectNotification(String payload) {
-  //   debugPrint("payload : $payload");
-  //   showDialog(
-  //     context: context,
-  //     builder: (_) => new AlertDialog(
-  //       title: new Text('Notification'),
-  //       content: new Text('$payload'),
-  //     ),
-  //   );
-  // }
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   notification(message);
+    // });
+    //
+    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+    //   print("message recieved");
+    //   // showNotification();
+    //   print(event.notification.body);
+    // });
+    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    //   print('Message clicked!');
+    // });
+    // }
+
+    // ignore: missing_return
+    // Future onSelectNotification(String payload) {
+    //   debugPrint("payload : $payload");
+    //   showDialog(
+    //     context: context,
+    //     builder: (_) => new AlertDialog(
+    //       title: new Text('Notification'),
+    //       content: new Text('$payload'),
+    //     ),
+    //   );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -673,9 +692,12 @@ class _LoginPage extends State<LoginPage> {
         if (map["type"].toString().compareTo('3') != 0) {
           userType = adminKeyWord;
           route = DashBoardTest1();
+          devices = await RemoteApi.getDevicesList();
         } else {
           userType = clientKeyWord;
           route = ClientDashBoard();
+          devices =
+              await RemoteApi.getClientDevicesList(map["clientId"].toString());
         }
 
         save('user_type', userType);
@@ -739,4 +761,6 @@ Future<void> logOut(BuildContext context) async {
   } else {
     toast("Error deleting token!");
   }
+
+
 }

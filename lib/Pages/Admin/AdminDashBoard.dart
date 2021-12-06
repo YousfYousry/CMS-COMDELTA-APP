@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
+
 // import 'package:connectivity/connectivity.dart';
 import 'package:countup/countup.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,15 +17,17 @@ import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/AdminAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/WidgetSize.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/AdvancedSearch.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
+import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawerAdmin.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import '../../public.dart';
+
 // import '../../main.dart';
 import 'DeviceHistory.dart';
 
@@ -57,6 +60,7 @@ class DashBoardTest1 extends StatefulWidget {
 class _DashBoardTest1 extends State<DashBoardTest1>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   double radius = 80, radius2 = 80;
+
   // StreamSubscription<ConnectivityResult> subscription;
   int activeHours = 72, inActiveHours = 72;
   List<DeviceJason> duplicatedDevices = [];
@@ -104,21 +108,25 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   Future<void> _onMapCreated(GoogleMapController controller) async {
     try {
       mapController = controller;
-      final greenIcon = await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png');
-      final yellowIcon = await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(12, 12)),
-          'assets/image/yellowmarker.png');
-      final redIcon = await BitmapDescriptor.fromAssetImage(
-          ImageConfiguration(size: Size(12, 12)), 'assets/image/redmarker.png');
-      icons = [greenIcon, yellowIcon, redIcon];
-      await getLocations();
+      // final greenIcon = await BitmapDescriptor.fromAssetImage(
+      //     ImageConfiguration(size: Size(12, 12)), 'assets/image/marker.png');
+      // final yellowIcon = await BitmapDescriptor.fromAssetImage(
+      //     ImageConfiguration(size: Size(12, 12)),
+      //     'assets/image/yellowmarker.png');
+      // final redIcon = await BitmapDescriptor.fromAssetImage(
+      //     ImageConfiguration(size: Size(12, 12)), 'assets/image/redmarker.png');
+      icons = [
+        BitmapDescriptor.fromBytes(greenIcon),
+        BitmapDescriptor.fromBytes(yellowIcon),
+        BitmapDescriptor.fromBytes(redIcon),
+      ];
+      setLocations();
     } catch (error) {
       toast(error.toString());
     }
-    setState(() {
-      loading = false;
-    });
+    // setState(() {
+    //   loading = false;
+    // });
   }
 
   @override
@@ -1996,6 +2004,58 @@ class _DashBoardTest1 extends State<DashBoardTest1>
     );
   }
 
+  void setLocations() {
+    try {
+      FirebaseMessaging.instance
+          .getInitialMessage()
+          .then((RemoteMessage message) {
+        if (message != null) {
+          Navigator.push(
+            context,
+            SizeRoute(
+              page: DeviceHistory(),
+            ),
+          );
+        }
+      });
+      setState(() {
+        this.markers.clear();
+        this.positions.clear();
+        this.duplicatedDevices.clear();
+        double total = 0, inActiveLast72 = 0;
+        devices.forEach((device) {
+          if (device.isUniKl()) {
+            this.duplicatedDevices.add(device);
+            total++;
+            if (device.inActiveLast72()) {
+              inActiveLast72++;
+            }
+            if (advancedSearch.filterDevice(device)) {
+              if (device.lat != 500 && device.lon != 500) {
+                addMarker(device);
+                positions.add(new LatLng(device.lat, device.lon));
+              }
+            }
+          }
+        });
+        this.values[0] = (total - inActiveLast72);
+        this.values[1] = inActiveLast72;
+        this.values[2] = total;
+        getActive();
+        getInactive();
+        if (positions.isNotEmpty) {
+          mapController.animateCamera(
+              CameraUpdate.newLatLngBounds(_bounds(positions), 20));
+        } else {
+          toast("No device was found!");
+          mapController.animateCamera(CameraUpdate.newLatLngZoom(_center, 4));
+        }
+      });
+    } catch (error) {
+      toast(error);
+    }
+  }
+
   Future<void> getLocations() async {
     if (loading) return;
     setState(() {
@@ -2028,7 +2088,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
         this.duplicatedDevices.clear();
         double total = 0, inActiveLast72 = 0;
         devices.forEach((device) {
-          if(device.isUniKl()) {
+          if (device.isUniKl()) {
             this.duplicatedDevices.add(device);
             total++;
             if (device.inActiveLast72()) {
@@ -2056,7 +2116,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
         }
       });
     } catch (error) {
-      // toast('Error: ' + error.message);
+      toast(error);
     }
   }
 
