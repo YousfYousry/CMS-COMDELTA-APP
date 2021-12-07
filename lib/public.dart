@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_select/smart_select.dart';
@@ -11,6 +10,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
 
+var dashBoardContext;
+var historyPage;
 const PrimaryColor = const Color(0xff0065a3);
 Uint8List greenIcon;
 Uint8List yellowIcon;

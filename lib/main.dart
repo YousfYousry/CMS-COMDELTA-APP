@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Classes/Notification.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AdminDashBoard.dart';
-import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
+// import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:login_cms_comdelta/Pages/Client/ClientDashBoard.dart';
 import 'package:upgrader/upgrader.dart';
 import 'public.dart';
@@ -30,9 +30,8 @@ Future<void> init() async {
   yellowIcon = await getBytesFromAsset('assets/image/yellow_marker.png', 30);
   redIcon = await getBytesFromAsset('assets/image/red_marker.png', 30);
 
-
   //this part happens only when user is logged in
-  if(!isLogged()){
+  if (!isLogged()) {
     return;
   }
   final clientId = await load('client_id');
@@ -94,7 +93,7 @@ Future selectNotification(String payload) async {
     Navigator.push(
       dashBoardContext,
       SizeRoute(
-        page: DeviceHistory(),
+        page: historyPage,
       ),
     );
   }
@@ -656,68 +655,87 @@ class _LoginPage extends State<LoginPage> {
     }
     setState(() => loading = true);
 
-    final response = await http.post(
-        Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
-        body: {
-          'email': emailFieldController.text.trim(),
-          'password': passFieldController.text
-        }).onError((error, stackTrace) {
-      toast('Error: ' + error.message);
-      setState(() => loading = false);
-      return;
-    });
+    try {
+      final response = await http.post(
+          Uri.parse('http://103.18.247.174:8080/AmitProject/login.php'),
+          body: {
+            'email': emailFieldController.text.trim(),
+            'password': passFieldController.text.trim()
+          }).onError((error, stackTrace) {
+        toast('Error: ' + error.message);
+        setState(() => loading = false);
+        return;
+      });
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> map = json.decode(response.body);
-      if (map["res"] == "0") {
-        var route;
-        if (map["type"].toString().isEmpty ||
-            map["clientId"].toString().isEmpty ||
-            deviceIdentifier.isEmpty ||
-            !await setNotificationToken(
-                map["type"].toString(), map["clientId"].toString())) {
-          if (deviceIdentifier.isEmpty) {
-            toast("Device Identifier is unknown");
+      if (response.statusCode == 200) {
+        Map<String, dynamic> map = json.decode(response.body);
+        if (map["res"] == "0") {
+          var route;
+          if (map["type"]
+              .toString()
+              .isEmpty ||
+              map["clientId"]
+                  .toString()
+                  .isEmpty ||
+              deviceIdentifier.isEmpty ||
+              !await setNotificationToken(
+                  map["type"].toString(), map["clientId"].toString())) {
+            if (deviceIdentifier.isEmpty) {
+              toast("Device Identifier is unknown");
+            }
+            if (map["clientId"]
+                .toString()
+                .isEmpty) {
+              toast("Client Id is unknown");
+            }
+            if (map["type"]
+                .toString()
+                .isEmpty) {
+              toast("User Type is unknown");
+            }
+            setState(() => loading = false);
+            return;
           }
-          if (map["clientId"].toString().isEmpty) {
-            toast("Client Id is unknown");
-          }
-          if (map["type"].toString().isEmpty) {
-            toast("User Type is unknown");
-          }
-          setState(() => loading = false);
-          return;
-        }
 
-        if (map["type"].toString().compareTo('3') != 0) {
-          userType = adminKeyWord;
-          route = DashBoardTest1();
-          devices = await RemoteApi.getDevicesList();
+          if (map["type"].toString().compareTo('3') != 0) {
+            userType = adminKeyWord;
+            route = DashBoardTest1();
+            devices = await RemoteApi.getDevicesList();
+          } else {
+            userType = clientKeyWord;
+            route = ClientDashBoard();
+            devices =
+            await RemoteApi.getClientDevicesList(map["clientId"].toString());
+          }
+
+          save('user_type', userType);
+          save('profile_pic', '-1');
+          save('client_id', map["clientId"].toString());
+          await save('user_id', map["userId"].toString())
+              .then((value) => RemoteApi.getUserInfo());
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => route));
+          toast('Logged in successfully');
         } else {
-          userType = clientKeyWord;
-          route = ClientDashBoard();
-          devices =
-              await RemoteApi.getClientDevicesList(map["clientId"].toString());
+          toast('Email or password is incorrect!');
+          print(response.body);
         }
-
-        save('user_type', userType);
-        save('profile_pic', '-1');
-        save('client_id', map["clientId"].toString());
-        await save('user_id', map["userId"].toString())
-            .then((value) => RemoteApi.getUserInfo());
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => route));
-        toast('Logged in successfully');
       } else {
-        print(response.body);
+        toast(getResponseError(response));
       }
-    } else {
-      toast(getResponseError(response));
+    }catch(error){
+      toast(error.toString());
     }
     setState(() => loading = false);
   }
 
   Future<bool> setNotificationToken(String type, String clientId) async {
+    if (type.trim() == "3") {
+      if (!(clientId.trim() == "5" || clientId.trim() == "8")) {
+        return true;
+      }
+    }
+
     final token = await FirebaseMessaging.instance.getToken();
     final response = await http.post(
         Uri.parse('http://103.18.247.174:8080/AmitProject/admin/setToken.php'),
@@ -761,6 +779,4 @@ Future<void> logOut(BuildContext context) async {
   } else {
     toast("Error deleting token!");
   }
-
-
 }

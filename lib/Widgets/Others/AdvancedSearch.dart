@@ -294,8 +294,9 @@ class AdvancedSearch {
 
   bool filterDevice(DeviceJason device) {
     if (advancedSearchBool) {
-      bool clientBool = (clientAd.isEmpty ||
-          client[getInt(device.client) - 1].contains(clientAd));
+      // bool clientBool = (clientAd.isEmpty ||
+      //     client[getInt(device.client) - 1].contains(clientAd));
+      bool clientBool = (clientAd.isEmpty || device.getClient == clientAd);
 
       bool statusBool = deviceStatusAd.isEmpty || (deviceStatusAd.toLowerCase().contains("inactive")?device.inActiveLast72():!device.inActiveLast72());
 

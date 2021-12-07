@@ -3,6 +3,7 @@ import 'dart:async';
 // import 'dart:typed_data';
 // import 'package:connectivity/connectivity.dart';
 // import 'package:countup/countup.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 // import 'package:flutter/services.dart';
@@ -14,10 +15,12 @@ import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/SideDrawers/SideDrawer.dart';
 
 // import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../../public.dart';
+import 'DeviceHistory.dart';
 
 class ClientDashBoard extends StatefulWidget {
   ClientDashBoard({Key key}) : super(key: key);
@@ -73,12 +76,26 @@ class _ClientDashBoard extends State<ClientDashBoard>
     });
   }
 
-  // @override
-  // void initState() {
-  //   subscription =
-  //       Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) {
+        Navigator.push(
+          context,
+          SizeRoute(
+            page: DeviceHistoryClient(),
+          ),
+        );
+      }
+    });
+
+    // subscription =
+    //     Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+    super.initState();
+  }
+
   //
   // Future<void> _updateConnectionStatus(ConnectivityResult result) async {
   //   if (result == ConnectivityResult.none) {
@@ -90,6 +107,8 @@ class _ClientDashBoard extends State<ClientDashBoard>
 
   @override
   Widget build(BuildContext context) {
+    dashBoardContext = context;
+    historyPage = DeviceHistoryClient();
     return WillPopScope(
       child: Scaffold(
         appBar: ClientAppBar(

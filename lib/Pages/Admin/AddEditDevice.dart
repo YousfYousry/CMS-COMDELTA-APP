@@ -8,11 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDate.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
+
 // import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:smart_select/smart_select.dart';
@@ -57,7 +59,8 @@ class _AddDevice extends State<AddDevice> {
   void initState() {
     if (widget.editDevice != null && widget.title.contains("Edit")) {
       setState(() {
-        clientValue = client[getInt(widget.editDevice.client) - 1].title;
+        // clientValue = client[getInt(widget.editDevice.client) - 1].title;
+        clientValue = widget.editDevice.getClient;
         locationValue = widget.editDevice.deviceLocation;
         heightValue = widget.editDevice.deviceHeight;
         siteRegionValue = widget.editDevice.siteRegion;

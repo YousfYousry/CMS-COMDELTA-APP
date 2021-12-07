@@ -7,8 +7,10 @@ import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
@@ -772,7 +774,8 @@ class _DeviceHistory extends State<DeviceHistory> with WidgetsBindingObserver {
       filterClient = true;
     } else {
       DeviceJason device = element.getDevice();
-      filterClient = client[getInt(device.client) - 1].contains(clientAd);
+      // filterClient = client[getInt(device.client) - 1].contains(clientAd);
+      filterClient = device.getClient == clientAd;
     }
 
     bool filterStatus = (deviceStatusAd.isEmpty)

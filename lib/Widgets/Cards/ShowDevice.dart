@@ -26,7 +26,8 @@ class ShowDevice {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            details('Client', client[int.parse(device.client) - 1].value),
+            // details('Client', client[int.parse(device.client) - 1].value),
+            details('Client', device.getClient),
             details('Device ID', device.id),
             details('Device Name', device.deviceName),
             details('Device Detail', device.deviceDetails),

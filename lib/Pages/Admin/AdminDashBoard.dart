@@ -40,7 +40,6 @@ const PrimaryColor = const Color(0xff0065a3);
 //   'Inactive Device Last 72 Hours'
 // ];
 double width, height;
-var dashBoardContext;
 
 class DashBoardTest1 extends StatefulWidget {
   DashBoardTest1({Key key, this.title}) : super(key: key);
@@ -131,6 +130,19 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
   @override
   void initState() {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) {
+        Navigator.push(
+          context,
+          SizeRoute(
+            page: DeviceHistory(),
+          ),
+        );
+      }
+    });
+
     focusNode = FocusNode();
     // subscription =
     //     Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
@@ -203,6 +215,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   @override
   Widget build(BuildContext context) {
     dashBoardContext = context;
+    historyPage = DeviceHistory();
 
     if (advancedSearch == null)
       advancedSearch =
@@ -2006,18 +2019,6 @@ class _DashBoardTest1 extends State<DashBoardTest1>
 
   void setLocations() {
     try {
-      FirebaseMessaging.instance
-          .getInitialMessage()
-          .then((RemoteMessage message) {
-        if (message != null) {
-          Navigator.push(
-            context,
-            SizeRoute(
-              page: DeviceHistory(),
-            ),
-          );
-        }
-      });
       setState(() {
         this.markers.clear();
         this.positions.clear();
@@ -2070,18 +2071,18 @@ class _DashBoardTest1 extends State<DashBoardTest1>
   Future<void> getDevices() async {
     try {
       devices = await RemoteApi.getDevicesList();
-      FirebaseMessaging.instance
-          .getInitialMessage()
-          .then((RemoteMessage message) {
-        if (message != null) {
-          Navigator.push(
-            context,
-            SizeRoute(
-              page: DeviceHistory(),
-            ),
-          );
-        }
-      });
+      // FirebaseMessaging.instance
+      //     .getInitialMessage()
+      //     .then((RemoteMessage message) {
+      //   if (message != null) {
+      //     Navigator.push(
+      //       context,
+      //       SizeRoute(
+      //         page: DeviceHistory(),
+      //       ),
+      //     );
+      //   }
+      // });
       setState(() {
         this.markers.clear();
         this.positions.clear();
