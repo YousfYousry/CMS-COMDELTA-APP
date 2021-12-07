@@ -4,10 +4,10 @@ import 'package:login_cms_comdelta/Icons/pdf_icons.dart';
 class DeviceLogsAppBar extends StatelessWidget {
   final title;
   final context;
-  final func1, func2, func3, func4;
+  final func1, func2, func3, func4, func5, func6;
 
   DeviceLogsAppBar(
-      this.context, this.title, this.func1, this.func2, this.func3, this.func4);
+      this.context, this.title, this.func1, this.func2, this.func3, this.func4, this.func5, this.func6);
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +60,26 @@ class DeviceLogsAppBar extends StatelessWidget {
                 value: 2,
                 child: Row(
                   children: [
+                    Icon(Icons.search),
+                    const SizedBox(width: 8),
+                    Text('Search'),
+                  ],
+                ),
+              ),
+              PopupMenuItem<int>(
+                value: 3,
+                child: Row(
+                  children: [
+                    Icon(Icons.clear),
+                    const SizedBox(width: 8),
+                    Text('Clear Search'),
+                  ],
+                ),
+              ),
+              PopupMenuItem<int>(
+                value: 4,
+                child: Row(
+                  children: [
                     Icon(
                       Pdf.file_pdf,
                       size: 20,
@@ -70,7 +90,7 @@ class DeviceLogsAppBar extends StatelessWidget {
                 ),
               ),
               PopupMenuItem<int>(
-                value: 3,
+                value: 5,
                 child: Row(
                   children: [
                     Icon(
@@ -110,6 +130,12 @@ class DeviceLogsAppBar extends StatelessWidget {
         break;
       case 3:
         func4();
+        break;
+      case 4:
+        func5();
+        break;
+      case 5:
+        func6();
         break;
     }
   }

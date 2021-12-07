@@ -18,7 +18,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
-import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
+import 'package:login_cms_comdelta/Pages/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';

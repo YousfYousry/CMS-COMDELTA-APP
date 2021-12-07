@@ -123,12 +123,12 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
     if (spans[1] != Span.down) {
       sortState = 2;
       _pagingController.itemList
-          .sort((a, b) => a.deviceName.compareTo(b.deviceDetails));
+          .sort((a, b) => a.deviceName.compareTo(b.deviceName));
       spans[1] = Span.down;
     } else {
       sortState = 3;
       _pagingController.itemList
-          .sort((a, b) => b.deviceName.compareTo(a.deviceDetails));
+          .sort((a, b) => b.deviceName.compareTo(a.deviceName));
       spans[1] = Span.up;
     }
     spans[0] = Span.def;
@@ -159,7 +159,7 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
       List<DeviceJason> dummyListData = [];
       dummySearchList.forEach((item) {
         if (item.id.toLowerCase().contains(query.toLowerCase()) ||
-            item.deviceDetails.toLowerCase().contains(query.toLowerCase()) ||
+            item.deviceName.toLowerCase().contains(query.toLowerCase()) ||
             item.deviceLocation.toLowerCase().contains(query.toLowerCase())) {
           resultFound = true;
           item.setHighLight(query);

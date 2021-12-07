@@ -1,7 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
-import 'package:login_cms_comdelta/Pages/Admin/DeviceLogs.dart';
+import 'package:login_cms_comdelta/Pages/DeviceLogs.dart';
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import '../../public.dart';

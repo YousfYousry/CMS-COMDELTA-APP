@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/services.dart';
+
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -13,8 +14,11 @@ import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,7 +27,7 @@ import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter/cupertino.dart';
-import '../../public.dart';
+import '../public.dart';
 
 const PrimaryColor = const Color(0xff0065a3);
 enum Span { def, up, down }
@@ -116,7 +120,7 @@ class TitleElement extends StatelessWidget {
       this.title,
       this.span,
       this.func,
-        this.textSize=14,
+      this.textSize = 14,
       this.index})
       : super(key: key);
 
@@ -243,6 +247,10 @@ class DeviceLogs extends StatefulWidget {
 class _DeviceLogs extends State<DeviceLogs> {
   TextEditingController searchController = new TextEditingController();
   bool loading = false, validate = false;
+  bool advancedSearchBool = false;
+  TextEditingController dateFromAd = new TextEditingController(),
+      dateToAd = new TextEditingController();
+  String resNum = "0";
 
   // String searchTerm="";
 
@@ -306,13 +314,13 @@ class _DeviceLogs extends State<DeviceLogs> {
       setState(() {
         validate = !resultFound;
         _pagingController.itemList = dummyListData;
+        resNum = dummyListData.length.toString();
       });
     } else {
       setState(() {
         validate = false;
-        if(spans[0] != Span.up){
-          allLogs.sort((a, b) =>
-               b.getE(0).compareTo(a.getE(0)));
+        if (spans[0] != Span.up) {
+          allLogs.sort((a, b) => b.getE(0).compareTo(a.getE(0)));
           spans[0] = Span.up;
           for (int i = 1; i < spans.length; i++) {
             spans[i] = Span.def;
@@ -320,8 +328,18 @@ class _DeviceLogs extends State<DeviceLogs> {
         }
         allLogs.forEach((element) => element.setHighLight(''));
         _pagingController.itemList = allLogs;
+        resNum = allLogs.length.toString();
       });
     }
+  }
+
+  void clearSearch() {
+    setState(() {
+      searchController.text = "";
+      reset();
+    });
+    advancedSearchBool = false;
+    refresh();
   }
 
   void refresh() {
@@ -332,7 +350,7 @@ class _DeviceLogs extends State<DeviceLogs> {
           progress(false);
         }
         if (allLogs.isEmpty) {
-          toast("No logs are available for this device!");
+          toast("No logs were found!");
         }
       });
     }
@@ -362,10 +380,17 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   Future<void> _fetchPage() async {
     try {
-      allLogs = await RemoteApi.getList(widget.device.id);
-      if(spans[0] != Span.up){
-        allLogs.sort((a, b) =>
-            b.getE(0).compareTo(a.getE(0)));
+      if (advancedSearchBool &&
+          (dateFromAd.text.isNotEmpty || dateToAd.text.isNotEmpty)) {
+        List<LogJason> tempLogs = await RemoteApi.getList(widget.device.id);
+        allLogs = tempLogs.where((element) => filterElement(element)).toList();
+        resNum = allLogs.length.toString();
+      } else {
+        allLogs = await RemoteApi.getList(widget.device.id);
+        resNum = allLogs.length.toString();
+      }
+      if (spans[0] != Span.up) {
+        allLogs.sort((a, b) => b.getE(0).compareTo(a.getE(0)));
         spans[0] = Span.up;
         for (int i = 1; i < spans.length; i++) {
           spans[i] = Span.def;
@@ -406,6 +431,8 @@ class _DeviceLogs extends State<DeviceLogs> {
               "Device " + widget.device.id + " Logs",
               showDeviceDetails,
               refresh,
+              show,
+              clearSearch,
               pdf,
               excel),
           preferredSize: const Size.fromHeight(50),
@@ -416,19 +443,41 @@ class _DeviceLogs extends State<DeviceLogs> {
             //   children: [
             Column(
           children: [
-            Container(
+            Padding(
               padding: const EdgeInsets.all(20),
               child: TextField(
-                onChanged: (text) => filterSearchResults(text),
+                onChanged: (text) {
+                  filterSearchResults(text);
+                },
                 controller: searchController,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
                   errorText: validate ? 'No result was found' : null,
-                  labelText: "Search",
-                  hintText: "Search",
-                  contentPadding: EdgeInsets.all(20.0),
+                  labelText: "Search (" + resNum + " results)",
+                  hintText: "Enter Detail or a value",
+                  contentPadding: EdgeInsets.all(10.0),
                   prefixIcon: Icon(Icons.search),
+                  suffixIcon: searchController.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () => setState(() {
+                            searchController.clear();
+                            filterSearchResults("");
+                            FocusScopeNode currentFocus =
+                                FocusScope.of(context);
+                            if (!currentFocus.hasPrimaryFocus &&
+                                currentFocus.focusedChild != null) {
+                              FocusManager.instance.primaryFocus.unfocus();
+                            }
+                          }),
+                        ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(0),
+                    ),
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(10),
@@ -780,7 +829,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                     Value(
                                                         height: 30,
                                                         width: 71,
-                                                        title: item.lightBattery1,
+                                                        title:
+                                                            item.lightBattery1,
                                                         high: item.highLight,
                                                         border: true),
                                                     ValueBulb(
@@ -797,7 +847,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                     Value(
                                                         height: 30,
                                                         width: 71,
-                                                        title: item.lightBattery2,
+                                                        title:
+                                                            item.lightBattery2,
                                                         high: item.highLight,
                                                         border: true),
                                                     ValueBulb(
@@ -814,7 +865,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                     Value(
                                                         height: 30,
                                                         width: 71,
-                                                        title: item.lightBattery3,
+                                                        title:
+                                                            item.lightBattery3,
                                                         high: item.highLight,
                                                         border: true),
                                                     ValueBulb(
@@ -838,7 +890,8 @@ class _DeviceLogs extends State<DeviceLogs> {
                                                     Value(
                                                         height: 30,
                                                         width: 70,
-                                                        title: item.simTelcoOptions,
+                                                        title: item
+                                                            .simTelcoOptions,
                                                         high: item.highLight,
                                                         border: false),
                                                   ],
@@ -1479,7 +1532,7 @@ class _DeviceLogs extends State<DeviceLogs> {
               alignment: PdfTextAlignment.right,
             ));
 
-        String str1 = 'Client: ' + compress(widget.device.client);
+        String str1 = 'Client: ' + compress(widget.device.getClient);
         String str2 = 'Device name: ' + widget.device.deviceName;
         String str3 = 'Height: ' + widget.device.deviceHeight;
         String str4 = 'Location: ' + widget.device.deviceLocation;
@@ -1631,5 +1684,164 @@ class _DeviceLogs extends State<DeviceLogs> {
 
   void showDeviceDetails() {
     ShowDevice(context, widget.device);
+  }
+
+  void show() {
+    Navigator.of(context).push(
+      new MaterialPageRoute<String>(
+          builder: (BuildContext context) {
+            return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return new Scaffold(
+                backgroundColor: Color(0xfafafafa),
+                appBar: new AppBar(
+                  centerTitle: true,
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(this.context),
+                  ),
+                  backgroundColor: Color(0xff0065a3),
+                  title: const Text('Advanced Search'),
+                  actions: [
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        dividerColor: Colors.white,
+                        iconTheme: IconThemeData(color: Colors.white),
+                        textTheme: TextTheme().apply(bodyColor: Colors.white),
+                      ),
+                      child: PopupMenuButton<int>(
+                        color: Color(0xff0065a3),
+                        onSelected: (item) {
+                          setState(() {
+                            reset();
+                          });
+                          if (item == 1) {
+                            advancedSearchBool = false;
+                            refresh();
+                            Navigator.pop(this.context);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem<int>(
+                            value: 0,
+                            child: Row(
+                              children: [
+                                Icon(Icons.clear),
+                                const SizedBox(width: 8),
+                                Text('Clear all fields'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<int>(
+                            value: 1,
+                            child: Row(
+                              children: [
+                                Icon(Icons.library_add_check_outlined),
+                                const SizedBox(width: 8),
+                                Text('All Device Logs'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                body: GestureDetector(
+                  onTap: () {
+                    FocusScopeNode currentFocus = FocusScope.of(context);
+                    if (!currentFocus.hasPrimaryFocus &&
+                        currentFocus.focusedChild != null) {
+                      FocusManager.instance.primaryFocus.unfocus();
+                    }
+                  },
+                  child: SingleChildScrollView(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      // height: MediaQuery.of(context).size.height,
+                      padding: EdgeInsets.all(15),
+                      // color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SmartDateH(
+                            controller: dateFromAd,
+                            controller2: dateToAd,
+                            title: "Filter Date",
+                            hintText: "From",
+                            hintText2: "To",
+                          ),
+                          SizedBox(
+                            height: 50,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    if (allEmpty()) {
+                      toast("Please fill in any field to search");
+                      return;
+                    }
+                    advancedSearchBool = true;
+                    Navigator.pop(this.context);
+                    refresh();
+                  },
+                  child: const Icon(Icons.search),
+                  backgroundColor: Color(0xff0065a3),
+                ),
+              );
+            });
+          },
+          fullscreenDialog: true),
+    );
+  }
+
+  bool filterElement(LogJason log) {
+    bool filterDateFrom;
+    try {
+      DateTime dateFrom = DateFormat('dd-MM-yyyy').parse(dateFromAd.text);
+      filterDateFrom = (dateFromAd.text.isEmpty ||
+              DateFormat('yyyy-MM-dd HH:mm:ss')
+                  .parse(log.createDate.trim())
+                  .isAfter(
+                      DateTime(dateFrom.year, dateFrom.month, dateFrom.day - 1))
+          // ||
+          // DateFormat('yyyy-MM-dd HH:mm:ss')
+          //     .parse(log.createDate.trim())
+          //     .isAtSameMomentAs(
+          //         DateFormat('dd-MM-yyyy').parse(dateFromAd.text))
+          );
+    } catch (Exception) {
+      filterDateFrom = false;
+    }
+
+    bool filterDateTo;
+    try {
+      DateTime dateTo = DateFormat('dd-MM-yyyy').parse(dateToAd.text);
+      filterDateTo = (dateToAd.text.isEmpty ||
+              DateFormat('yyyy-MM-dd HH:mm:ss')
+                  .parse(log.createDate.trim())
+                  .isBefore(DateTime(dateTo.year, dateTo.month, dateTo.day + 1))
+          // ||
+          // DateFormat('yyyy-MM-dd HH:mm:ss')
+          //     .parse(log.createDate.trim())
+          //     .isAtSameMomentAs(DateFormat('dd-MM-yyyy').parse(dateToAd.text))
+          );
+    } catch (Exception) {
+      filterDateTo = false;
+    }
+    return filterDateFrom && filterDateTo;
+  }
+
+  void reset() {
+    dateFromAd.text = "";
+    dateToAd.text = "";
+  }
+
+  bool allEmpty() {
+    return dateFromAd.text == "" && dateToAd.text == "";
   }
 }

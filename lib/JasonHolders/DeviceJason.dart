@@ -318,6 +318,7 @@ class DeviceJason {
   String get id => _id;
 
   String get getClient => parseClient();
+  // String get client => parseClient();
 
   String get deviceName => _deviceName;
 
