@@ -107,6 +107,7 @@ class _ClientDashBoard extends State<ClientDashBoard>
 
   @override
   Widget build(BuildContext context) {
+
     dashBoardContext = context;
     historyPage = DeviceHistoryClient();
     return WillPopScope(
@@ -300,7 +301,7 @@ class _ClientDashBoard extends State<ClientDashBoard>
             ),
             Loading(
               loading: loading,
-              color: Colors.white,
+              // color: Colors.white,
             ),
           ],
         ),

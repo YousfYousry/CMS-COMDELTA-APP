@@ -1,18 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:login_cms_comdelta/Pages/Client/ActiveDeviceCard.dart';
-import 'package:login_cms_comdelta/Pages/Client/InactiveDeviceCard.dart';
-import 'package:login_cms_comdelta/Pages/Client/TotalDevicesCard.dart';
+import 'package:login_cms_comdelta/Pages/Client/ActiveDevicePage.dart';
+import 'package:login_cms_comdelta/Pages/Client/InactiveDevicePage.dart';
+import 'package:login_cms_comdelta/Pages/Client/TotalDevicesPage.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomeAppBar.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Widgets/Others/FloatingButtonDashBoard.dart';
 import '../../Widgets/ProgressBars/ProgressBar.dart';
 import '../../Widgets/SideDrawers/SideDrawer.dart';
 import '../../Widgets/Others/SizeTransition.dart';
 import 'package:http/http.dart' as http;
-
 import '../../public.dart';
 
 class DeviceStatus extends StatefulWidget {

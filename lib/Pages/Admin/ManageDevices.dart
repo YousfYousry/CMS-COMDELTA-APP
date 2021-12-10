@@ -20,98 +20,19 @@ import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/ManageDevicesAppBar.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-// import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Position/MiddleLeft.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'dart:math' as math;
 import '../../public.dart';
-
-const PrimaryColor = const Color(0xff0065a3);
 
 class ManageDevice extends StatefulWidget {
   @override
   _ManageDevice createState() => _ManageDevice();
 }
 
-//
-// var spanUp = WidgetSpan(
-//       child: Padding(
-//         padding: EdgeInsets.only(left: 2, bottom: 2),
-//         child: ImageIcon(
-//           AssetImage('assets/image/sortup.png'),
-//           size: 12,
-//           color: Colors.black,
-//         ),
-//       ),
-//     ),
-//     spanDown = WidgetSpan(
-//       child: Padding(
-//         padding: EdgeInsets.only(left: 2, bottom: 2),
-//         child: ImageIcon(
-//           AssetImage('assets/image/sortdown.png'),
-//           size: 12,
-//           color: Colors.black,
-//         ),
-//       ),
-//     ),
-//     spanDefault = WidgetSpan(
-//       child: Transform.rotate(
-//           angle: 90 * math.pi / 180,
-//           child: Icon(
-//             Icons.sync_alt,
-//             size: 15,
-//             color: Colors.grey,
-//           )),
-//     );
-
-class SpanUp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortup.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDown extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortdown.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDefault extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 90 * math.pi / 180,
-      child: Icon(
-        Icons.sync_alt,
-        size: 15,
-        color: Colors.grey,
-      ),
-    );
-  }
-}
 
 class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   TextEditingController searchController = new TextEditingController();
@@ -123,13 +44,6 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
   var title = ["All Devices", "Failed Devices", "Filtered Devices"];
 
   AdvancedSearch advancedSearch;
-
-  // String clientAd = "", simProviderAd = "";
-  // TextEditingController batchNumAd = new TextEditingController(),
-  //     activationFromAd = new TextEditingController(),
-  //     activationToAd = new TextEditingController(),
-  //     lastSignalAd = new TextEditingController();
-  // var span1 = SpanUp, span2 = SpanDefault, span3 = SpanDefault;
 
   var spans = [Span.up, Span.def, Span.def];
 
@@ -1238,6 +1152,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
     setState(() {
       loading = true;
       validate = false;
+      index = 1;
     });
 
     try {
@@ -1249,7 +1164,7 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
         if (device.isUniKl()&&device.inActiveLast72()) {
           String query = searchController.text;
 
-          if (advancedSearch.filterDevice(device)) {
+          // if (advancedSearch.filterDevice(device)) {
             if (query.isNotEmpty) {
               if (device.id.toLowerCase().contains(query.toLowerCase()) ||
                   device.deviceName
@@ -1266,16 +1181,16 @@ class _ManageDevice extends State<ManageDevice> with WidgetsBindingObserver {
               tempDevices.add(device);
               this.duplicateDevices.add(device);
             }
-          }
+          // }
         }
       });
 
       setState(() {
-        if (advancedSearch.advancedSearchBool) {
-          index = 2;
-        } else {
-          index = 0;
-        }
+        // if (advancedSearch.advancedSearchBool) {
+        //   index = 2;
+        // } else {
+        //   index = 1;
+        // }
         this._pagingController.itemList = tempDevices;
         resNum = tempDevices.length.toString();
         sort();

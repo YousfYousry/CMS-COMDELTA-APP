@@ -1,19 +1,9 @@
-// import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
-
-// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../../public.dart';
-
-// import '../../Widgets/ProgressBars/ProgressBar.dart';
-// import '../../Widgets/SideDrawers/SideDrawer.dart';
-// import '../../Widgets/AppBars/CustomeAppBar.dart';
 
 class FeedBackPage extends StatefulWidget {
   @override

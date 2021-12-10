@@ -131,7 +131,7 @@ class _SideDrawer extends State<SideDrawerAdmin> {
           ),
           ListTile(
             leading: Icon(Icons.home),
-            title: Text('Dashoard'),
+            title: Text('Dashboard'),
             onTap: () => Navigator.pop(context),
           ),
           ExpansionPanelList(

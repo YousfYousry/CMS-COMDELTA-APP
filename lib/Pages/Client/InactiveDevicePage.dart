@@ -8,61 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import '../../public.dart';
 import '../../Widgets/AppBars/CustomAppBarWithBack.dart';
-import 'dart:math' as math;
 
-enum Span { def, up, down }
-
-class SpanUp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortup.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDown extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortdown.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDefault extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 90 * math.pi / 180,
-      child: Icon(
-        Icons.sync_alt,
-        size: 15,
-        color: Colors.grey,
-      ),
-    );
-  }
-}
-
-class ActiveDeviceCard extends StatefulWidget {
-  ActiveDeviceCard({Key key, this.title}) : super(key: key);
+class InactiveDeviceCard extends StatefulWidget {
+  InactiveDeviceCard({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _ActiveDeviceCard createState() => _ActiveDeviceCard();
+  _InactiveDeviceCard createState() => _InactiveDeviceCard();
 }
 
-class _ActiveDeviceCard extends State<ActiveDeviceCard> {
+class _InactiveDeviceCard extends State<InactiveDeviceCard> {
   TextEditingController searchController = new TextEditingController();
   bool loading = false, validate = false;
   String resNum = "0";
@@ -198,7 +153,7 @@ class _ActiveDeviceCard extends State<ActiveDeviceCard> {
 
   @override
   void initState() {
-    duplicateDevices = devices.where((h) => !h.inActiveLast72()).toList();
+    duplicateDevices = devices.where((h) => h.inActiveLast72()).toList();
     setState(() {
       resNum = duplicateDevices.length.toString();
       _pagingController.itemList = duplicateDevices;
@@ -216,7 +171,7 @@ class _ActiveDeviceCard extends State<ActiveDeviceCard> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: CustomAppBarBack(context, "Active Devices"),
+          child: CustomAppBarBack(context, "Inactive Devices"),
           preferredSize: const Size.fromHeight(50),
         ),
         body:
@@ -620,7 +575,7 @@ class _ActiveDeviceCard extends State<ActiveDeviceCard> {
       if (clientId != '-1') {
         location = await RemoteApi.getLocationList();
         devices = await RemoteApi.getClientDevicesList(clientId);
-        duplicateDevices = devices.where((h) => !h.inActiveLast72()).toList();
+        duplicateDevices = devices.where((h) => h.inActiveLast72()).toList();
         setState(() {
           resNum = duplicateDevices.length.toString();
           _pagingController.itemList = duplicateDevices;

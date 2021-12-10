@@ -1,22 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Classes/Notification.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AdminDashBoard.dart';
-// import 'package:login_cms_comdelta/Pages/Admin/DeviceHistory.dart';
 import 'package:login_cms_comdelta/Pages/Client/ClientDashBoard.dart';
 import 'package:upgrader/upgrader.dart';
-import 'public.dart';
+
 import 'JasonHolders/RemoteApi.dart';
 import 'Widgets/Others/Loading.dart';
 import 'Widgets/Others/SizeTransition.dart';
+import 'public.dart';
 
 Future<void> init() async {
   await Firebase.initializeApp();
@@ -26,9 +27,11 @@ Future<void> init() async {
   client = await RemoteApi.getClientList();
   await NotificationService().init();
   FirebaseMessaging.onMessage.listen(_messageHandler);
-  greenIcon = await getBytesFromAsset('assets/image/green_marker.png', 30);
-  yellowIcon = await getBytesFromAsset('assets/image/yellow_marker.png', 30);
-  redIcon = await getBytesFromAsset('assets/image/red_marker.png', 30);
+
+  int width = (MediaQuery.of(NavigationService.navigatorKey.currentContext).size.width *MediaQuery.of(NavigationService.navigatorKey.currentContext).devicePixelRatio)~/ 24.0;
+  greenIcon = await getBytesFromAsset('assets/image/green_marker.png', width);
+  yellowIcon = await getBytesFromAsset('assets/image/yellow_marker.png', width);
+  redIcon = await getBytesFromAsset('assets/image/red_marker.png', width);
 
   //this part happens only when user is logged in
   if (!isLogged()) {
@@ -109,6 +112,10 @@ class LoadingPage extends StatefulWidget {
   _LoadingPage createState() => _LoadingPage();
 }
 
+class NavigationService {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+}
+
 class _LoadingPage extends State<LoadingPage> {
   @override
   void initState() {
@@ -152,6 +159,7 @@ Future<void> main() async {
       ),
       home: UpgradeAlert(child: (isLogged()) ? LoadingPage() : LoginPage()), //
       navigatorObservers: [routeObserver],
+      navigatorKey: NavigationService.navigatorKey, // set property
     ),
   );
 
@@ -671,26 +679,18 @@ class _LoginPage extends State<LoginPage> {
         Map<String, dynamic> map = json.decode(response.body);
         if (map["res"] == "0") {
           var route;
-          if (map["type"]
-              .toString()
-              .isEmpty ||
-              map["clientId"]
-                  .toString()
-                  .isEmpty ||
+          if (map["type"].toString().isEmpty ||
+              map["clientId"].toString().isEmpty ||
               deviceIdentifier.isEmpty ||
               !await setNotificationToken(
                   map["type"].toString(), map["clientId"].toString())) {
             if (deviceIdentifier.isEmpty) {
               toast("Device Identifier is unknown");
             }
-            if (map["clientId"]
-                .toString()
-                .isEmpty) {
+            if (map["clientId"].toString().isEmpty) {
               toast("Client Id is unknown");
             }
-            if (map["type"]
-                .toString()
-                .isEmpty) {
+            if (map["type"].toString().isEmpty) {
               toast("User Type is unknown");
             }
             setState(() => loading = false);
@@ -700,12 +700,16 @@ class _LoginPage extends State<LoginPage> {
           if (map["type"].toString().compareTo('3') != 0) {
             userType = adminKeyWord;
             route = DashBoardTest1();
-            devices = await RemoteApi.getDevicesList();
+            try {
+              devices = await RemoteApi.getDevicesList();
+            }catch(error){}
           } else {
             userType = clientKeyWord;
             route = ClientDashBoard();
-            devices =
-            await RemoteApi.getClientDevicesList(map["clientId"].toString());
+            try {
+              devices = await RemoteApi.getClientDevicesList(
+                  map["clientId"].toString());
+            }catch(error){}
           }
 
           save('user_type', userType);
@@ -723,7 +727,7 @@ class _LoginPage extends State<LoginPage> {
       } else {
         toast(getResponseError(response));
       }
-    }catch(error){
+    } catch (error) {
       toast(error.toString());
     }
     setState(() => loading = false);

@@ -249,8 +249,4 @@ class _SmartDate extends State<SmartDateH> {
         widget.controller2.text = formatDate(pickedDate);
       });
   }
-
-  String formatDate(DateTime date) {
-    return DateFormat('dd-MM-yyyy').format(date);
-  }
 }

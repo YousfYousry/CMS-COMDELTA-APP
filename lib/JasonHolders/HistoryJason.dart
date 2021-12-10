@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '../public.dart';
 import 'DeviceJason.dart';
 
@@ -56,4 +58,6 @@ class HistoryJason {
   String get inactivePeriod => _inactivePeriod;
 
   String get deviceId => _deviceId;
+
+  DateTime get date => DateTime(DateFormat('yyyy-MM-dd HH:mm:ss').parse(_changeDate).year, DateFormat('yyyy-MM-dd HH:mm:ss').parse(_changeDate).month, DateFormat('yyyy-MM-dd HH:mm:ss').parse(_changeDate).day);
 }

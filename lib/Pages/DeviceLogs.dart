@@ -23,87 +23,10 @@ import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:math' as math;
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter/cupertino.dart';
 import '../public.dart';
-
-const PrimaryColor = const Color(0xff0065a3);
-enum Span { def, up, down }
-
-// var spanUp = WidgetSpan(
-//       child: Padding(
-//         padding: EdgeInsets.only(left: 2, bottom: 2),
-//         child: ImageIcon(
-//           AssetImage('assets/image/sortup.png'),
-//           size: 12,
-//           color: Colors.black,
-//         ),
-//       ),
-//     ),
-//     spanDown = WidgetSpan(
-//       child: Padding(
-//         padding: EdgeInsets.only(left: 2, bottom: 2),
-//         child: ImageIcon(
-//           AssetImage('assets/image/sortdown.png'),
-//           size: 12,
-//           color: Colors.black,
-//         ),
-//       ),
-//     ),
-//     spanDefault = WidgetSpan(
-//       child: Transform.rotate(
-//         angle: 90 * math.pi / 180,
-//         child: Icon(
-//           Icons.sync_alt,
-//           size: 15,
-//           color: Colors.grey,
-//         ),
-//       ),
-//     );
-
-class SpanUp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortup.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDown extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortdown.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDefault extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 90 * math.pi / 180,
-      child: Icon(
-        Icons.sync_alt,
-        size: 15,
-        color: Colors.grey,
-      ),
-    );
-  }
-}
 
 class TitleElement extends StatelessWidget {
   final double width, height;

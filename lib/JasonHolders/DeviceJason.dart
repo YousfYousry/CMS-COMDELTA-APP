@@ -307,18 +307,11 @@ class DeviceJason {
             date.minute, date.second));
   }
 
-  String parseClient(){
-    try{
-      return client[getInt(_client) - 1].title;
-    }catch(error){
-      return "unknown";
-    }
-  }
-
   String get id => _id;
 
-  String get getClient => parseClient();
-  // String get client => parseClient();
+  String get getClient => parseClient(_client);
+
+  String get clientId => _client;
 
   String get deviceName => _deviceName;
 

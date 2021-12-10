@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
-// import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
-// import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextFieldHor.dart';
@@ -25,7 +23,6 @@ class _DeviceHistory extends State<DeviceHistoryClient> with WidgetsBindingObser
   bool loading = false;
   bool startIdError = false;
   bool endIdError = false;
-  // String clientAd = "";
   String deviceStatusAd = "";
   TextEditingController activationFromAd = new TextEditingController(),
       activationToAd = new TextEditingController(),

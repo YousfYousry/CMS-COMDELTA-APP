@@ -1732,7 +1732,7 @@ class _DashBoardTest1 extends State<DashBoardTest1>
               ),
               Loading(
                 loading: loading,
-                color: Color(0xFFFFFFFF),
+                // color: Color(0xFFFFFFFF),
               ),
             ],
           ),

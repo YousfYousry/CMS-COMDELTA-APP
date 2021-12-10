@@ -98,7 +98,7 @@ class ExportExcel {
       sheet.getRangeByName('B' + num).setText(items[i].deviceName.toString());
       sheet
           .getRangeByName('C' + num)
-          .setText(client[getInt(items[i].client) - 1].value.toString());
+          .setText(items[i].getClient.toString());
       sheet
           .getRangeByName('D' + num)
           .setText(items[i].deviceDetails.toString());

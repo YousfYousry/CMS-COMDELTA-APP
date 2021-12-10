@@ -5,8 +5,8 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DeviceCountHistory.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
@@ -119,42 +119,42 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver , Ro
     }
   }
 
-  Widget dialogButton(Color btnColor, String title, Widget btnIcon,
-      {VoidCallback onPressed}) {
-    return Expanded(
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(btnColor),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: Colors.black12),
-            ),
-          ),
-        ),
-        onPressed: onPressed,
-        child: Center(
-          child: Container(
-            height: 30,
-            child: Row(
-              children: [
-                Spacer(),
-                Padding(
-                  padding: EdgeInsets.all(5),
-                  child: btnIcon,
-                ),
-                Text(
-                  title,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget dialogButton(Color btnColor, String title, Widget btnIcon,
+  //     {VoidCallback onPressed}) {
+  //   return Expanded(
+  //     child: ElevatedButton(
+  //       style: ButtonStyle(
+  //         backgroundColor: MaterialStateProperty.all<Color>(btnColor),
+  //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+  //           RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             side: BorderSide(color: Colors.black12),
+  //           ),
+  //         ),
+  //       ),
+  //       onPressed: onPressed,
+  //       child: Center(
+  //         child: Container(
+  //           height: 30,
+  //           child: Row(
+  //             children: [
+  //               Spacer(),
+  //               Padding(
+  //                 padding: EdgeInsets.all(5),
+  //                 child: btnIcon,
+  //               ),
+  //               Text(
+  //                 title,
+  //                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+  //               ),
+  //               Spacer(),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   GlobalKey _fabKey = GlobalKey();
   bool _fabVisible = true;
@@ -292,7 +292,7 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver , Ro
         }
       },
       child: Scaffold(
-        backgroundColor: Color(0xfafafafa),
+        backgroundColor: Color(0xfffafafa),
         appBar: PreferredSize(
           child: CustomAppBarBack(context, "Manage Client"),
           preferredSize: const Size.fromHeight(50),
@@ -354,10 +354,11 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver , Ro
                               child: InkWell(
                                 onTap: () {
                                   AwesomeDialog(
-                                    dialogBackgroundColor: Color(0xfafafafa),
+                                    dialogBackgroundColor: Color(0xfffafafa),
                                     context: context,
                                     animType: AnimType.SCALE,
                                     dialogType: DialogType.NO_HEADER,
+                                    showCloseIcon: true,
                                     body: Padding(
                                       padding:
                                           EdgeInsets.only(left: 15, right: 15),
@@ -406,28 +407,72 @@ class _ManageClient extends State<ManageClient> with WidgetsBindingObserver , Ro
                                                   .status
                                                   .toString()
                                                   .contains("1")),
-                                          Row(
-                                            children: [
-                                              dialogButton(
-                                                  Colors.black45,
-                                                  "Edit",
-                                                  Icon(Icons.edit, size: 18),
-                                                  onPressed: () {
-                                                Navigator.pop(context);
-                                                editClient(clients[index]);
-                                              }),
-                                              SizedBox(
-                                                width: 15,
+                                          // Row(
+                                          //   children: [
+                                          //     dialogButton(
+                                          //         Colors.black45,
+                                          //         "Edit",
+                                          //         Icon(Icons.edit, size: 18),
+                                          //         onPressed: () {
+                                          //       Navigator.pop(context);
+                                          //       editClient(clients[index]);
+                                          //     }),
+                                          //     SizedBox(
+                                          //       width: 5,
+                                          //     ),
+                                          //     dialogButton(Colors.red, "Delete",
+                                          //         Icon(Icons.delete, size: 18),
+                                          //         onPressed: () {
+                                          //       Navigator.pop(context);
+                                          //       deleteClient(
+                                          //           clients[index], context);
+                                          //     }),
+                                          //   ],
+                                          // ),
+
+                                          ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor: MaterialStateProperty.all<Color>(PrimaryColor),
+                                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  side: BorderSide(color: Colors.black12),
+                                                ),
                                               ),
-                                              dialogButton(Colors.red, "Delete",
-                                                  Icon(Icons.delete, size: 18),
-                                                  onPressed: () {
-                                                Navigator.pop(context);
-                                                deleteClient(
-                                                    clients[index], context);
-                                              }),
-                                            ],
+                                            ),
+                                            onPressed: () =>Navigator.push(
+                                                context,
+                                                SizeRoute(
+                                                  page: DeviceCountHistory(clientId: clients[index].id),
+                                                ),
+                                              ),
+                                            child: Center(
+                                              child:Row(
+                                                  children: [
+                                                    Spacer(),
+                                                    Padding(
+                                                      padding: EdgeInsets.all(5),
+                                                      child: Icon(Icons.history, size: 18),
+                                                    ),
+                                                    Text(
+                                                      "Device count history",
+                                                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                    ),
+                                                    Spacer(),
+                                                  ],
+                                                ),
+                                            ),
                                           ),
+
+                                          // Container(
+                                          //   height: 35,
+                                          //   child: dialogButton(Colors.yellow, "Delete",
+                                          //     Icon(Icons.delete, size: 18),
+                                          //     onPressed: () {
+                                          //       Navigator.pop(context);
+                                          //       deleteClient(
+                                          //           clients[index], context);
+                                          //     }),),
                                         ],
                                       ),
                                     ),

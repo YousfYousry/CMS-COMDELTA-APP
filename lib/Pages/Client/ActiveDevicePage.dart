@@ -8,97 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import '../../public.dart';
 import '../../Widgets/AppBars/CustomAppBarWithBack.dart';
-import 'dart:math' as math;
 
-enum Span { def, up, down }
-
-class SpanUp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortup.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDown extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2, bottom: 2),
-      child: ImageIcon(
-        AssetImage('assets/image/sortdown.png'),
-        size: 12,
-        color: Colors.black,
-      ),
-    );
-  }
-}
-
-class SpanDefault extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 90 * math.pi / 180,
-      child: Icon(
-        Icons.sync_alt,
-        size: 15,
-        color: Colors.grey,
-      ),
-    );
-  }
-}
-
-class TotalDeviceCard extends StatefulWidget {
-  TotalDeviceCard({Key key, this.title}) : super(key: key);
+class ActiveDeviceCard extends StatefulWidget {
+  ActiveDeviceCard({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
-  _TotalDeviceCard createState() => _TotalDeviceCard();
+  _ActiveDeviceCard createState() => _ActiveDeviceCard();
 }
-//
-// var spanUp = WidgetSpan(
-//       child: Padding(
-//         padding: EdgeInsets.only(left: 2, bottom: 2),
-//         child: ImageIcon(
-//           AssetImage('assets/image/sortup.png'),
-//           size: 12,
-//           color: Colors.black,
-//         ),
-//       ),
-//     ),
-//     spanDown = WidgetSpan(
-//       child: Padding(
-//         padding: EdgeInsets.only(left: 2, bottom: 2),
-//         child: ImageIcon(
-//           AssetImage('assets/image/sortdown.png'),
-//           size: 12,
-//           color: Colors.black,
-//         ),
-//       ),
-//     ),
-//     spanDefault = WidgetSpan(
-//       child: Transform.rotate(
-//           angle: 90 * math.pi / 180,
-//           child: Icon(
-//             Icons.sync_alt,
-//             size: 15,
-//             color: Colors.grey,
-//           )),
-//     );
 
-class _TotalDeviceCard extends State<TotalDeviceCard> {
+class _ActiveDeviceCard extends State<ActiveDeviceCard> {
   TextEditingController searchController = new TextEditingController();
   bool loading = false, validate = false;
   String resNum = "0";
   int sortState = 1;
   final PagingController<int, DeviceJason> _pagingController =
-      PagingController(firstPageKey: 0);
+  PagingController(firstPageKey: 0);
   var duplicateDevices = [];
 
   var spans = [Span.up, Span.def, Span.def];
@@ -228,10 +153,10 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
 
   @override
   void initState() {
-    duplicateDevices = devices;
+    duplicateDevices = devices.where((h) => !h.inActiveLast72()).toList();
     setState(() {
-      resNum = devices.length.toString();
-      _pagingController.itemList = devices;
+      resNum = duplicateDevices.length.toString();
+      _pagingController.itemList = duplicateDevices;
       sort();
     });
     super.initState();
@@ -246,13 +171,13 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
       child: Scaffold(
         backgroundColor: Color(0xfafafafa),
         appBar: PreferredSize(
-          child: CustomAppBarBack(context, "Total Devices"),
+          child: CustomAppBarBack(context, "Active Devices"),
           preferredSize: const Size.fromHeight(50),
         ),
         body:
-            // Stack(
-            //   children: [
-            Column(
+        // Stack(
+        //   children: [
+        Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(20),
@@ -272,18 +197,18 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                   suffixIcon: searchController.text.isEmpty
                       ? null
                       : IconButton(
-                          icon: Icon(Icons.clear),
-                          onPressed: () => setState(() {
-                            searchController.clear();
-                            filterSearchResults("");
-                            FocusScopeNode currentFocus =
-                                FocusScope.of(context);
-                            if (!currentFocus.hasPrimaryFocus &&
-                                currentFocus.focusedChild != null) {
-                              FocusManager.instance.primaryFocus.unfocus();
-                            }
-                          }),
-                        ),
+                    icon: Icon(Icons.clear),
+                    onPressed: () => setState(() {
+                      searchController.clear();
+                      filterSearchResults("");
+                      FocusScopeNode currentFocus =
+                      FocusScope.of(context);
+                      if (!currentFocus.hasPrimaryFocus &&
+                          currentFocus.focusedChild != null) {
+                        FocusManager.instance.primaryFocus.unfocus();
+                      }
+                    }),
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(0),
@@ -338,8 +263,8 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                                             child: (spans[0] == Span.def)
                                                 ? SpanDefault()
                                                 : (spans[0] == Span.up)
-                                                    ? SpanUp()
-                                                    : SpanDown()),
+                                                ? SpanUp()
+                                                : SpanDown()),
                                       ],
                                     ),
                                   ),
@@ -376,8 +301,8 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                                             child: (spans[1] == Span.def)
                                                 ? SpanDefault()
                                                 : (spans[1] == Span.up)
-                                                    ? SpanUp()
-                                                    : SpanDown()),
+                                                ? SpanUp()
+                                                : SpanDown()),
                                       ],
                                     ),
                                   ),
@@ -414,8 +339,8 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                                             child: (spans[2] == Span.def)
                                                 ? SpanDefault()
                                                 : (spans[2] == Span.up)
-                                                    ? SpanUp()
-                                                    : SpanDown()),
+                                                ? SpanUp()
+                                                : SpanDown()),
                                       ],
                                     ),
                                   ),
@@ -472,14 +397,14 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                           // ),
                           RefreshIndicator(
                             onRefresh: () => Future.sync(
-                              () => getDevices(),
+                                  () => getDevices(),
                             ),
                             child: PagedListView<int, DeviceJason>(
                               physics: AlwaysScrollableScrollPhysics(),
                               shrinkWrap: true,
                               pagingController: _pagingController,
                               builderDelegate:
-                                  PagedChildBuilderDelegate<DeviceJason>(
+                              PagedChildBuilderDelegate<DeviceJason>(
                                 firstPageErrorIndicatorBuilder: (_) =>
                                     SizedBox(),
                                 newPageErrorIndicatorBuilder: (_) => SizedBox(),
@@ -508,16 +433,16 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                                                 flex: 1,
                                                 child: Padding(
                                                   padding:
-                                                      EdgeInsets.only(left: 10),
+                                                  EdgeInsets.only(left: 10),
                                                   child: SubstringHighlight(
                                                     text: item.id,
                                                     term: item.highLight,
                                                     textStyleHighlight:
-                                                        TextStyle(
+                                                    TextStyle(
                                                       fontSize: 13,
                                                       color: Colors.red,
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                      FontWeight.bold,
                                                     ),
                                                     textStyle: TextStyle(
                                                       fontSize: 12,
@@ -541,16 +466,16 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                                                 flex: 4,
                                                 child: Padding(
                                                   padding:
-                                                      EdgeInsets.only(left: 10),
+                                                  EdgeInsets.only(left: 10),
                                                   child: SubstringHighlight(
                                                     text: item.deviceName,
                                                     term: item.highLight,
                                                     textStyleHighlight:
-                                                        TextStyle(
+                                                    TextStyle(
                                                       fontSize: 13,
                                                       color: Colors.red,
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                      FontWeight.bold,
                                                     ),
                                                     textStyle: TextStyle(
                                                       fontSize: 12,
@@ -573,16 +498,16 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
                                                 flex: 2,
                                                 child: Padding(
                                                   padding:
-                                                      EdgeInsets.only(left: 10),
+                                                  EdgeInsets.only(left: 10),
                                                   child: SubstringHighlight(
                                                     text: item.deviceLocation,
                                                     term: item.highLight,
                                                     textStyleHighlight:
-                                                        TextStyle(
+                                                    TextStyle(
                                                       fontSize: 13,
                                                       color: Colors.red,
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                      FontWeight.bold,
                                                     ),
                                                     textStyle: TextStyle(
                                                       fontSize: 12,
@@ -650,9 +575,10 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
       if (clientId != '-1') {
         location = await RemoteApi.getLocationList();
         devices = await RemoteApi.getClientDevicesList(clientId);
+        duplicateDevices = devices.where((h) => !h.inActiveLast72()).toList();
         setState(() {
-          resNum = devices.length.toString();
-          _pagingController.itemList = devices;
+          resNum = duplicateDevices.length.toString();
+          _pagingController.itemList = duplicateDevices;
           sort();
         });
       } else {
@@ -666,99 +592,6 @@ class _TotalDeviceCard extends State<TotalDeviceCard> {
     });
   }
 
-  // void sendGet(String clientId) {
-  //   http
-  //       .get(Uri.parse(
-  //           'http://103.18.247.174:8080/AmitProject/getLocations.php'))
-  //       .then((value) {
-  //     // ignore: deprecated_member_use
-  //     List<String> id = new List<String>();
-  //     // ignore: deprecated_member_use
-  //     List<String> locationName = new List<String>();
-  //     if (value.statusCode == 200) {
-  //       // ignore: deprecated_member_use
-  //       List<dynamic> values = new List<dynamic>();
-  //       values = json.decode(value.body);
-  //       if (values.length > 0) {
-  //         for (int i = 0; i < values.length; i++) {
-  //           if (values[i] != null) {
-  //             Map<String, dynamic> map = values[i];
-  //             id.add(map['location_id'].toString());
-  //             locationName.add(map['location_name'].toString());
-  //           }
-  //         }
-  //       }
-  //       sendPost(clientId, id, locationName);
-  //     } else {
-  //       setState(() {
-  //         loading = false;
-  //       });
-  //       throw Exception("Unable to get devices list");
-  //     }
-  //   }).onError((error, stackTrace) {
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //     toast('Error: ' + error.message);
-  //   });
-  // }
-  //
-  // void sendPost(String clientId, List<String> id, List<String> locationName) {
-  //   http.post(Uri.parse('http://103.18.247.174:8080/AmitProject/getDevice.php'),
-  //       body: {
-  //         'client_id': clientId,
-  //       }).then((response) {
-  //     if (response.statusCode == 200) {
-  //       // ignore: deprecated_member_use
-  //       List<DeviceElement> devices = new List<DeviceElement>();
-  //       // ignore: deprecated_member_use
-  //       List<dynamic> values = new List<dynamic>();
-  //       values = json.decode(response.body);
-  //       // print(values);
-  //       if (values.length > 0) {
-  //         for (int i = 0; i < values.length; i++) {
-  //           if (values[i] != null) {
-  //             Map<String, dynamic> map = values[i];
-  //             devices.add(DeviceElement.fromJson(
-  //                 map, (i + 1).toString(), id, locationName));
-  //           }
-  //         }
-  //       }
-  //       showDevices(devices);
-  //     } else {
-  //       setState(() {
-  //         loading = false;
-  //       });
-  //       throw Exception("Unable to get devices list");
-  //     }
-  //   }).onError((error, stackTrace) {
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //     toast('Error: ' + error.message);
-  //   });
-  // }
-  //
-  // void showDevices(List<DeviceElement> devices) {
-  //   setState(() {
-  //     duplicateItems.addAll(devices);
-  //     items.addAll(devices);
-  //     loading = false;
-  //   });
-  // }
-  //
-  // Future<String> load(String key) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString(key) ?? '-1';
-  // }
-  //
-  // double getDouble(String str) {
-  //   try {
-  //     return double.parse(str);
-  //   } catch (e) {
-  //     return 0;
-  //   }
-  // }
 
   void clearFocus() {
     FocusScopeNode currentFocus = FocusScope.of(context);

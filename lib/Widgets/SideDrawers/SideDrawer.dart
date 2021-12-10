@@ -4,12 +4,12 @@
 import 'package:flutter/material.dart';
 
 // import 'package:login_cms_comdelta/JasonHolders/UserInfoJason.dart';
-import 'package:login_cms_comdelta/Pages/Client/ActiveDeviceCard.dart';
+import 'package:login_cms_comdelta/Pages/Client/ActiveDevicePage.dart';
 import 'package:login_cms_comdelta/Pages/Client/DeviceHistory.dart';
 
 // import 'package:login_cms_comdelta/Pages/Client/DashBoard.dart';
-import 'package:login_cms_comdelta/Pages/Client/InactiveDeviceCard.dart';
-import 'package:login_cms_comdelta/Pages/Client/TotalDevicesCard.dart';
+import 'package:login_cms_comdelta/Pages/Client/InactiveDevicePage.dart';
+import 'package:login_cms_comdelta/Pages/Client/TotalDevicesPage.dart';
 
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -143,7 +143,7 @@ class _SideDrawer extends State<SideDrawer> {
           ),
           ListTile(
               leading: Icon(Icons.home),
-              title: Text('Dashoard'),
+              title: Text('Dashboard'),
               onTap: () => Navigator.pop(context)
               // {
               // Navigator.push(

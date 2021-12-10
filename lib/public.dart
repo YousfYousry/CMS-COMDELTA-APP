@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:smart_select/smart_select.dart';
 import 'JasonHolders/DeviceJason.dart';
 import 'JasonHolders/UserInfoJason.dart';
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 
 var dashBoardContext;
 var historyPage;
@@ -145,7 +147,57 @@ Map<int, Color> customColors = {
   900: Color.fromRGBO(136, 14, 79, 1),
 };
 
+enum Span { def, up, down }
 
+class SpanUp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 2, bottom: 2),
+      child: ImageIcon(
+        AssetImage('assets/image/sortup.png'),
+        size: 12,
+        color: Colors.black,
+      ),
+    );
+  }
+}
+
+class SpanDown extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 2, bottom: 2),
+      child: ImageIcon(
+        AssetImage('assets/image/sortdown.png'),
+        size: 12,
+        color: Colors.black,
+      ),
+    );
+  }
+}
+
+class SpanDefault extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: 90 * math.pi / 180,
+      child: Icon(
+        Icons.sync_alt,
+        size: 15,
+        color: Colors.grey,
+      ),
+    );
+  }
+}
+
+String parseClient(String clientId){
+  try{
+    return client[getInt(clientId) - 1].title;
+  }catch(error){
+    return "unknown";
+  }
+}
 
 double getDouble(String str) {
   try {
@@ -186,6 +238,14 @@ String getResponseError(http.Response response) {
     default:
       return 'Error occurred while Communication with Server with StatusCode: ${response.statusCode}';
   }
+}
+
+String formatDate(DateTime date) {
+  return DateFormat('dd-MM-yyyy').format(date);
+}
+
+String formatDate2(DateTime date) {
+  return DateFormat('yyyy-MM-dd').format(date);
 }
 
 Future<String> load(String key) async {
