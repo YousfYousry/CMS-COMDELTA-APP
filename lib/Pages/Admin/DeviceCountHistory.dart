@@ -10,7 +10,7 @@ import 'package:login_cms_comdelta/Classes/DeviceCountHolder.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
-import 'package:login_cms_comdelta/Pages/Admin/DisplayDivices.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DisplayDevices.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceCountAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
