@@ -1,14 +1,25 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/Classes/DeviceCount.dart';
 import 'package:login_cms_comdelta/Classes/DeviceCountHolder.dart';
+import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
+import 'package:login_cms_comdelta/Pages/Admin/DisplayDivices.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceCountAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../../public.dart';
 
 class TitleElement extends StatelessWidget {
@@ -83,41 +94,49 @@ class Value extends StatelessWidget {
   final double width, height;
   final String title, high;
   final bool border;
+  final onClick;
 
   const Value(
-      {Key key, this.height, this.width=0, this.title, this.high, this.border})
+      {Key key, this.height, this.width=0, this.title, this.high, this.border, this.onClick})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: width!=0?0:1,
-      child:Container(
-      padding: EdgeInsets.only(left: 10),
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        border: Border(
-          right: BorderSide(width: border ? 1.0 : 0, color: Colors.grey),
+      child:Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onClick,
+          child: Container(
+            padding: EdgeInsets.only(left: 10),
+            height: height,
+            width: width,
+            decoration: BoxDecoration(
+              border: Border(
+                right: BorderSide(width: border ? 1.0 : 0, color: Colors.grey),
+              ),
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SubstringHighlight(
+                text: title,
+                term: high,
+                textStyleHighlight: TextStyle(
+                  fontSize: 13,
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+                textStyle: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: SubstringHighlight(
-          text: title,
-          term: high,
-          textStyleHighlight: TextStyle(
-            fontSize: 13,
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-          ),
-          textStyle: TextStyle(
-            fontSize: 12,
-            color: Colors.black,
-          ),
-        ),
-      ),
-    ),);
+    );
   }
 }
 
@@ -193,14 +212,6 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     }
   }
 
-  // void clearSearch() {
-  //   setState(() {
-  //     searchController.text = "";
-  //     // reset();
-  //   });
-  //   refresh();
-  // }
-
   void refresh() {
     if (!loading) {
       progress(true);
@@ -231,14 +242,14 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
           element.id, element.clientId, !element.inActiveLast72())));
       DateTime date = DateTime.now();
       counts.add(DeviceCount(
-          "Today",
+          formatDate2(DateTime(date.year, date.month, date.day)),
           deviceHolder
               .where((element) => element.clientId == widget.clientId)
               .toList()));
 
       for (int i = 0;
           DateTime(date.year, date.month, date.day - i)
-              .isAfter(DateTime.utc(2021, 10, 25));
+              .isAfter(DateTime.utc(2021, 10, 24));
           i++) {
         history
             .where((history) => history.date.isAtSameMomentAs(
@@ -299,7 +310,9 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
           child: DeviceCountAppBar(
             context,
             parseClient(widget.clientId),
-            selectDate,
+            displayAll,
+            selectDay,
+            selectMonth,
             exportPdf,
           ),
           preferredSize: const Size.fromHeight(50),
@@ -380,6 +393,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                               title: "Total",
                               span: spans[1],
                               border: true,
+                              textSize: 12,
                               func: setSpans,
                               index: 1),
                           TitleElement(
@@ -388,6 +402,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                               title: "Active",
                               span: spans[2],
                               func: setSpans,
+                              textSize: 12,
                               border: true,
                               index: 2),
                           TitleElement(
@@ -395,6 +410,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                               height: 30,
                               title: "Inactive",
                               span: spans[3],
+                              textSize: 12,
                               func: setSpans,
                               index: 3),
                         ],
@@ -456,35 +472,10 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                                     height: 30,
                                     child: Row(
                                       children: [
-                                        // Container(
-                                        //   decoration: BoxDecoration(
-                                        //     border: Border(
-                                        //       right: BorderSide(
-                                        //           width: 1.0,
-                                        //           color: Colors.grey),
-                                        //     ),
-                                        //   ),
-                                        //   child: Align(
-                                        //     alignment: Alignment.center,
-                                        //     child: SubstringHighlight(
-                                        //       text: item.date,
-                                        //       term: item.highLight,
-                                        //       textStyleHighlight: TextStyle(
-                                        //         fontSize: 13,
-                                        //         color: Colors.red,
-                                        //         fontWeight: FontWeight.bold,
-                                        //       ),
-                                        //       textStyle: TextStyle(
-                                        //         fontSize: 12,
-                                        //         color: Colors.black,
-                                        //       ),
-                                        //     ),
-                                        //   ),
-                                        // ),
                                         Value(
                                             height: 30,
                                             width: 90,
-                                            title: item.date,
+                                            title: formatDate2(DateTime.now())==item.date?"Today":item.date,
                                             high: item.highLight,
                                             border: true),
                                         Value(
@@ -492,18 +483,36 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                                             // width: 71,
                                             title: item.total,
                                             high: item.highLight,
+                                            onClick:()=>  Navigator.push(
+                                              context,
+                                              SizeRoute(
+                                                page: DisplayDevice(widget.clientId,getDevices(item.deviceHolder),0,item.date),
+                                              ),
+                                            ),
                                             border: true),
                                         Value(
                                             height: 30,
                                             // width: 71,
                                             title: item.active,
                                             high: item.highLight,
+                                            onClick: ()=>  Navigator.push(
+                                              context,
+                                              SizeRoute(
+                                                  page: DisplayDevice(widget.clientId,getDevices(item.deviceHolder.where((element) => element.isActive).toList()),1,item.date),
+                                              ),
+                                            ),
                                             border: true),
                                         Value(
                                             height: 30,
                                             // width: 71,
                                             title: item.inactive,
                                             high: item.highLight,
+                                            onClick:()=>  Navigator.push(
+                                              context,
+                                              SizeRoute(
+                                                  page:  DisplayDevice(widget.clientId,getDevices(item.deviceHolder.where((element) => !element.isActive).toList()),2,item.date),
+                                              ),
+                                            ),
                                             border: false),
                                       ],
                                     ),
@@ -537,324 +546,382 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
   }
 
   Future<void> exportPdf() async {
-    // if (loading) {
+    if (loading) {
     toast("Loading, Please be patient!");
-    //   return;
-    // }
-    //
-    // if (_pagingController.itemList.isEmpty) {
-    //   toast("No logs available");
-    //   return;
-    // }
-    //
-    // await Permission.storage.request().then((value) async {
-    //   if (value.isGranted) {
-    //     PdfDocument document = PdfDocument();
-    //     document.pageSettings.margins.all = 0;
-    //
-    //     PdfFont font = PdfStandardFont(
-    //       PdfFontFamily.timesRoman,
-    //       12,
-    //     );
-    //
-    //     PdfFont fontTitle = PdfStandardFont(
-    //       PdfFontFamily.timesRoman,
-    //       12,
-    //       style: PdfFontStyle.bold,
-    //     );
-    //
-    //     PdfFont fontGridTitle = PdfStandardFont(
-    //       PdfFontFamily.timesRoman,
-    //       10,
-    //       style: PdfFontStyle.bold,
-    //     );
-    //
-    //     PdfFont fontGrid = PdfStandardFont(
-    //       PdfFontFamily.timesRoman,
-    //       10,
-    //     );
-    //
-    //     String text =
-    //         'This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898';
-    //     Size size = font.measureString(text);
-    //     Size size1 = font.measureString(
-    //         'Contact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898');
-    //     Size size2 = font.measureString('Contact Us: ');
-    //     Size size3 = font.measureString('Contact Us: info@comdelta.com.my |');
-    //     Size size4 = fontTitle.measureString('Device Log');
-    //     Size size5 = fontGridTitle.measureString('2021-01-11 06:48:47');
-    //
-    //     PdfPage page = document.pages.add();
-    //     PdfGraphics graphics = page.graphics;
-    //     double width = graphics.clientSize.width,
-    //         height = graphics.clientSize.height;
-    //
-    //     PdfGrid grid = PdfGrid();
-    //     grid.style = PdfGridStyle(
-    //         font: fontGrid,
-    //         cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
-    //
-    //     grid.columns.add(count: 6);
-    //     grid.headers.add(1);
-    //
-    //     PdfGridRow header = grid.headers[0];
-    //     header.cells[0].value = 'Date';
-    //     header.cells[1].value = 'Light 1\n(LOW)';
-    //     header.cells[2].value = 'Light 2\n(LOW)';
-    //     header.cells[3].value = 'Light 3\n(MEDIUM)';
-    //     header.cells[4].value = 'Battery Status';
-    //     header.cells[5].value = 'RSSI';
-    //
-    //     for (int i = 0; i < 6; i++) {
-    //       header.cells[i].style = PdfGridCellStyle(
-    //           format: PdfStringFormat(
-    //               alignment: (i == 0)
-    //                   ? PdfTextAlignment.left
-    //                   : PdfTextAlignment.center),
-    //           font: fontGridTitle,
-    //           cellPadding: PdfPaddings(
-    //               left: (i == 0) ? 5 : 2, right: 2, top: 2, bottom: 2));
-    //       header.cells[i].style.backgroundBrush =
-    //           PdfSolidBrush(PdfColor(0, 101, 163));
-    //       header.cells[i].style.textBrush =
-    //           PdfSolidBrush(PdfColor(255, 255, 255));
-    //       header.cells[i].style.textBrush =
-    //           PdfSolidBrush(PdfColor(255, 255, 255));
-    //     }
-    //
-    //     PdfGridRow row;
-    //
-    //     for (int i = 0; i < _pagingController.itemList.length; i++) {
-    //       row = grid.rows.add();
-    //       row.cells[0].value = _pagingController.itemList[i].createDate;
-    //       row.cells[1].value =
-    //           _pagingController.itemList[i].ls1.contains("1") ? "ON" : "OFF";
-    //       row.cells[2].value =
-    //           _pagingController.itemList[i].ls2.contains("1") ? "ON" : "OFF";
-    //       row.cells[3].value =
-    //           _pagingController.itemList[i].ls3.contains("1") ? "ON" : "OFF";
-    //       row.cells[4].value = _pagingController.itemList[i].batteryValue;
-    //       row.cells[5].value = _pagingController.itemList[i].rssiValue;
-    //
-    //       for (int l = 0; l < 6; l++) {
-    //         row.cells[l].style = PdfGridCellStyle(
-    //             format: PdfStringFormat(
-    //                 alignment: (l == 0)
-    //                     ? PdfTextAlignment.left
-    //                     : PdfTextAlignment.center),
-    //             font: fontGrid,
-    //             cellPadding: PdfPaddings(
-    //                 left: (l == 0) ? 5 : 2, right: 2, top: 2, bottom: 2));
-    //         if (i % 2 != 0) {
-    //           row.cells[l].style.backgroundBrush = PdfBrushes.lightGray;
-    //         }
-    //       }
-    //     }
-    //
-    //     grid.columns[0].width = size5.width + 10;
-    //     grid.repeatHeader = true;
-    //
-    //     grid.draw(
-    //         page: page,
-    //         format: PdfLayoutFormat(
-    //             paginateBounds: Rect.fromLTWH(
-    //                 40, 40, width - 40, height - (size.height + 30))),
-    //         bounds: Rect.fromLTWH(
-    //             40,
-    //             (width / 7) + 100 + size4.height + (size3.height * 2),
-    //             width - 40,
-    //             height - (size.height + 30)));
-    //
-    //     for (int num = 0; num < document.pages.count; num++) {
-    //       page = document.pages[num];
-    //       graphics = document.pages[num].graphics;
-    //       Rect rect =
-    //           Rect.fromLTWH((width) / 2, height - size.height - 20, 0, 0);
-    //       PdfGraphicsState state = graphics.save();
-    //       graphics.setTransparency(0.20);
-    //       graphics.drawImage(PdfBitmap(await _readImageData('water.png')),
-    //           Rect.fromLTWH(0, 0, width, height));
-    //       graphics.restore(state);
-    //       graphics.drawString(text, font,
-    //           brush: PdfBrushes.black,
-    //           bounds: rect,
-    //           format: PdfStringFormat(
-    //             alignment: PdfTextAlignment.center,
-    //           ));
-    //       PdfTextWebLink(
-    //               url: 'mailto:info@comdelta.com.my',
-    //               text: ' info@comdelta.com.my',
-    //               font: PdfStandardFont(PdfFontFamily.timesRoman, 12,
-    //                   style: PdfFontStyle.underline),
-    //               brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-    //               pen: PdfPens.cornflowerBlue,
-    //               format: PdfStringFormat(
-    //                   alignment: PdfTextAlignment.left,
-    //                   lineAlignment: PdfVerticalAlignment.middle))
-    //           .draw(
-    //               page,
-    //               Offset((width - size1.width) / 2 + size2.width,
-    //                   height - size1.height - 20));
-    //       PdfTextWebLink(
-    //               url: 'www.comdelta.com.my',
-    //               text: ' www.comdelta.com.my',
-    //               font: PdfStandardFont(PdfFontFamily.timesRoman, 12,
-    //                   style: PdfFontStyle.underline),
-    //               brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-    //               pen: PdfPens.cornflowerBlue,
-    //               format: PdfStringFormat(
-    //                   alignment: PdfTextAlignment.left,
-    //                   lineAlignment: PdfVerticalAlignment.middle))
-    //           .draw(
-    //               page,
-    //               Offset((width - size1.width) / 2 + size3.width,
-    //                   height - size1.height - 20));
-    //     }
-    //
-    //     page = document.pages[0];
-    //     graphics = document.pages[0].graphics;
-    //
-    //     graphics.drawImage(
-    //         PdfBitmap(await _readImageData('logonew.png')),
-    //         Rect.fromLTWH(
-    //             40, 40, (width / 7) * 2.181818181818181818182, width / 7));
-    //
-    //     graphics.drawString('Device Log', fontTitle,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.left,
-    //         ));
-    //
-    //     graphics.drawString(
-    //         'Date of generated: ' +
-    //             DateFormat('dd MMM yyyy').format(DateTime.now()),
-    //         font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH(width - 40, 40 + width / 7 + 10, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.right,
-    //         ));
-    //
-    //     String str1 = 'Client: ' + compress(widget.device.getClient);
-    //     String str2 = 'Device name: ' + widget.device.deviceName;
-    //     String str3 = 'Height: ' + widget.device.deviceHeight;
-    //     String str4 = 'Location: ' + widget.device.deviceLocation;
-    //
-    //     String str5 = 'Site Details: ' + widget.device.deviceDetails;
-    //     String str6 = "";
-    //     if (widget.device.activationDate.toString().isNotEmpty)
-    //       str6 = 'Activation date: ' + widget.device.activationDate;
-    //
-    //     graphics.drawString(str1, font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH(40, 40 + width / 7 + 30 + size4.height, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.left,
-    //         ));
-    //
-    //     graphics.drawString(str2, font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH((width - 80) / 4 + 40,
-    //             40 + width / 7 + 30 + size4.height, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.left,
-    //         ));
-    //
-    //     graphics.drawString(str3, font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH((width - 80) / 2 + 40,
-    //             40 + width / 7 + 30 + size4.height, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.left,
-    //         ));
-    //
-    //     graphics.drawString(str4, font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH(
-    //             width - 40, 40 + width / 7 + 30 + size4.height, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.right,
-    //         ));
-    //
-    //     graphics.drawString(str5, font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH(
-    //             40,
-    //             width / 7 + 75 + size4.height + size3.height,
-    //             str6.isEmpty ? (width - 80) : (width - 80) / 2,
-    //             0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.left,
-    //         ));
-    //
-    //     graphics.drawString(str6, font,
-    //         brush: PdfBrushes.black,
-    //         bounds: Rect.fromLTWH((width - 80) / 2 + 40,
-    //             width / 7 + 75 + size4.height + size3.height, 0, 0),
-    //         format: PdfStringFormat(
-    //           alignment: PdfTextAlignment.left,
-    //         ));
-    //
-    //     saveAndLaunchFile(document, widget.device.id.toString() + '.pdf');
-    //   } else if (value.isPermanentlyDenied) {
-    //     toast("Accept permission to proceed!");
-    //     await openAppSettings();
-    //   } else if (value.isDenied) {
-    //     toast("Permission is denied");
-    //   } else if (value.isRestricted) {
-    //     toast("Permission is restricted");
-    //   } else if (value.isLimited) {
-    //     toast("Permission is limited");
-    //   }
-    //   return true;
-    // });
+      return;
+    }
+
+    if (_pagingController.itemList.isEmpty) {
+      toast("No logs available");
+      return;
+    }
+
+    await Permission.storage.request().then((value) async {
+      if (value.isGranted) {
+        PdfDocument document = PdfDocument();
+        document.pageSettings.margins.all = 0;
+
+        PdfFont font = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          12,
+        );
+
+        PdfFont fontTitle = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          12,
+          style: PdfFontStyle.bold,
+        );
+
+        PdfFont fontGridTitle = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          10,
+          style: PdfFontStyle.bold,
+        );
+
+        PdfFont fontGrid = PdfStandardFont(
+          PdfFontFamily.timesRoman,
+          10,
+        );
+
+        String text =
+            'This is a computer-generated document. No signature is required.\nContact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898';
+        Size size = font.measureString(text);
+        Size size1 = font.measureString(
+            'Contact Us: info@comdelta.com.my | www.comdelta.com.my | +603-83228898');
+        Size size2 = font.measureString('Contact Us: ');
+        Size size3 = font.measureString('Contact Us: info@comdelta.com.my |');
+        Size size4 = fontTitle.measureString('Device Log');
+        Size size5 = fontGridTitle.measureString('2021-01-11 06:48:47');
+
+        PdfPage page = document.pages.add();
+        PdfGraphics graphics = page.graphics;
+        double width = graphics.clientSize.width,
+            height = graphics.clientSize.height;
+
+        PdfGrid grid = PdfGrid();
+        grid.style = PdfGridStyle(
+            font: fontGrid,
+            cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
+
+        grid.columns.add(count: 4);
+        grid.headers.add(1);
+
+        PdfGridRow header = grid.headers[0];
+        header.cells[0].value = 'Date';
+        header.cells[1].value = 'Total Devices';
+        header.cells[2].value = 'Active Devices';
+        header.cells[3].value = 'Inactive Devices';
+
+        for (int i = 0; i < 4; i++) {
+          header.cells[i].style = PdfGridCellStyle(
+              format: PdfStringFormat(
+                  alignment: (i == 0)
+                      ? PdfTextAlignment.left
+                      : PdfTextAlignment.center),
+              font: fontGridTitle,
+              cellPadding: PdfPaddings(
+                  left: (i == 0) ? 5 : 2, right: 2, top: 2, bottom: 2));
+          header.cells[i].style.backgroundBrush =
+              PdfSolidBrush(PdfColor(0, 101, 163));
+          header.cells[i].style.textBrush =
+              PdfSolidBrush(PdfColor(255, 255, 255));
+          header.cells[i].style.textBrush =
+              PdfSolidBrush(PdfColor(255, 255, 255));
+        }
+
+        PdfGridRow row;
+
+        for (int i = 0; i < _pagingController.itemList.length; i++) {
+          row = grid.rows.add();
+          row.cells[0].value = _pagingController.itemList[i].date;
+          row.cells[1].value =
+              _pagingController.itemList[i].deviceHolder.length.toString();
+          row.cells[2].value =
+              _pagingController.itemList[i].deviceHolder.where((element) => element.isActive).length.toString();
+          row.cells[3].value =
+              _pagingController.itemList[i].deviceHolder.where((element) => !element.isActive).length.toString();
+
+          for (int l = 0; l < 4; l++) {
+            row.cells[l].style = PdfGridCellStyle(
+                format: PdfStringFormat(
+                    alignment: (l == 0)
+                        ? PdfTextAlignment.left
+                        : PdfTextAlignment.center),
+                font: fontGrid,
+                cellPadding: PdfPaddings(
+                    left: (l == 0) ? 5 : 2, right: 2, top: 2, bottom: 2));
+            if (i % 2 != 0) {
+              row.cells[l].style.backgroundBrush = PdfBrushes.lightGray;
+            }
+          }
+        }
+
+        grid.columns[0].width = size5.width + 10;
+        grid.repeatHeader = true;
+
+        grid.draw(
+            page: page,
+            format: PdfLayoutFormat(
+                paginateBounds: Rect.fromLTWH(
+                    40, 40, width - 40, height - (size.height +30))),
+            bounds: Rect.fromLTWH(
+                40,
+                (width / 7) + 60 + size4.height,
+                width - 40,
+                height - (size.height + 30)));
+
+        for (int num = 0; num < document.pages.count; num++) {
+          page = document.pages[num];
+          graphics = document.pages[num].graphics;
+          Rect rect =
+              Rect.fromLTWH((width) / 2, height - size.height - 20, 0, 0);
+          PdfGraphicsState state = graphics.save();
+          graphics.setTransparency(0.20);
+          graphics.drawImage(PdfBitmap(await _readImageData('water.png')),
+              Rect.fromLTWH(0, 0, width, height));
+          graphics.restore(state);
+          graphics.drawString(text, font,
+              brush: PdfBrushes.black,
+              bounds: rect,
+              format: PdfStringFormat(
+                alignment: PdfTextAlignment.center,
+              ));
+          PdfTextWebLink(
+                  url: 'mailto:info@comdelta.com.my',
+                  text: ' info@comdelta.com.my',
+                  font: PdfStandardFont(PdfFontFamily.timesRoman, 12,
+                      style: PdfFontStyle.underline),
+                  brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+                  pen: PdfPens.cornflowerBlue,
+                  format: PdfStringFormat(
+                      alignment: PdfTextAlignment.left,
+                      lineAlignment: PdfVerticalAlignment.middle))
+              .draw(
+                  page,
+                  Offset((width - size1.width) / 2 + size2.width,
+                      height - size1.height - 20));
+          PdfTextWebLink(
+                  url: 'www.comdelta.com.my',
+                  text: ' www.comdelta.com.my',
+                  font: PdfStandardFont(PdfFontFamily.timesRoman, 12,
+                      style: PdfFontStyle.underline),
+                  brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+                  pen: PdfPens.cornflowerBlue,
+                  format: PdfStringFormat(
+                      alignment: PdfTextAlignment.left,
+                      lineAlignment: PdfVerticalAlignment.middle))
+              .draw(
+                  page,
+                  Offset((width - size1.width) / 2 + size3.width,
+                      height - size1.height - 20));
+        }
+
+        page = document.pages[0];
+        graphics = document.pages[0].graphics;
+
+        graphics.drawImage(
+            PdfBitmap(await _readImageData('logonew.png')),
+            Rect.fromLTWH(
+                40, 40, (width / 7) * 2.181818181818181818182, width / 7));
+
+        graphics.drawString('Client: ' + compress(parseClient(widget.clientId)), fontTitle,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.left,
+            ));
+
+        graphics.drawString(
+            'Date of generated: ' +
+                DateFormat('dd MMM yyyy').format(DateTime.now()),
+            font,
+            brush: PdfBrushes.black,
+            bounds: Rect.fromLTWH(width - 40, 40 + width / 7 + 10, 0, 0),
+            format: PdfStringFormat(
+              alignment: PdfTextAlignment.right,
+            ));
+
+        // String str1 = 'Client: ' + compress(parseClient(widget.clientId));
+        // String str2 = 'Device name: ' + widget.device.deviceName;
+        // String str3 = 'Height: ' + widget.device.deviceHeight;
+        // String str4 = 'Location: ' + widget.device.deviceLocation;
+        //
+        // String str5 = 'Site Details: ' + widget.device.deviceDetails;
+        // String str6 = "";
+        // if (widget.device.activationDate.toString().isNotEmpty)
+        //   str6 = 'Activation date: ' + widget.device.activationDate;
+        //
+        // graphics.drawString(str1, font,
+        //     brush: PdfBrushes.black,
+        //     bounds: Rect.fromLTWH(40, 40 + width / 7 + 30 + size4.height, 0, 0),
+        //     format: PdfStringFormat(
+        //       alignment: PdfTextAlignment.left,
+        //     ));
+        //
+        // graphics.drawString(str2, font,
+        //     brush: PdfBrushes.black,
+        //     bounds: Rect.fromLTWH((width - 80) / 4 + 40,
+        //         40 + width / 7 + 30 + size4.height, 0, 0),
+        //     format: PdfStringFormat(
+        //       alignment: PdfTextAlignment.left,
+        //     ));
+        //
+        // graphics.drawString(str3, font,
+        //     brush: PdfBrushes.black,
+        //     bounds: Rect.fromLTWH((width - 80) / 2 + 40,
+        //         40 + width / 7 + 30 + size4.height, 0, 0),
+        //     format: PdfStringFormat(
+        //       alignment: PdfTextAlignment.left,
+        //     ));
+        //
+        // graphics.drawString(str4, font,
+        //     brush: PdfBrushes.black,
+        //     bounds: Rect.fromLTWH(
+        //         width - 40, 40 + width / 7 + 30 + size4.height, 0, 0),
+        //     format: PdfStringFormat(
+        //       alignment: PdfTextAlignment.right,
+        //     ));
+        //
+        // graphics.drawString(str5, font,
+        //     brush: PdfBrushes.black,
+        //     bounds: Rect.fromLTWH(
+        //         40,
+        //         width / 7 + 75 + size4.height + size3.height,
+        //         str6.isEmpty ? (width - 80) : (width - 80) / 2,
+        //         0),
+        //     format: PdfStringFormat(
+        //       alignment: PdfTextAlignment.left,
+        //     ));
+        //
+        // graphics.drawString(str6, font,
+        //     brush: PdfBrushes.black,
+        //     bounds: Rect.fromLTWH((width - 80) / 2 + 40,
+        //         width / 7 + 75 + size4.height + size3.height, 0, 0),
+        //     format: PdfStringFormat(
+        //       alignment: PdfTextAlignment.left,
+        //     ));
+
+        saveAndLaunchFile(document, parseClient(widget.clientId) + '.pdf');
+      } else if (value.isPermanentlyDenied) {
+        toast("Accept permission to proceed!");
+        await openAppSettings();
+      } else if (value.isDenied) {
+        toast("Permission is denied");
+      } else if (value.isRestricted) {
+        toast("Permission is restricted");
+      } else if (value.isLimited) {
+        toast("Permission is limited");
+      }
+      return true;
+    });
   }
 
-  Future<void> selectDate() async {
+  Future<void> displayAll() async {
+    searchController.clear();
+    setState(() {
+      validate = false;
+      if (spans[0] != Span.up) {
+        counts.sort((a, b) => b.getE(0).compareTo(a.getE(0)));
+        spans[0] = Span.up;
+        for (int i = 1; i < spans.length; i++) {
+          spans[i] = Span.def;
+        }
+      }
+      counts.forEach((element) => element.setHighLight(''));
+      _pagingController.itemList = counts;
+      resNum = counts.length.toString();
+    });
+  }
+
+  Future<void> selectDay() async {
+    final DateTime pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      fieldHintText: "Select Day",
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: MaterialColor(0xff0065a3, customColors),
+              primaryColorDark: Color(0xff0065a3),
+              accentColor: Color(0xff0065a3),
+            ),
+            dialogBackgroundColor: Colors.white,
+            dialogTheme: DialogTheme(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+            ),
+          ),
+          child: child,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _pagingController.itemList = counts.where((element) => element.date==formatDate2(pickedDate)).toList();
+        resNum = _pagingController.itemList.length.toString();
+      });
+    }
+  }
+
+  Future<void> selectMonth() async {
     toast("Selecting, Please be patient!");
   }
 
-// String compress(String str) {
-//   try {
-//     str = client[int.parse(str) - 1].value;
-//   } catch (error) {}
-//   if (str.toLowerCase().contains("research & development department")) {
-//     return "R&D";
-//   } else if (str.toLowerCase().contains("comdelta technologies")) {
-//     return "Comdelta";
-//   } else if (str.length > 11) {
-//     return str.substring(0, 11) + "...";
-//   } else {
-//     return str;
-//   }
-// }
+String compress(String str) {
+  try {
+    str = client[int.parse(str) - 1].value;
+  } catch (error) {}
+  if (str.toLowerCase().contains("research & development department")) {
+    return "R&D";
+  } else if (str.toLowerCase().contains("comdelta technologies")) {
+    return "Comdelta";
+  } else if (str.length > 11) {
+    return str.substring(0, 11) + "...";
+  } else {
+    return str;
+  }
+}
 
-// Future<String> getDirectoryPath() async {
-//   Directory appDocDirectory = await getApplicationDocumentsDirectory();
-//
-//   Directory directory =
-//   await new Directory(appDocDirectory.path + '/' + 'dir')
-//       .create(recursive: true);
-//
-//   return directory.path;
-// }
+Future<String> getDirectoryPath() async {
+  Directory appDocDirectory = await getApplicationDocumentsDirectory();
 
-// Future<Uint8List> _readImageData(String name) async {
-//   final data = await rootBundle.load('assets/image/$name');
-//   return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-// }
-//
-// Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
-//   List<int> bytes = document.save();
-//   document.dispose();
-//   final String path = (await getApplicationSupportDirectory()).path;
-//   final String fileName = Platform.isWindows
-//       ? '$path\\' + name.toString()
-//       : '$path/' + name.toString();
-//   final File file = File(fileName);
-//   await file.writeAsBytes(bytes, flush: true);
-//   OpenFile.open(fileName);
-// }
+  Directory directory =
+  await new Directory(appDocDirectory.path + '/' + 'dir')
+      .create(recursive: true);
 
+  return directory.path;
+}
+
+Future<Uint8List> _readImageData(String name) async {
+  final data = await rootBundle.load('assets/image/$name');
+  return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+}
+
+Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
+  List<int> bytes = document.save();
+  document.dispose();
+  final String path = (await getApplicationSupportDirectory()).path;
+  final String fileName = Platform.isWindows
+      ? '$path\\' + name.toString()
+      : '$path/' + name.toString();
+  final File file = File(fileName);
+  await file.writeAsBytes(bytes, flush: true);
+  OpenFile.open(fileName);
+}
+
+    List<DeviceJason> getDevices(List<DeviceCountHolder> devicesCount){
+      List<DeviceJason> temp=[];
+      devicesCount.forEach((deviceCount) {
+        DeviceJason device = devices.firstWhere((device) => deviceCount.id==device.id);
+        if(device!=null){
+          temp.add(device);
+        }
+      });
+        return temp;
+    }
 }

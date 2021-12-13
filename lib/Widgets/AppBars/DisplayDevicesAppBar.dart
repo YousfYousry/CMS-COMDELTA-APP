@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/Icons/pdf_icons.dart';
 
-class DeviceCountAppBar extends StatelessWidget {
+class DisplayDevicesAppBar extends StatelessWidget {
   final title;
   final context;
-  final func1;
-  final func2;
-  final func3;
-  final func4;
+  final func1, func2;
 
-  DeviceCountAppBar(
-      this.context, this.title, this.func1, this.func2, this.func3, this.func4);
+  DisplayDevicesAppBar(this.context, this.title, this.func1, this.func2);
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +17,11 @@ class DeviceCountAppBar extends StatelessWidget {
         icon: Icon(Icons.arrow_back),
         onPressed: () => Navigator.pop(this.context),
       ),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
+      title:
+          Text(
+            title,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
       actions: [
         Theme(
           data: Theme.of(context).copyWith(
@@ -40,9 +37,12 @@ class DeviceCountAppBar extends StatelessWidget {
                 value: 0,
                 child: Row(
                   children: [
-                    Icon(Icons.library_add_check),
+                    Icon(
+                      Pdf.file_pdf,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
-                    Text('Display All'),
+                    Text('Export PDF'),
                   ],
                 ),
               ),
@@ -50,32 +50,12 @@ class DeviceCountAppBar extends StatelessWidget {
                 value: 1,
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today),
-                    const SizedBox(width: 8),
-                    Text('Select Day'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 2,
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_today),
-                    const SizedBox(width: 8),
-                    Text('Select Month'),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: 3,
-                child: Row(
-                  children: [
                     Icon(
-                      Pdf.file_pdf,
+                      Pdf.file_excel,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    Text('Export Pdf'),
+                    Text('Export Excel'),
                   ],
                 ),
               ),
@@ -93,12 +73,6 @@ class DeviceCountAppBar extends StatelessWidget {
         break;
       case 1:
         func2();
-        break;
-      case 2:
-        func3();
-        break;
-      case 3:
-        func4();
         break;
     }
   }

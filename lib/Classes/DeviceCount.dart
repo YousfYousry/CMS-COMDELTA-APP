@@ -1,3 +1,4 @@
+import '../public.dart';
 import 'DeviceCountHolder.dart';
 
 class DeviceCount {
@@ -39,7 +40,7 @@ class DeviceCount {
 
   String getE(int index) {
     if (index == 0) {
-      return _date;
+      return formatDate2(DateTime.now())==_date?"Today":_date;
     } else if (index == 1) {
       return _total;
     } else if (index == 2) {

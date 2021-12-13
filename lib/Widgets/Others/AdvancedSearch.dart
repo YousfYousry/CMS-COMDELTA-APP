@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
@@ -15,6 +14,7 @@ class AdvancedSearch {
   bool advancedSearchBool = false;
   bool startIdError = false;
   bool endIdError = false;
+  final showClient;
   String clientAd = "", simProviderAd = "", deviceStatusAd = "";
   TextEditingController batchNumAd = new TextEditingController(),
       deviceDetailsAd = new TextEditingController(),
@@ -25,7 +25,8 @@ class AdvancedSearch {
       startingId = new TextEditingController(),
       endingId = new TextEditingController();
 
-  AdvancedSearch(this.context, this.getLocations, this.searchController);
+  AdvancedSearch(this.context, this.getLocations, this.searchController,
+      {this.showClient = true});
 
   void show() {
     Navigator.of(context).push(
@@ -127,11 +128,14 @@ class AdvancedSearch {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ModalFilter(
-                            value: clientAd,
-                            title: "Client",
-                            options: client,
-                            passVal: (val) => setState(() => clientAd = val),
+                          Visibility(
+                            child: ModalFilter(
+                              value: clientAd,
+                              title: "Client",
+                              options: client,
+                              passVal: (val) => setState(() => clientAd = val),
+                            ),
+                            visible: showClient,
                           ),
                           ModalFilter(
                             value: simProviderAd,
@@ -298,13 +302,17 @@ class AdvancedSearch {
       //     client[getInt(device.client) - 1].contains(clientAd));
       bool clientBool = (clientAd.isEmpty || device.getClient == clientAd);
 
-      bool statusBool = deviceStatusAd.isEmpty || (deviceStatusAd.toLowerCase().contains("inactive")?device.inActiveLast72():!device.inActiveLast72());
+      bool statusBool = deviceStatusAd.isEmpty ||
+          (deviceStatusAd.toLowerCase().contains("inactive")
+              ? device.inActiveLast72()
+              : !device.inActiveLast72());
 
       bool batchBool = (batchNumAd.text.isEmpty ||
           device.batchNum.toLowerCase().contains(batchNumAd.text.toString()));
       bool detailsBool = (deviceDetailsAd.text.isEmpty ||
-          device.deviceDetails.toLowerCase().contains(deviceDetailsAd.text.toString()));
-
+          device.deviceDetails
+              .toLowerCase()
+              .contains(deviceDetailsAd.text.toString()));
 
       bool activationFromBool;
       try {
@@ -331,8 +339,6 @@ class AdvancedSearch {
         activationToBool = false;
       }
 
-
-
       bool lastSignalFromBool;
       try {
         lastSignalFromBool = (lastSignalFromAd.text.isEmpty ||
@@ -341,7 +347,7 @@ class AdvancedSearch {
             DateFormat('yyyy-MM-dd HH:mm:ss')
                 .parse(device.lastSignal)
                 .isAtSameMomentAs(
-                DateFormat('dd-MM-yyyy').parse(lastSignalFromAd.text)));
+                    DateFormat('dd-MM-yyyy').parse(lastSignalFromAd.text)));
       } catch (Exception) {
         lastSignalFromBool = false;
       }
@@ -353,7 +359,7 @@ class AdvancedSearch {
             DateFormat('yyyy-MM-dd HH:mm:ss')
                 .parse(device.lastSignal)
                 .isAtSameMomentAs(
-                DateFormat('dd-MM-yyyy').parse(lastSignalToAd.text)));
+                    DateFormat('dd-MM-yyyy').parse(lastSignalToAd.text)));
       } catch (Exception) {
         lastSignalToBool = false;
       }
