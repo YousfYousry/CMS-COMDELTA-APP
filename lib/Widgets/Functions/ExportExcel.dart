@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';

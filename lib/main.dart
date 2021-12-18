@@ -15,7 +15,7 @@ import 'package:login_cms_comdelta/Pages/Client/ClientDashBoard.dart';
 import 'package:upgrader/upgrader.dart';
 
 import 'JasonHolders/RemoteApi.dart';
-import 'Widgets/Others/Loading.dart';
+import 'Widgets/ProgressBars/Loading.dart';
 import 'Widgets/Others/SizeTransition.dart';
 import 'public.dart';
 
@@ -28,7 +28,7 @@ Future<void> init() async {
   await NotificationService().init();
   FirebaseMessaging.onMessage.listen(_messageHandler);
 
-  int width = (MediaQuery.of(NavigationService.navigatorKey.currentContext).size.width *MediaQuery.of(NavigationService.navigatorKey.currentContext).devicePixelRatio)~/ 24.0;
+  int width = (MediaQuery.of(NavigationService.navigatorKey.currentContext).size.width * MediaQuery.of(NavigationService.navigatorKey.currentContext).devicePixelRatio)~/ 24.0;
   greenIcon = await getBytesFromAsset('assets/image/green_marker.png', width);
   yellowIcon = await getBytesFromAsset('assets/image/yellow_marker.png', width);
   redIcon = await getBytesFromAsset('assets/image/red_marker.png', width);

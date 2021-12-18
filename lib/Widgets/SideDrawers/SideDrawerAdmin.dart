@@ -83,7 +83,8 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width: 2,color: Colors.white.withOpacity(0.8)),
+                      border: Border.all(
+                          width: 2, color: Colors.white.withOpacity(0.8)),
                       borderRadius: BorderRadius.circular(50.0),
                     ),
                     child: ClipOval(
@@ -101,7 +102,10 @@ class _SideDrawer extends State<SideDrawerAdmin> {
                   SizedBox(
                     height: 5,
                   ),
-                  Text(user.firsName + ' ' + user.lastName,style: TextStyle(color: Colors.white),),
+                  Text(
+                    user.firsName + ' ' + user.lastName,
+                    style: TextStyle(color: Colors.white),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -134,41 +138,44 @@ class _SideDrawer extends State<SideDrawerAdmin> {
             title: Text('Dashboard'),
             onTap: () => Navigator.pop(context),
           ),
-          ExpansionPanelList(
-            elevation: 0,
-            expandedHeaderPadding: EdgeInsets.all(0),
-            animationDuration: Duration(milliseconds: 500),
-            dividerColor: Color(0xfffafafa),
-            expansionCallback: (int index, bool isExpanded) {
-              setState(() {
-                button1 = !isExpanded;
-                button2 = false;
-              });
-            },
-            children: [
-              ExpansionPanel(
-                backgroundColor: Color(0xfffafafa),
-                headerBuilder: (BuildContext context, bool isExpanded) {
-                  return ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text('Client'),
-                    onTap: () {
-                      setState(() {
-                        button1 = !isExpanded;
-                        button2 = false;
-                      });
-                    },
-                  );
-                },
-                body: Column(
-                  children: [
-                    itemChild("Manage Client", ManageClient()),
-                    itemChild("Add Client", AddClient()),
-                  ],
+          Visibility(
+            child: ExpansionPanelList(
+              elevation: 0,
+              expandedHeaderPadding: EdgeInsets.all(0),
+              animationDuration: Duration(milliseconds: 500),
+              dividerColor: Color(0xfffafafa),
+              expansionCallback: (int index, bool isExpanded) {
+                setState(() {
+                  button1 = !isExpanded;
+                  button2 = false;
+                });
+              },
+              children: [
+                ExpansionPanel(
+                  backgroundColor: Color(0xfffafafa),
+                  headerBuilder: (BuildContext context, bool isExpanded) {
+                    return ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text('Client'),
+                      onTap: () {
+                        setState(() {
+                          button1 = !isExpanded;
+                          button2 = false;
+                        });
+                      },
+                    );
+                  },
+                  body: Column(
+                    children: [
+                      itemChild("Manage Client", ManageClient()),
+                      itemChild("Add Client", AddClient()),
+                    ],
+                  ),
+                  isExpanded: button1,
                 ),
-                isExpanded: button1,
-              ),
-            ],
+              ],
+            ),
+            visible: user.clientId.trim() != "13",
           ),
           ExpansionPanelList(
             elevation: 0,
@@ -266,9 +273,9 @@ class _SideDrawer extends State<SideDrawerAdmin> {
     );
   }
 
-Future<void> getInfo() async {
-  await RemoteApi.getUserInfo().then((value) => setState(()=>user));
-}
+  Future<void> getInfo() async {
+    await RemoteApi.getUserInfo().then((value) => setState(() => user));
+  }
 //
 // void sendPost(String userId) {
 //   http.post(

@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -12,14 +11,14 @@ import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Pages/Admin/DisplayDevices.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceCountAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import '../../public.dart';
 
 class TitleElement extends StatelessWidget {
@@ -38,10 +37,10 @@ class TitleElement extends StatelessWidget {
       this.title,
       this.span,
       this.func,
-        this.border=false,
+      this.border = false,
       this.textSize = 14,
       this.index})
-      : super(key: key);
+      :super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +151,8 @@ class DeviceCountHistory extends StatefulWidget {
 class _DeviceCountHistory extends State<DeviceCountHistory> {
   TextEditingController searchController = new TextEditingController();
   bool loading = false, validate = false;
+  DateTime selectedDay = DateTime.now();
+  DateTime selectedMonth = DateTime.now();
   String resNum = "0";
 
   final PagingController<int, DeviceCount> _pagingController =
@@ -212,10 +213,10 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     }
   }
 
-  void refresh() {
+  Future<void> refresh() async{
     if (!loading) {
       progress(true);
-      _fetchPage().then((value) {
+      await _fetchPage().then((value) {
         if (loading) {
           progress(false);
         }
@@ -741,66 +742,6 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
               alignment: PdfTextAlignment.right,
             ));
 
-        // String str1 = 'Client: ' + compress(parseClient(widget.clientId));
-        // String str2 = 'Device name: ' + widget.device.deviceName;
-        // String str3 = 'Height: ' + widget.device.deviceHeight;
-        // String str4 = 'Location: ' + widget.device.deviceLocation;
-        //
-        // String str5 = 'Site Details: ' + widget.device.deviceDetails;
-        // String str6 = "";
-        // if (widget.device.activationDate.toString().isNotEmpty)
-        //   str6 = 'Activation date: ' + widget.device.activationDate;
-        //
-        // graphics.drawString(str1, font,
-        //     brush: PdfBrushes.black,
-        //     bounds: Rect.fromLTWH(40, 40 + width / 7 + 30 + size4.height, 0, 0),
-        //     format: PdfStringFormat(
-        //       alignment: PdfTextAlignment.left,
-        //     ));
-        //
-        // graphics.drawString(str2, font,
-        //     brush: PdfBrushes.black,
-        //     bounds: Rect.fromLTWH((width - 80) / 4 + 40,
-        //         40 + width / 7 + 30 + size4.height, 0, 0),
-        //     format: PdfStringFormat(
-        //       alignment: PdfTextAlignment.left,
-        //     ));
-        //
-        // graphics.drawString(str3, font,
-        //     brush: PdfBrushes.black,
-        //     bounds: Rect.fromLTWH((width - 80) / 2 + 40,
-        //         40 + width / 7 + 30 + size4.height, 0, 0),
-        //     format: PdfStringFormat(
-        //       alignment: PdfTextAlignment.left,
-        //     ));
-        //
-        // graphics.drawString(str4, font,
-        //     brush: PdfBrushes.black,
-        //     bounds: Rect.fromLTWH(
-        //         width - 40, 40 + width / 7 + 30 + size4.height, 0, 0),
-        //     format: PdfStringFormat(
-        //       alignment: PdfTextAlignment.right,
-        //     ));
-        //
-        // graphics.drawString(str5, font,
-        //     brush: PdfBrushes.black,
-        //     bounds: Rect.fromLTWH(
-        //         40,
-        //         width / 7 + 75 + size4.height + size3.height,
-        //         str6.isEmpty ? (width - 80) : (width - 80) / 2,
-        //         0),
-        //     format: PdfStringFormat(
-        //       alignment: PdfTextAlignment.left,
-        //     ));
-        //
-        // graphics.drawString(str6, font,
-        //     brush: PdfBrushes.black,
-        //     bounds: Rect.fromLTWH((width - 80) / 2 + 40,
-        //         width / 7 + 75 + size4.height + size3.height, 0, 0),
-        //     format: PdfStringFormat(
-        //       alignment: PdfTextAlignment.left,
-        //     ));
-
         saveAndLaunchFile(document, parseClient(widget.clientId) + '.pdf');
       } else if (value.isPermanentlyDenied) {
         toast("Accept permission to proceed!");
@@ -817,6 +758,8 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
   }
 
   Future<void> displayAll() async {
+    selectedDay = DateTime.now();
+    selectedMonth = DateTime.now();
     searchController.clear();
     setState(() {
       validate = false;
@@ -836,9 +779,9 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
   Future<void> selectDay() async {
     final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      initialDate: selectedDay,
+      firstDate: DateTime(2021,10,25),
+      lastDate: DateTime.now(),
       fieldHintText: "Select Day",
       builder: (BuildContext context, Widget child) {
         return Theme(
@@ -861,6 +804,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     );
 
     if (pickedDate != null) {
+      selectedDay = pickedDate;
       setState(() {
         _pagingController.itemList = counts.where((element) => element.date==formatDate2(pickedDate)).toList();
         resNum = _pagingController.itemList.length.toString();
@@ -869,7 +813,20 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
   }
 
   Future<void> selectMonth() async {
-    toast("Selecting, Please be patient!");
+    final DateTime pickedDate = await showMonthPicker(
+      context: context,
+      initialDate: selectedMonth,
+      firstDate: DateTime(2021, 10, 25),
+      lastDate: DateTime.now(),
+      locale: Locale("en"),
+    );
+    if (pickedDate != null) {
+      selectedMonth = pickedDate;
+      setState(() {
+        _pagingController.itemList = counts.where((element) => DateTime(DateFormat('yyyy-MM-dd').parse(element.date.trim()).year,DateFormat('yyyy-MM-dd').parse(element.date.trim()).month).isAtSameMomentAs(DateTime(pickedDate.year,pickedDate.month))).toList();
+        resNum = _pagingController.itemList.length.toString();
+      });
+    }
   }
 
 String compress(String str) {

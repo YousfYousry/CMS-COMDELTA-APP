@@ -5,7 +5,7 @@ import 'package:login_cms_comdelta/JasonHolders/ClientJason.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
-import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartSelect.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
 // import 'package:login_cms_comdelta/Widgets/ProgressBars/ProgressBar.dart';

@@ -50,7 +50,7 @@ class DeviceCountAppBar extends StatelessWidget {
                 value: 1,
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today),
+                    Icon(Icons.calendar_view_day),
                     const SizedBox(width: 8),
                     Text('Select Day'),
                   ],

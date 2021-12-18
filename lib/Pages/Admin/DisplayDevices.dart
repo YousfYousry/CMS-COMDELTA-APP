@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -18,7 +17,7 @@ import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/Pages/Admin/AddEditDevice.dart';
 import 'package:login_cms_comdelta/Pages/DeviceLogs.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DisplayDevicesAppBar.dart';
-import 'package:login_cms_comdelta/Widgets/Others/Loading.dart';
+import 'package:login_cms_comdelta/Widgets/ProgressBars/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/Others/SizeTransition.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/SnackBar.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -1004,8 +1003,6 @@ class _DisplayDevice extends State<DisplayDevice> {
     }
   }
 
-  //formatDate2(DateTime.now())==item.date?"Active Today":"Active on "+item.date
-
   String getPDFDate(){
     if(widget.status==0){
       return formatDate2(DateTime.now())==widget.date?"Total Devices Today":"Total Devices on "+widget.date;
@@ -1036,7 +1033,7 @@ class _DisplayDevice extends State<DisplayDevice> {
         return 0;
       }
       return int.parse(s);
-    } catch (Exception) {
+    } catch (error) {
       return 0;
     }
   }

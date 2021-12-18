@@ -323,7 +323,7 @@ class AdvancedSearch {
                 .parse(device.activationDate)
                 .isAtSameMomentAs(
                     DateFormat('dd-MM-yyyy').parse(activationFromAd.text)));
-      } catch (Exception) {
+      } catch (error) {
         activationFromBool = false;
       }
       bool activationToBool;
@@ -335,7 +335,7 @@ class AdvancedSearch {
                 .parse(device.activationDate)
                 .isAtSameMomentAs(
                     DateFormat('dd-MM-yyyy').parse(activationToAd.text)));
-      } catch (Exception) {
+      } catch (error) {
         activationToBool = false;
       }
 
@@ -348,7 +348,7 @@ class AdvancedSearch {
                 .parse(device.lastSignal)
                 .isAtSameMomentAs(
                     DateFormat('dd-MM-yyyy').parse(lastSignalFromAd.text)));
-      } catch (Exception) {
+      } catch (error) {
         lastSignalFromBool = false;
       }
       bool lastSignalToBool;
@@ -360,7 +360,7 @@ class AdvancedSearch {
                 .parse(device.lastSignal)
                 .isAtSameMomentAs(
                     DateFormat('dd-MM-yyyy').parse(lastSignalToAd.text)));
-      } catch (Exception) {
+      } catch (error) {
         lastSignalToBool = false;
       }
 
@@ -412,7 +412,7 @@ class AdvancedSearch {
         return 0;
       }
       return int.parse(s);
-    } catch (Exception) {
+    } catch (error) {
       return 0;
     }
   }
@@ -423,7 +423,7 @@ class AdvancedSearch {
         return false;
       }
       return true;
-    } catch (Exception) {
+    } catch (error) {
       return false;
     }
   }
