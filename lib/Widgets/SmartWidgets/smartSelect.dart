@@ -9,6 +9,7 @@ class ModalFilter extends StatefulWidget {
   final String errorText;
   final bool error;
   final bool initial;
+  final bool disableCancel;
 
   // final ValueChanged onChange;
   ModalFilter({
@@ -20,6 +21,7 @@ class ModalFilter extends StatefulWidget {
     this.error = false,
     this.initial = false,
     this.initialValue = "",
+    this.disableCancel = false,
   });
 
   @override
@@ -113,7 +115,7 @@ class _ModalFilter extends State<ModalFilter> {
                   ),
                 ),
               ),
-              visible: widget.value.isNotEmpty,
+              visible: widget.value.isNotEmpty && !widget.disableCancel,
             ),
           ],
         ),

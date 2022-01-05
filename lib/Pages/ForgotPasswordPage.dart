@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/public.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
+
 // import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartTextField.dart';
@@ -424,8 +425,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-  Future<void> getUser() async{
-      await RemoteApi.getUserInfo().then((value) => setState(()=>user));
+  Future<void> getUser() async {
+    await RemoteApi.getUserInfo().then((value) => setState(() => user));
   }
 
   Future changePass() async {
@@ -508,6 +509,25 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       if (response.statusCode == 200) {
         if (json.decode(response.body) > 0) {
           toast('Password has been updated successfully');
+          RemoteApi.notifyAdmins(
+              user.fulName + " Changes his password",
+              "from: " +
+                  oPassFieldController.text +
+                  "to: " +
+                  passFieldController.text);
+
+          http.post(
+              Uri.parse(
+                  'http://103.18.247.174:8080/AmitProject/sendFeedBack.php'),
+              body: {
+                'from': user.fulName,
+                'to': "info@comdelta.com.my",
+                'subject': user.fulName + " Changes his password",
+                'message': "from: " +
+                    oPassFieldController.text +
+                    "to: " +
+                    passFieldController.text,
+              });
         } else {
           toast('You are not authorised person !');
         }

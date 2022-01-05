@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/CustomAppBarWithBack.dart';
@@ -561,14 +560,19 @@ class _FeedBackPageState extends State<FeedBackPage> {
       if (response.statusCode == 200) {
         if (response.body.toLowerCase().contains("message sent")) {
           toast("Feedback has been sent successfully!");
+          RemoteApi.notifyAdmins(user.fulName, messageController.text);
         } else {
           toast('Error while sending Feedback');
+          // print(response.body);
+          RemoteApi.notifyAdmins(user.fulName, messageController.text);
         }
       } else {
+        RemoteApi.notifyAdmins(user.fulName, messageController.text);
         toast(getResponseError(response));
       }
     } catch (error) {
       toast(error.toString());
+      RemoteApi.notifyAdmins(user.fulName, messageController.text);
     }
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }

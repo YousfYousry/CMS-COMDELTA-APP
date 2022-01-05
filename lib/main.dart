@@ -63,7 +63,8 @@ const IOSNotificationDetails iOSPlatformChannelSpecifics =
   presentBadge: true,
   // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
   presentSound:
-      true, // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+      true,
+      // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
   // sound: String?,  // Specifics the file path to play (only from iOS 10 onwards)
   // badgeNumber: int?, // The application's icon badge number
   // attachments: List<IOSNotificationAttachment>?, (only from iOS 10 onwards)

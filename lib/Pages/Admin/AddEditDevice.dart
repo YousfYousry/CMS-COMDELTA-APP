@@ -35,7 +35,7 @@ class _AddDevice extends State<AddDevice> {
   bool errorClient = false, errorLocation = false;
 
   String clientValue = "";
-  String locationValue = "";
+  S2Choice<String> locationValue = S2Choice<String>(value: '', title: '');
   String heightValue = "Above 45m";
   String siteRegionValue = "";
   String simProvider = "";
@@ -61,7 +61,9 @@ class _AddDevice extends State<AddDevice> {
       setState(() {
         // clientValue = client[getInt(widget.editDevice.client) - 1].title;
         clientValue = widget.editDevice.getClient;
-        locationValue = widget.editDevice.deviceLocation;
+        locationValue = location
+            .getRange(getSafeInt(widget.editDevice.deviceLocationId) - 1, getSafeInt(widget.editDevice.deviceLocationId))
+            .first;
         heightValue = widget.editDevice.deviceHeight;
         siteRegionValue = widget.editDevice.siteRegion;
         simProvider = widget.editDevice.simProvider;
@@ -271,6 +273,7 @@ class _AddDevice extends State<AddDevice> {
                               errorClient = false;
                             }),
                         errorText: 'Please enter Client',
+                        disableCancel: true,
                         error: errorClient),
                     // SizedBox(height: 20),
                     // RichText(
@@ -287,11 +290,15 @@ class _AddDevice extends State<AddDevice> {
                     // ),
                     // SizedBox(height: 5),
                     ModalFilter(
-                        value: locationValue,
+                        value: locationValue.title,
                         title: "Location",
                         options: location,
+                        disableCancel: true,
                         passVal: (val) => setState(() {
-                              locationValue = val;
+                              int index = getInt(val);
+                              locationValue = location
+                                  .getRange(index - 1, index)
+                                  .first;
                               errorLocation = false;
                             }),
                         errorText: 'Please enter Location',
@@ -371,6 +378,9 @@ class _AddDevice extends State<AddDevice> {
                       title: "Height",
                       options: height,
                       passVal: (val) => setState(() => heightValue = val),
+                      initial: true,
+                      initialValue: "Above 45m",
+                      disableCancel: true,
                     ),
                     // SizedBox(height: 20),
                     // RichText(
@@ -397,6 +407,7 @@ class _AddDevice extends State<AddDevice> {
                       title: "Site Region",
                       options: siteRegion,
                       passVal: (val) => setState(() => siteRegionValue = val),
+                      disableCancel: true,
                     ),
                     // SizedBox(height: 20),
                     // RichText(
@@ -434,6 +445,7 @@ class _AddDevice extends State<AddDevice> {
                       value: simProvider,
                       title: "Sim Provider",
                       options: simCardProvider,
+                      disableCancel: true,
                       passVal: (val) => setState(() => simProvider = val),
                     ),
                     // SizedBox(height: 20),
@@ -449,6 +461,9 @@ class _AddDevice extends State<AddDevice> {
                       title: "Battery Status",
                       options: status,
                       passVal: (val) => setState(() => batteryStatus = val),
+                      initial: true,
+                      initialValue: "Inactive",
+                      disableCancel: true,
                     ),
                     // SizedBox(height: 20),
                     // RichText(
@@ -463,6 +478,9 @@ class _AddDevice extends State<AddDevice> {
                       title: "RSSI Status",
                       options: status,
                       passVal: (val) => setState(() => rssiStatus = val),
+                      initial: true,
+                      initialValue: "Inactive",
+                      disableCancel: true,
                     ),
                     SizedBox(height: 70),
                   ],
@@ -492,13 +510,13 @@ class _AddDevice extends State<AddDevice> {
       });
     }
 
-    if (locationValue.isEmpty) {
+    if (locationValue.title.isEmpty) {
       setState(() {
         errorLocation = true;
       });
     }
 
-    if (clientValue.isEmpty || locationValue.isEmpty) {
+    if (clientValue.isEmpty || locationValue.title.isEmpty) {
       toast("Please fill in all the required fields.");
       return;
     }
@@ -523,10 +541,7 @@ class _AddDevice extends State<AddDevice> {
                       value: clientValue, title: clientValue)) +
                   1)
               .toString(),
-          'location': (location.indexOf(S2Choice<String>(
-                      value: locationValue, title: locationValue)) +
-                  1)
-              .toString(),
+          'location': (location.indexOf(locationValue) + 1).toString(),
           'device_name': deviceName.text,
           'device_detail': deviceDetail.text,
           'latitude': latitude.text,
@@ -574,16 +589,5 @@ class _AddDevice extends State<AddDevice> {
       toast('Error: ' + error.message);
       saveSnack.hide();
     });
-  }
-
-  int getInt(String s) {
-    try {
-      if (s == null || int.parse(s) == null) {
-        return 0;
-      }
-      return int.parse(s);
-    } catch (Exception) {
-      return 0;
-    }
   }
 }

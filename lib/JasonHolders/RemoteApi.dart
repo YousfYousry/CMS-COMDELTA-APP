@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:login_cms_comdelta/JasonHolders/DeviceJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/HistoryJason.dart';
 import 'package:login_cms_comdelta/JasonHolders/LogJason.dart';
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:smart_select/smart_select.dart';
 
 import '../public.dart';
@@ -133,6 +132,20 @@ class RemoteApi {
     T Function(dynamic object) mapper,
   ) =>
       jsonArray.map(mapper).toList();
+
+  static Future<int> notifyAdmins(String title,String description) async {
+    final response = await http.post(
+        Uri.parse('http://103.18.247.174:8080/AmitProject/admin/notifyAdmins.php'),
+        body: {
+          'title': title,
+          'description': description,
+        });
+    if (response.statusCode == 200) {
+      return 0;
+    } else {
+      return response.statusCode;
+    }
+  }
 
 
   static Future <void> getUserInfo() async{

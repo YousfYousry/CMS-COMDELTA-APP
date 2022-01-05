@@ -32,7 +32,7 @@ class TitleElement extends StatelessWidget {
 
   const TitleElement(
       {Key key,
-      this.width=0,
+      this.width = 0,
       this.height,
       this.title,
       this.span,
@@ -40,48 +40,49 @@ class TitleElement extends StatelessWidget {
       this.border = false,
       this.textSize = 14,
       this.index})
-      :super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      flex: width!=0?0:1,
-      child:Container(
-      width: width,
-      height: height,
+      flex: width != 0 ? 0 : 1,
+      child: Container(
+        width: width,
+        height: height,
         decoration: BoxDecoration(
           border: Border(
             right: BorderSide(width: border ? 1.0 : 0, color: Colors.grey),
           ),
         ),
-      child: InkWell(
-        onTap: sort,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontSize: textSize,
+        child: InkWell(
+          onTap: sort,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: textSize,
+                  ),
+                  children: [
+                    TextSpan(text: title),
+                    WidgetSpan(
+                        child: (span == Span.def)
+                            ? SpanDefault()
+                            : (span == Span.up)
+                                ? SpanUp()
+                                : SpanDown()),
+                  ],
                 ),
-                children: [
-                  TextSpan(text: title),
-                  WidgetSpan(
-                      child: (span == Span.def)
-                          ? SpanDefault()
-                          : (span == Span.up)
-                              ? SpanUp()
-                              : SpanDown()),
-                ],
               ),
             ),
           ),
         ),
       ),
-    ),);
+    );
   }
 
   void sort() {
@@ -96,14 +97,20 @@ class Value extends StatelessWidget {
   final onClick;
 
   const Value(
-      {Key key, this.height, this.width=0, this.title, this.high, this.border, this.onClick})
+      {Key key,
+      this.height,
+      this.width = 0,
+      this.title,
+      this.high,
+      this.border,
+      this.onClick})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      flex: width!=0?0:1,
-      child:Material(
+      flex: width != 0 ? 0 : 1,
+      child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onClick,
@@ -213,7 +220,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     }
   }
 
-  Future<void> refresh() async{
+  Future<void> refresh() async {
     if (!loading) {
       progress(true);
       await _fetchPage().then((value) {
@@ -240,7 +247,11 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
       devices = await RemoteApi.getDevicesList();
       List<DeviceCountHolder> deviceHolder = [];
       devices.forEach((element) => deviceHolder.add(DeviceCountHolder(
-          element.id, element.clientId, !element.inActiveLast72())));
+          element.id,
+          element.clientId,
+          element.createdDate,
+          !element.inActiveLast72())));
+
       DateTime date = DateTime.now();
       counts.add(DeviceCount(
           formatDate2(DateTime(date.year, date.month, date.day)),
@@ -257,19 +268,20 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                 DateTime(date.year, date.month, date.day - i)))
             .toList()
             .forEach((history) {
-          String clientId = deviceHolder[deviceHolder
-                  .indexWhere((element) => element.id == history.deviceId)]
-              .clientId;
           deviceHolder[deviceHolder
-                  .indexWhere((element) => element.id == history.deviceId)] =
-              DeviceCountHolder(
-                  history.deviceId, clientId, !history.active.contains("1"));
+                  .indexWhere((element) => element.id == history.deviceId)]
+              .setActive(!history.active.contains("1"));
         });
         if (i > 0) {
           counts.add(DeviceCount(
               formatDate2(DateTime(date.year, date.month, date.day - i)),
               deviceHolder
-                  .where((element) => element.clientId == widget.clientId)
+                  .where((element) =>
+                      (element.clientId == widget.clientId) &&
+                      (DateFormat('yyyy-MM-dd HH:mm:ss')
+                          .parse(element.createdDate)
+                          .isBefore(DateTime(
+                              date.year, date.month, date.day - i + 1))))
                   .toList()));
         }
       }
@@ -476,7 +488,11 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                                         Value(
                                             height: 30,
                                             width: 90,
-                                            title: formatDate2(DateTime.now())==item.date?"Today":item.date,
+                                            title:
+                                                formatDate2(DateTime.now()) ==
+                                                        item.date
+                                                    ? "Today"
+                                                    : item.date,
                                             high: item.highLight,
                                             border: true),
                                         Value(
@@ -484,36 +500,59 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
                                             // width: 71,
                                             title: item.total,
                                             high: item.highLight,
-                                            onClick:()=>  Navigator.push(
-                                              context,
-                                              SizeRoute(
-                                                page: DisplayDevice(widget.clientId,getDevices(item.deviceHolder),0,item.date),
-                                              ),
-                                            ),
+                                            onClick: () => Navigator.push(
+                                                  context,
+                                                  SizeRoute(
+                                                    page: DisplayDevice(
+                                                        widget.clientId,
+                                                        getDevices(
+                                                            item.deviceHolder),
+                                                        0,
+                                                        item.date),
+                                                  ),
+                                                ),
                                             border: true),
                                         Value(
                                             height: 30,
                                             // width: 71,
                                             title: item.active,
                                             high: item.highLight,
-                                            onClick: ()=>  Navigator.push(
-                                              context,
-                                              SizeRoute(
-                                                  page: DisplayDevice(widget.clientId,getDevices(item.deviceHolder.where((element) => element.isActive).toList()),1,item.date),
-                                              ),
-                                            ),
+                                            onClick: () => Navigator.push(
+                                                  context,
+                                                  SizeRoute(
+                                                    page: DisplayDevice(
+                                                        widget.clientId,
+                                                        getDevices(item
+                                                            .deviceHolder
+                                                            .where((element) =>
+                                                                element
+                                                                    .isActive)
+                                                            .toList()),
+                                                        1,
+                                                        item.date),
+                                                  ),
+                                                ),
                                             border: true),
                                         Value(
                                             height: 30,
                                             // width: 71,
                                             title: item.inactive,
                                             high: item.highLight,
-                                            onClick:()=>  Navigator.push(
-                                              context,
-                                              SizeRoute(
-                                                  page:  DisplayDevice(widget.clientId,getDevices(item.deviceHolder.where((element) => !element.isActive).toList()),2,item.date),
-                                              ),
-                                            ),
+                                            onClick: () => Navigator.push(
+                                                  context,
+                                                  SizeRoute(
+                                                    page: DisplayDevice(
+                                                        widget.clientId,
+                                                        getDevices(item
+                                                            .deviceHolder
+                                                            .where((element) =>
+                                                                !element
+                                                                    .isActive)
+                                                            .toList()),
+                                                        2,
+                                                        item.date),
+                                                  ),
+                                                ),
                                             border: false),
                                       ],
                                     ),
@@ -548,7 +587,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
 
   Future<void> exportPdf() async {
     if (loading) {
-    toast("Loading, Please be patient!");
+      toast("Loading, Please be patient!");
       return;
     }
 
@@ -637,10 +676,14 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
           row.cells[0].value = _pagingController.itemList[i].date;
           row.cells[1].value =
               _pagingController.itemList[i].deviceHolder.length.toString();
-          row.cells[2].value =
-              _pagingController.itemList[i].deviceHolder.where((element) => element.isActive).length.toString();
-          row.cells[3].value =
-              _pagingController.itemList[i].deviceHolder.where((element) => !element.isActive).length.toString();
+          row.cells[2].value = _pagingController.itemList[i].deviceHolder
+              .where((element) => element.isActive)
+              .length
+              .toString();
+          row.cells[3].value = _pagingController.itemList[i].deviceHolder
+              .where((element) => !element.isActive)
+              .length
+              .toString();
 
           for (int l = 0; l < 4; l++) {
             row.cells[l].style = PdfGridCellStyle(
@@ -664,12 +707,9 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
             page: page,
             format: PdfLayoutFormat(
                 paginateBounds: Rect.fromLTWH(
-                    40, 40, width - 40, height - (size.height +30))),
-            bounds: Rect.fromLTWH(
-                40,
-                (width / 7) + 60 + size4.height,
-                width - 40,
-                height - (size.height + 30)));
+                    40, 40, width - 40, height - (size.height + 30))),
+            bounds: Rect.fromLTWH(40, (width / 7) + 60 + size4.height,
+                width - 40, height - (size.height + 30)));
 
         for (int num = 0; num < document.pages.count; num++) {
           page = document.pages[num];
@@ -725,7 +765,8 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
             Rect.fromLTWH(
                 40, 40, (width / 7) * 2.181818181818181818182, width / 7));
 
-        graphics.drawString('Client: ' + compress(parseClient(widget.clientId)), fontTitle,
+        graphics.drawString(
+            'Client: ' + compress(parseClient(widget.clientId)), fontTitle,
             brush: PdfBrushes.black,
             bounds: Rect.fromLTWH(40, 40 + width / 7 + 10, 0, 0),
             format: PdfStringFormat(
@@ -780,7 +821,7 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     final DateTime pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDay,
-      firstDate: DateTime(2021,10,25),
+      firstDate: DateTime(2021, 10, 25),
       lastDate: DateTime.now(),
       fieldHintText: "Select Day",
       builder: (BuildContext context, Widget child) {
@@ -806,7 +847,9 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     if (pickedDate != null) {
       selectedDay = pickedDate;
       setState(() {
-        _pagingController.itemList = counts.where((element) => element.date==formatDate2(pickedDate)).toList();
+        _pagingController.itemList = counts
+            .where((element) => element.date == formatDate2(pickedDate))
+            .toList();
         resNum = _pagingController.itemList.length.toString();
       });
     }
@@ -823,62 +866,68 @@ class _DeviceCountHistory extends State<DeviceCountHistory> {
     if (pickedDate != null) {
       selectedMonth = pickedDate;
       setState(() {
-        _pagingController.itemList = counts.where((element) => DateTime(DateFormat('yyyy-MM-dd').parse(element.date.trim()).year,DateFormat('yyyy-MM-dd').parse(element.date.trim()).month).isAtSameMomentAs(DateTime(pickedDate.year,pickedDate.month))).toList();
+        _pagingController.itemList = counts
+            .where((element) => DateTime(
+                    DateFormat('yyyy-MM-dd').parse(element.date.trim()).year,
+                    DateFormat('yyyy-MM-dd').parse(element.date.trim()).month)
+                .isAtSameMomentAs(DateTime(pickedDate.year, pickedDate.month)))
+            .toList();
         resNum = _pagingController.itemList.length.toString();
       });
     }
   }
 
-String compress(String str) {
-  try {
-    str = client[int.parse(str) - 1].value;
-  } catch (error) {}
-  if (str.toLowerCase().contains("research & development department")) {
-    return "R&D";
-  } else if (str.toLowerCase().contains("comdelta technologies")) {
-    return "Comdelta";
-  } else if (str.length > 11) {
-    return str.substring(0, 11) + "...";
-  } else {
-    return str;
-  }
-}
-
-Future<String> getDirectoryPath() async {
-  Directory appDocDirectory = await getApplicationDocumentsDirectory();
-
-  Directory directory =
-  await new Directory(appDocDirectory.path + '/' + 'dir')
-      .create(recursive: true);
-
-  return directory.path;
-}
-
-Future<Uint8List> _readImageData(String name) async {
-  final data = await rootBundle.load('assets/image/$name');
-  return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-}
-
-Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
-  List<int> bytes = document.save();
-  document.dispose();
-  final String path = (await getApplicationSupportDirectory()).path;
-  final String fileName = Platform.isWindows
-      ? '$path\\' + name.toString()
-      : '$path/' + name.toString();
-  final File file = File(fileName);
-  await file.writeAsBytes(bytes, flush: true);
-  OpenFile.open(fileName);
-}
-
-    List<DeviceJason> getDevices(List<DeviceCountHolder> devicesCount){
-      List<DeviceJason> temp=[];
-      devicesCount.forEach((deviceCount) {
-        DeviceJason device = devices.firstWhere((device) => deviceCount.id==device.id);
-        if(device!=null){
-          temp.add(device);
-        }
-      });
-        return temp;
+  String compress(String str) {
+    try {
+      str = client[int.parse(str) - 1].value;
+    } catch (error) {}
+    if (str.toLowerCase().contains("research & development department")) {
+      return "R&D";
+    } else if (str.toLowerCase().contains("comdelta technologies")) {
+      return "Comdelta";
+    } else if (str.length > 11) {
+      return str.substring(0, 11) + "...";
+    } else {
+      return str;
     }
+  }
+
+  Future<String> getDirectoryPath() async {
+    Directory appDocDirectory = await getApplicationDocumentsDirectory();
+
+    Directory directory =
+        await new Directory(appDocDirectory.path + '/' + 'dir')
+            .create(recursive: true);
+
+    return directory.path;
+  }
+
+  Future<Uint8List> _readImageData(String name) async {
+    final data = await rootBundle.load('assets/image/$name');
+    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  }
+
+  Future<void> saveAndLaunchFile(PdfDocument document, String name) async {
+    List<int> bytes = document.save();
+    document.dispose();
+    final String path = (await getApplicationSupportDirectory()).path;
+    final String fileName = Platform.isWindows
+        ? '$path\\' + name.toString()
+        : '$path/' + name.toString();
+    final File file = File(fileName);
+    await file.writeAsBytes(bytes, flush: true);
+    OpenFile.open(fileName);
+  }
+
+  List<DeviceJason> getDevices(List<DeviceCountHolder> devicesCount) {
+    List<DeviceJason> temp = [];
+    devicesCount.forEach((deviceCount) {
+      DeviceJason device =
+          devices.firstWhere((device) => deviceCount.id == device.id);
+      if (device != null) {
+        temp.add(device);
+      }
+    });
+    return temp;
+  }
 }

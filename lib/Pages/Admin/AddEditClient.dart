@@ -162,6 +162,7 @@ class _AddClient extends State<AddClient> {
                       passVal: (val) => setState(()=> statTwo = val),
                       initial: true,
                       initialValue: "Hidden",
+                      disableCancel: true,
                     ),
                     // SizedBox(height: 20),
                     // RichText(
@@ -178,6 +179,7 @@ class _AddClient extends State<AddClient> {
                       passVal: (val) => setState(()=> statThree = val),
                       initial: true,
                       initialValue: "Hidden",
+                      disableCancel: true,
                     ),
                     SizedBox(height: 70),
                   ],

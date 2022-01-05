@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
@@ -423,6 +422,21 @@ class _UserProfileState extends State<UserProfile> {
               toast('Profile has been updated successfully');
               getUser();
             });
+
+
+            RemoteApi.notifyAdmins(user.fulName + " Changes his profile","");
+
+            http.post(
+                Uri.parse(
+                    'http://103.18.247.174:8080/AmitProject/sendFeedBack.php'),
+                body: {
+                  'from': user.fulName,
+                  'to': "info@comdelta.com.my",
+                  'subject': user.fulName + " Changes his profile",
+                  'message': "",
+                });
+
+
           } else {
             toast('Something wrong with the server!');
           }

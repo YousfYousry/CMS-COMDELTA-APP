@@ -19,6 +19,7 @@ class DeviceJason {
   String _deviceHeight = "";
   String _activationDate = "";
   String _lastSignal = "";
+  String _createdDate = "";
   bool _l1 = false;
   bool _l2 = false;
   bool _l3 = false;
@@ -49,6 +50,7 @@ class DeviceJason {
       this._deviceHeight,
       this._activationDate,
       this._lastSignal,
+      this._createdDate,
       this._l1,
       this._l2,
       this._l3,
@@ -122,17 +124,6 @@ class DeviceJason {
       return 0;
     }
 
-    String getLocation(String locationId) {
-      try {
-        return location
-            .firstWhere(
-                (element) => element.value == getStr(json['location_id']))
-            .title;
-      } catch (error) {
-        return "unknown";
-      }
-    }
-
     return DeviceJason(
       getStr(json['device_id']),
       getStr(json['unikl']),
@@ -144,12 +135,13 @@ class DeviceJason {
       getStr(json['rssi_status']),
       getStr(json['client_batch_number']),
       getStr(json['sim_serial_number']),
-      getLocation(getStr(json['location_id'])),
+      getStr(json['location_id']),
       getStr(json['device_detail']),
       ((getStr(json['device_height']).contains("0")) ? "Below" : "Above") +
           " 45m",
       getStr(json['device_activation']),
       getStr(json['LatestUpdateDate']),
+      getStr(json['CreatedDate']),
       getStr(json['LS1']).contains("1"),
       getStr(json['LS2']).contains("1"),
       getStr(json['LS3']).contains("1"),
@@ -300,6 +292,17 @@ class DeviceJason {
   //       date.second));
   // }
 
+  String getLocation(String locationId) {
+    try {
+      return location
+          .firstWhere(
+              (element) => element.value == locationId)
+          .title;
+    } catch (error) {
+      return "unknown";
+    }
+  }
+
   bool inActiveLast72() {
     DateTime date = DateTime.now();
     return DateFormat('yyyy-MM-dd HH:mm:ss').parse(_lastSignal).isBefore(
@@ -321,7 +324,9 @@ class DeviceJason {
 
   String get batteryStatus => _batteryStatus;
 
-  String get deviceLocation => _deviceLocation;
+  String get deviceLocation => getLocation(_deviceLocation);
+
+  String get deviceLocationId => _deviceLocation;
 
   String get highLight => _highLight;
 
@@ -338,6 +343,8 @@ class DeviceJason {
   bool get l1 => _l1;
 
   String get lastSignal => _lastSignal;
+
+  String get createdDate => _createdDate;
 
   String get activationDate => _activationDate;
 

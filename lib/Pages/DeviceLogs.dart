@@ -1,10 +1,6 @@
-// import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/services.dart';
-
-// import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
@@ -14,18 +10,13 @@ import 'package:login_cms_comdelta/JasonHolders/RemoteApi.dart';
 import 'package:login_cms_comdelta/Widgets/AppBars/DeviceLogsAppBar.dart';
 import 'package:login_cms_comdelta/Widgets/Cards/ShowDevice.dart';
 import 'package:login_cms_comdelta/Widgets/Functions/ExportExcel.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Functions/random.dart';
 import 'package:login_cms_comdelta/Widgets/ProgressBars/Loading.dart';
 import 'package:login_cms_comdelta/Widgets/SmartWidgets/smartDateHor.dart';
-
-// import 'package:login_cms_comdelta/Widgets/Cards/ShowDeviceAdmin.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:flutter/cupertino.dart';
 import '../public.dart';
 
 class TitleElement extends StatelessWidget {
@@ -620,7 +611,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                       onNotification:
                                           (OverscrollIndicatorNotification
                                               overscroll) {
-                                        overscroll.disallowGlow();
+                                        overscroll.disallowIndicator();
                                         return false;
                                       },
                                       child: PagedListView<int, LogJason>(
@@ -702,7 +693,7 @@ class _DeviceLogs extends State<DeviceLogs> {
                                           onNotification:
                                               (OverscrollIndicatorNotification
                                                   overscroll) {
-                                            overscroll.disallowGlow();
+                                            overscroll.disallowIndicator();
                                             return true;
                                           },
                                           child: PagedListView<int, LogJason>(
@@ -1730,14 +1721,14 @@ class _DeviceLogs extends State<DeviceLogs> {
               DateFormat('yyyy-MM-dd HH:mm:ss')
                   .parse(log.createDate.trim())
                   .isAfter(
-                      DateTime(dateFrom.year, dateFrom.month, dateFrom.day - 1))
+                      DateTime(dateFrom.year, dateFrom.month, dateFrom.day))
           // ||
           // DateFormat('yyyy-MM-dd HH:mm:ss')
           //     .parse(log.createDate.trim())
           //     .isAtSameMomentAs(
           //         DateFormat('dd-MM-yyyy').parse(dateFromAd.text))
           );
-    } catch (Exception) {
+    } catch (error) {
       filterDateFrom = false;
     }
 
@@ -1753,7 +1744,7 @@ class _DeviceLogs extends State<DeviceLogs> {
           //     .parse(log.createDate.trim())
           //     .isAtSameMomentAs(DateFormat('dd-MM-yyyy').parse(dateToAd.text))
           );
-    } catch (Exception) {
+    } catch (error) {
       filterDateTo = false;
     }
     return filterDateFrom && filterDateTo;

@@ -18,8 +18,8 @@ const PrimaryColor = const Color(0xff0065a3);
 Uint8List greenIcon;
 Uint8List yellowIcon;
 Uint8List redIcon;
-int daysInactive() => ((userType == clientKeyWord) ? 5 : 3);
 
+int daysInactive() => ((userType == clientKeyWord) ? 5 : 3);
 
 //if you want to force logout all users on next updates change these keyWords
 String userType = "";
@@ -191,10 +191,10 @@ class SpanDefault extends StatelessWidget {
   }
 }
 
-String parseClient(String clientId){
-  try{
+String parseClient(String clientId) {
+  try {
     return client[getInt(clientId) - 1].title;
-  }catch(error){
+  } catch (error) {
     return "unknown";
   }
 }
@@ -214,6 +214,25 @@ int getInt(String str) {
     return 0;
   }
 }
+
+int getSafeInt(String str) {
+  try {
+    return int.parse(str) > 0 ? int.parse(str) : 1;
+  } catch (e) {
+    return 1;
+  }
+}
+
+// int getInt(String s) {
+//   try {
+//     if (s == null || int.parse(s) == null) {
+//       return 0;
+//     }
+//     return int.parse(s);
+//   } catch (error) {
+//     return 0;
+//   }
+// }
 
 void toast(String msg) {
   Fluttertoast.showToast(
@@ -258,10 +277,12 @@ Future<void> save(String key, String data) async {
   prefs.setString(key, data);
 }
 
-
 Future<Uint8List> getBytesFromAsset(String path, int width) async {
   ByteData data = await rootBundle.load(path);
-  ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+  ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+      targetWidth: width);
   ui.FrameInfo fi = await codec.getNextFrame();
-  return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+  return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+      .buffer
+      .asUint8List();
 }
