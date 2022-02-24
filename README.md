@@ -11,5 +11,5 @@ Features: <br />
 - Notification will be sent once changes of the data has been detected (e.g. device went inactive). <br />
 - Some beatifull animations (thanks to flutter libraries). <br />
 
-Screenshots:
+Screenshots:<br />
 ![image](https://user-images.githubusercontent.com/60311634/155440935-da4780d7-d46f-4183-9b8d-abad286a0d8e.png)
